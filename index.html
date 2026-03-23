@@ -1,323 +1,202 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>English Vocabulary Speaking Practice</title>
+<title>Speaking Practice · English Vocabulary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
 <style>
-  /* ── Morandi accent palette ──────────────────────────────────────────────
-     sage   #9aab98   dusty-rose #b89898   sand  #c4a882
-     slate  #8fa3b1   lavender   #a8a0ba
-  ──────────────────────────────────────────────────────────────────────── */
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: #111;
-    color: #e4e4e4;
-    font-family: system-ui, -apple-system, sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 32px 16px 48px;
-  }
-
-  h1 {
-    font-size: 1.1rem;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #555;
-    margin-bottom: 32px;
-    text-align: center;
-  }
-
-  #app {
-    width: 100%;
-    max-width: 460px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-  }
-
-  /* ── Card ───────────────────────────────────────────────────────────────── */
-  .card {
-    width: 100%;
-    background: #1a1a1a;
-    border-radius: 16px;
-    padding: 32px 28px 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    border: 1px solid #242424;
-  }
-
-  .label {
-    font-size: 0.68rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: #444;
-    text-align: center;
-  }
-
-  .translation {
-    font-size: 2rem;
-    font-weight: 700;
-    line-height: 1.2;
-    color: #f0f0f0;
-    text-align: center;
-  }
-
-  .example {
-    font-size: 0.9rem;
-    color: #777;
-    line-height: 1.7;
-    font-style: italic;
-    text-align: center;
-    border-top: 1px solid #242424;
-    padding-top: 16px;
-    width: 100%;
-  }
-
-  /* ── Audio buttons (Word / Sentence / Slow) ─────────────────────────────── */
-  .speak-row {
-    display: flex;
-    gap: 8px;
-    width: 100%;
-  }
-
-  .speak-row button {
-    flex: 1;
-    padding: 10px 0;
-    font-size: 0.82rem;
-    background: #111;
-    color: #c8c8c8;
-    border: 1px solid #2e2e2e;
-    border-radius: 8px;
-    letter-spacing: 0.03em;
-  }
-
-  .speak-row button:hover:not(:disabled) {
-    background: #1e1e1e;
-    border-color: #3a3a3a;
-    color: #fff;
-  }
-
-  .speak-row button.speaking {
-    border-color: #8fa3b1;
-    color: #8fa3b1;
-  }
-
-  #btn-speed.slow {
-    border-color: #9aab98;
-    color: #9aab98;
-  }
-
-  /* ── Result ─────────────────────────────────────────────────────────────── */
-  .result-box {
-    width: 100%;
-    background: #1a1a1a;
-    border-radius: 12px;
-    padding: 16px 20px;
-    min-height: 60px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    font-size: 1rem;
-    transition: border 0.25s;
-    border: 1px solid #242424;
-  }
-
-  .result-box.correct { border-color: #9aab98; }
-  .result-box.wrong   { border-color: #b89898; }
-
-  .result-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .result-icon { font-size: 1.2rem; }
-
-  .result-title { font-weight: 600; font-size: 1rem; }
-  .result-box.correct .result-title { color: #9aab98; }
-  .result-box.wrong   .result-title { color: #b89898; }
-
-  /* ── Diff detail ─────────────────────────────────────────────────────────── */
-  .diff-detail {
-    font-size: 0.85rem;
-    color: #888;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding-top: 8px;
-    border-top: 1px solid #242424;
-  }
-
-  .diff-row { display: flex; gap: 10px; align-items: baseline; }
-  .diff-label { color: #444; min-width: 72px; font-size: 0.75rem; text-align: right; }
-  .diff-word { font-family: monospace; font-size: 0.95rem; letter-spacing: 0.04em; }
-
-  .diff-correct    { color: #e4e4e4; }
-  .diff-wrong-char { color: #b89898; font-weight: 700; text-decoration: underline; }
-  .diff-missing    { color: #3a3a3a; }
-
-  /* ── Main buttons row ───────────────────────────────────────────────────── */
-  .btn-row {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-  }
-
-  button {
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-family: inherit;
-    font-weight: 600;
-    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  button:active  { transform: scale(0.97); }
-  button:disabled { opacity: 0.35; cursor: not-allowed; }
-
-  #btn-record {
-    flex: 1;
-    padding: 15px;
-    font-size: 0.95rem;
-    background: #1e1e1e;
-    color: #e4e4e4;
-    border: 1px solid #2e2e2e;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  #btn-record:hover:not(:disabled) { background: #252525; }
-
-  #btn-record.recording {
-    background: #1e1e1e;
-    border-color: #b89898;
-    color: #b89898;
-    animation: pulse 1.4s infinite;
-  }
-
-  @keyframes pulse {
-    0%   { box-shadow: 0 0 0 0 rgba(184,152,152,0.4); }
-    70%  { box-shadow: 0 0 0 10px rgba(184,152,152,0); }
-    100% { box-shadow: 0 0 0 0 rgba(184,152,152,0); }
-  }
-
-  #btn-next {
-    padding: 15px 20px;
-    font-size: 0.88rem;
-    background: #111;
-    color: #555;
-    border: 1px solid #242424;
-  }
-
-  #btn-next:hover:not(:disabled) { background: #1a1a1a; color: #ccc; border-color: #333; }
-
-  /* ── Stats ──────────────────────────────────────────────────────────────── */
-  .stats {
-    width: 100%;
-    background: #141414;
-    border-radius: 12px;
-    padding: 14px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.82rem;
-    color: #555;
-    border: 1px solid #1e1e1e;
-  }
-
-  .stats strong { color: #ccc; }
-
-  .rate { font-size: 1.3rem; font-weight: 700; }
-  .rate.good { color: #9aab98; }
-  .rate.ok   { color: #c4a882; }
-  .rate.bad  { color: #b89898; }
-
-  /* ── Misc ───────────────────────────────────────────────────────────────── */
-  #interim {
-    font-size: 0.8rem;
-    color: #444;
-    text-align: center;
-    min-height: 18px;
-  }
-
-  .notice {
-    background: #1a1414;
-    border: 1px solid #3a2424;
-    border-radius: 10px;
-    padding: 20px;
-    color: #b89898;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    text-align: center;
-    width: 100%;
-  }
-
-  #word-counter {
-    font-size: 0.75rem;
-    color: #3a3a3a;
-    text-align: center;
-    width: 100%;
-  }
-
-  /* ── Mode toggle ────────────────────────────────────────────────────────── */
-  .mode-toggle {
-    display: flex;
-    width: 100%;
-    background: #111;
-    border-radius: 8px;
-    padding: 3px;
-    border: 1px solid #242424;
-  }
-
-  .mode-btn {
-    flex: 1;
-    padding: 9px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    background: transparent;
-    color: #444;
-    border: none;
-    border-radius: 6px;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-  }
-
-  .mode-btn.active {
-    background: #1e1e1e;
-    color: #e4e4e4;
-  }
-
-  /* sentence mode — highlight the example more */
-  .example.target {
-    color: #c8c8c8;
-    font-style: normal;
-    border-top-color: #8fa3b1;
-  }
+:root {
+  --bg:      #0f0f0f;
+  --surf:    #161616;
+  --ring:    rgba(255,255,255,0.06);
+  --ring-in: rgba(255,255,255,0.05);
+  --div:     rgba(255,255,255,0.05);
+  --text:    #e8e8e8;
+  --sub:     #888;
+  --muted:   #555;
+  --faint:   #2e2e2e;
+  --sage:    #8a9e89;
+  --rose:    #a88585;
+  --sand:    #b89870;
+  --slate:   #7d94a6;
+  --r-app:   20px;
+  --r-pill:  9999px;
+  --btn-h:   38px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* principle 4: Inter variable font, weight 550, ss02 off */
+body {
+  background: var(--bg); color: var(--text);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-weight: 450; font-feature-settings: "ss02" 0, "cv05" 1;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; padding: 40px 20px 60px;
+}
+/* principle 9: default left-aligned */
+#app { width: 100%; max-width: 460px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+/* principle 10: title + subtitle same line */
+.page-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; width: 100%; }
+.page-title { font-size: 1rem; font-weight: 650; letter-spacing: -0.015em; color: var(--text); }
+.page-sub   { font-size: 0.875rem; font-weight: 400; color: var(--muted); }
+/* principle 8: 14px text, line-height 2 */
+#word-counter { font-size: 0.75rem; color: var(--faint); line-height: 2; width: 100%; }
+/* principle 2: outer 10px - 3px pad = 7px inner
+   principle 3: 5% inset ring */
+.mode-toggle {
+  display: flex; width: 100%; background: var(--surf);
+  border-radius: 10px; padding: 3px;
+  box-shadow: inset 0 0 0 1px var(--ring-in);
+}
+.mode-btn {
+  flex: 1; height: 32px; padding: 0; font-family: inherit;
+  font-size: 0.8rem; font-weight: 550; font-feature-settings: "ss02" 0;
+  background: transparent; color: var(--muted); border: none;
+  border-radius: 7px; letter-spacing: 0.02em; cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+/* principle 1: active uses shadow ring, no border */
+.mode-btn.active {
+  background: #222; color: var(--text);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 1px 4px rgba(0,0,0,0.5);
+}
+/* principle 1: outer ring shadow; no border */
+.card {
+  width: 100%; background: var(--surf); border-radius: var(--r-app);
+  padding: 24px; display: flex; flex-direction: column;
+  box-shadow: 0 0 0 1px var(--ring), 0 4px 20px rgba(0,0,0,0.5);
+}
+.card-block { padding: 16px 0; }
+.card-block:first-child { padding-top: 0; }
+.card-block:last-of-type { padding-bottom: 18px; }
+/* principle 16: thin decorative horizontal rule */
+.card-divider { height: 1px; background: var(--div); margin: 0 -24px; }
+/* principle 6: mono + uppercase + tracking-wider + xs + gray */
+.eyebrow {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.68rem; font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--muted); margin-bottom: 10px;
+}
+/* principle 5: tight tracking on 2rem+
+   principle 7: text-balance for heading */
+.translation {
+  font-size: 2rem; font-weight: 650; line-height: 1.15;
+  letter-spacing: -0.03em; color: #f4f4f4; text-wrap: balance;
+}
+/* principle 7: text-pretty for paragraph
+   principle 11: max-width in ch units */
+.example {
+  font-size: 0.9rem; font-weight: 400; color: var(--sub);
+  line-height: 1.8; font-style: italic; text-wrap: pretty; max-width: 42ch;
+}
+.example.target { color: #d0d0d0; font-style: normal; }
+/* principle 12: height via calc()
+   principle 13: calc() alignment
+   principle 16: top divider line */
+.speak-row {
+  display: flex; gap: 6px; width: 100%;
+  border-top: 1px solid var(--div); padding-top: 18px;
+}
+.speak-row button {
+  flex: 1; height: calc(var(--btn-h) - 4px); padding: 0;
+  font-family: inherit; font-size: 0.78rem; font-weight: 550;
+  background: var(--bg); color: #888; border: none;
+  border-radius: var(--r-pill); letter-spacing: 0.01em; cursor: pointer;
+  transition: background 0.12s, color 0.12s, box-shadow 0.12s;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
+}
+.speak-row button:hover:not(:disabled) {
+  background: #1c1c1c; color: var(--text);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.11);
+}
+.speak-row button.speaking { color: var(--slate); box-shadow: inset 0 0 0 1px var(--slate); }
+#btn-speed.slow { color: var(--sage); box-shadow: inset 0 0 0 1px var(--sage); }
+/* principle 1: ring glow instead of border
+   principle 3: inset ring */
+.result-box {
+  width: 100%; background: var(--surf); border-radius: 14px;
+  padding: 16px 20px; min-height: 56px; display: flex;
+  flex-direction: column; gap: 10px; font-size: 0.9rem;
+  transition: box-shadow 0.25s; box-shadow: inset 0 0 0 1px var(--ring-in);
+}
+.result-box.correct { box-shadow: inset 0 0 0 1px rgba(138,158,137,0.3), 0 0 0 1px rgba(138,158,137,0.08); }
+.result-box.wrong   { box-shadow: inset 0 0 0 1px rgba(168,133,133,0.3), 0 0 0 1px rgba(168,133,133,0.08); }
+.result-header { display: flex; align-items: center; gap: 8px; }
+.result-icon { font-size: 1rem; }
+.result-title { font-weight: 600; font-size: 0.88rem; letter-spacing: -0.01em; }
+.result-box.correct .result-title { color: var(--sage); }
+.result-box.wrong   .result-title { color: var(--rose); }
+/* principle 6 for diff labels; principle 16 divider */
+.diff-detail { font-size: 0.82rem; display: flex; flex-direction: column; gap: 5px; padding-top: 10px; border-top: 1px solid var(--div); }
+.diff-row { display: flex; gap: 10px; align-items: baseline; }
+.diff-label { font-family: ui-monospace, monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); min-width: 64px; }
+.diff-word { font-family: ui-monospace, monospace; font-size: 0.88rem; letter-spacing: 0.02em; }
+.diff-correct    { color: var(--text); }
+.diff-wrong-char { color: var(--rose); font-weight: 700; }
+.diff-missing    { color: #2a2a2a; }
+/* principle 8: line-height 2 */
+#interim { font-size: 0.75rem; color: #333; line-height: 2; min-height: 28px; width: 100%; }
+button {
+  border: none; cursor: pointer;
+  font-family: "Inter", system-ui, sans-serif; font-feature-settings: "ss02" 0;
+  transition: background 0.12s, box-shadow 0.12s, color 0.12s, transform 0.08s;
+  -webkit-tap-highlight-color: transparent;
+}
+button:active  { transform: scale(0.97); }
+button:disabled { opacity: 0.3; cursor: not-allowed; }
+.btn-row { display: flex; gap: 8px; width: 100%; }
+/* principle 12: --btn-h height, rounded-full
+   principle 1: outer ring, no border */
+#btn-record {
+  flex: 1; height: var(--btn-h); padding: 0 20px;
+  font-size: 0.875rem; font-weight: 550; background: #1c1c1c; color: var(--text);
+  border-radius: var(--r-pill); display: flex; align-items: center;
+  justify-content: center; gap: 6px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 1px 5px rgba(0,0,0,0.5);
+}
+#btn-record:hover:not(:disabled) { background: #222; box-shadow: 0 0 0 1px rgba(255,255,255,0.12), 0 2px 10px rgba(0,0,0,0.5); }
+#btn-record.recording {
+  background: #1c1c1c; color: var(--rose);
+  box-shadow: 0 0 0 1px rgba(168,133,133,0.3);
+  animation: pulse 1.4s infinite;
+}
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(168,133,133,0.3), 0 0 0 1px rgba(168,133,133,0.3); }
+  70%  { box-shadow: 0 0 0 8px rgba(168,133,133,0),   0 0 0 1px rgba(168,133,133,0.3); }
+  100% { box-shadow: 0 0 0 0   rgba(168,133,133,0),   0 0 0 1px rgba(168,133,133,0.3); }
+}
+/* principle 13: calc() to match #btn-record */
+#btn-next {
+  height: var(--btn-h); padding: 0 18px; font-size: 0.8rem; font-weight: 550;
+  background: transparent; color: var(--muted); border-radius: var(--r-pill);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.07);
+}
+#btn-next:hover:not(:disabled) { background: #181818; color: var(--text); box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
+/* principle 3 */
+.stats {
+  width: 100%; background: var(--surf); border-radius: 14px;
+  padding: 16px 20px; display: flex; justify-content: space-between;
+  align-items: center; box-shadow: inset 0 0 0 1px var(--ring-in);
+}
+.stats-left { display: flex; flex-direction: column; gap: 3px; }
+/* principle 8 */
+.stats-numbers { font-size: 0.82rem; color: var(--muted); line-height: 2; }
+.stats-numbers strong { color: var(--text); font-weight: 600; }
+/* principle 5: tight tracking on large number */
+.rate { font-size: 1.3rem; font-weight: 650; letter-spacing: -0.04em; }
+.rate.good { color: var(--sage); }
+.rate.ok   { color: var(--sand); }
+.rate.bad  { color: var(--rose); }
+.notice { background: var(--surf); border-radius: 14px; padding: 24px; color: var(--rose); font-size: 0.875rem; line-height: 2; width: 100%; box-shadow: inset 0 0 0 1px rgba(168,133,133,0.15); }
 </style>
 </head>
 <body>
-
-<h1>English Vocabulary Speaking Practice</h1>
-
 <div id="app">
-  <p id="loading" style="color:#666;text-align:center;">Loading words…</p>
+  <p style="color:#333;font-size:0.8rem;line-height:2;width:100%;">Loading words…</p>
 </div>
-
 <script>
 // ── CSV parser ──────────────────────────────────────────────────────────────
 function parseCSV(text) {
@@ -360,8 +239,6 @@ let usedIndices = new Set();
 let stats = { correct: 0, total: 0 };
 let recognition = null;
 let isRecording = false;
-let speechRate = 1.0;
-let practiceMode = 'word'; // 'word' | 'sentence'
 
 // ── DOM refs ─────────────────────────────────────────────────────────────────
 const app = document.getElementById('app');
@@ -369,18 +246,23 @@ const app = document.getElementById('app');
 // ── Build UI ─────────────────────────────────────────────────────────────────
 function buildUI() {
   app.innerHTML = `
+    <header class="page-header">
+      <span class="page-title">Speaking Practice</span>
+      <span class="page-sub">English Vocabulary</span>
+    </header>
     <div id="word-counter"></div>
     <div class="mode-toggle">
       <button class="mode-btn active" id="mode-word" onclick="setMode('word')">Word</button>
       <button class="mode-btn" id="mode-sentence" onclick="setMode('sentence')">Sentence</button>
     </div>
     <div class="card">
-      <div style="text-align:center;width:100%;">
-        <div class="label" style="margin-bottom:10px;">Translation</div>
+      <div class="card-block">
+        <div class="eyebrow">Translation</div>
         <div class="translation" id="translation"></div>
       </div>
-      <div style="width:100%;">
-        <div class="label" id="example-label" style="margin-bottom:10px;text-align:center;">Example — say the word aloud</div>
+      <div class="card-divider"></div>
+      <div class="card-block">
+        <div class="eyebrow" id="example-label">Example · say the word aloud</div>
         <div class="example" id="example"></div>
       </div>
       <div class="speak-row">
@@ -389,27 +271,22 @@ function buildUI() {
         <button id="btn-speed">🐢 Slow</button>
       </div>
     </div>
-
     <div class="result-box" id="result-box"></div>
     <div id="interim"></div>
-
     <div class="btn-row">
       <button id="btn-record">🎤 Hold to Speak</button>
       <button id="btn-next">Next →</button>
     </div>
-
     <div class="stats">
-      <div>
-        <div style="margin-bottom:2px">Correct <strong id="s-correct">0</strong> / Total <strong id="s-total">0</strong></div>
-        <div style="font-size:0.78rem;">Session stats</div>
+      <div class="stats-left">
+        <div class="eyebrow">Session</div>
+        <div class="stats-numbers">Correct <strong id="s-correct">0</strong> / <strong id="s-total">0</strong></div>
       </div>
       <div class="rate" id="s-rate">—</div>
     </div>
   `;
 
   document.getElementById('btn-speak').addEventListener('click', speakWord);
-  document.getElementById('btn-speak-sentence').addEventListener('click', speakSentence);
-  document.getElementById('btn-speed').addEventListener('click', toggleSpeed);
 
   document.getElementById('btn-record').addEventListener('mousedown', startRecording);
   document.getElementById('btn-record').addEventListener('touchstart', e => { e.preventDefault(); startRecording(); });
@@ -420,32 +297,6 @@ function buildUI() {
   document.getElementById('btn-next').addEventListener('click', nextWord);
 
   nextWord();
-}
-
-// ── Mode ──────────────────────────────────────────────────────────────────────
-function setMode(mode) {
-  practiceMode = mode;
-  document.getElementById('mode-word').classList.toggle('active', mode === 'word');
-  document.getElementById('mode-sentence').classList.toggle('active', mode === 'sentence');
-
-  const exLabel = document.getElementById('example-label');
-  const exEl = document.getElementById('example');
-  if (mode === 'sentence') {
-    exLabel.textContent = 'Say this sentence aloud';
-    exEl.classList.add('target');
-  } else {
-    exLabel.textContent = 'Example — say the word aloud';
-    exEl.classList.remove('target');
-  }
-
-  // reset result & re-enable record
-  document.getElementById('result-box').className = 'result-box';
-  document.getElementById('result-box').innerHTML = '';
-  document.getElementById('interim').textContent = '';
-  const btn = document.getElementById('btn-record');
-  btn.disabled = false;
-  btn.textContent = '🎤 Hold to Speak';
-  btn.classList.remove('recording');
 }
 
 // ── Word logic ────────────────────────────────────────────────────────────────
@@ -462,33 +313,20 @@ function nextWord() {
   current = pickRandom();
 
   document.getElementById('translation').textContent = current['Translation/Explanation'] || current['Translation'] || '—';
-  document.getElementById('example').textContent = current['Example Sentence'] || '(no example sentence)';
+  document.getElementById('example').textContent = current['Example Sentence'] || '（無例句）';
   document.getElementById('result-box').className = 'result-box';
   document.getElementById('result-box').innerHTML = '';
   document.getElementById('interim').textContent = '';
   document.getElementById('word-counter').textContent =
-    `Practiced ${stats.total} · Library: ${words.length} words`;
+    `已練習 ${stats.total} 題 · 單字庫共 ${words.length} 個`;
 
   const btn = document.getElementById('btn-record');
   btn.disabled = false;
-  btn.textContent = '🎤 Hold to Speak';
+  btn.textContent = '🎤 按住說話';
   btn.classList.remove('recording');
 }
 
 // ── SpeechSynthesis ──────────────────────────────────────────────────────────
-function toggleSpeed() {
-  const btn = document.getElementById('btn-speed');
-  if (speechRate === 1.0) {
-    speechRate = 0.5;
-    btn.textContent = '🐢 Slow ✓';
-    btn.classList.add('slow');
-  } else {
-    speechRate = 1.0;
-    btn.textContent = '🐢 Slow';
-    btn.classList.remove('slow');
-  }
-}
-
 function speakWord() {
   if (!current) return;
   if (!window.speechSynthesis) return;
@@ -497,7 +335,7 @@ function speakWord() {
 
   const utter = new SpeechSynthesisUtterance(current['Word']);
   utter.lang = 'en-US';
-  utter.rate = speechRate;
+  utter.rate = 0.8;
 
   const btn = document.getElementById('btn-speak');
   btn.classList.add('speaking');
@@ -515,22 +353,6 @@ function speakWord() {
   window.speechSynthesis.speak(utter);
 }
 
-function speakSentence() {
-  if (!current || !window.speechSynthesis) return;
-  const sentence = current['Example Sentence'];
-  if (!sentence) return;
-  window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(sentence);
-  utter.lang = 'en-US';
-  utter.rate = speechRate;
-  const btn = document.getElementById('btn-speak-sentence');
-  btn.classList.add('speaking');
-  btn.disabled = true;
-  utter.onend = () => { btn.classList.remove('speaking'); btn.disabled = false; };
-  utter.onerror = () => { btn.classList.remove('speaking'); btn.disabled = false; };
-  window.speechSynthesis.speak(utter);
-}
-
 // ── Recording ─────────────────────────────────────────────────────────────────
 function startRecording() {
   if (isRecording) return;
@@ -539,7 +361,7 @@ function startRecording() {
   isRecording = true;
   const btn = document.getElementById('btn-record');
   btn.classList.add('recording');
-  btn.textContent = '🔴 Listening…';
+  btn.textContent = '🔴 辨識中…';
 
   recognition = new SR();
   recognition.lang = 'en-US';
@@ -562,7 +384,7 @@ function startRecording() {
     console.warn('SR error', e.error);
     resetRecordBtn();
     if (e.error === 'no-speech') {
-      document.getElementById('interim').textContent = 'No speech detected, please try again';
+      document.getElementById('interim').textContent = '沒有偵測到聲音，請再試一次';
     }
   };
 
@@ -581,7 +403,7 @@ function resetRecordBtn() {
   const btn = document.getElementById('btn-record');
   if (!btn) return;
   btn.classList.remove('recording');
-  btn.textContent = '🎤 Hold to Speak';
+  btn.textContent = '🎤 按住說話';
 }
 
 // ── Comparison ────────────────────────────────────────────────────────────────
@@ -646,19 +468,9 @@ function processResult(transcript) {
   if (!current) return;
   stats.total++;
 
-  let correct;
-  if (practiceMode === 'sentence') {
-    const answer = normalize(current['Example Sentence'] || '');
-    const spoken = normalize(transcript);
-    const aWords = answer.split(/\s+/).filter(Boolean);
-    const sWords = spoken.split(/\s+/).filter(Boolean);
-    const matched = aWords.filter(w => sWords.includes(w)).length;
-    correct = aWords.length > 0 && matched / aWords.length >= 0.8;
-  } else {
-    const answer = normalize(current['Word']);
-    const spoken = normalize(transcript);
-    correct = spoken === answer || spoken.split(/\s+/).includes(answer);
-  }
+  const answer = normalize(current['Word']);
+  const spoken = normalize(transcript);
+  const correct = spoken === answer || spoken.split(/\s+/).includes(answer);
 
   if (correct) stats.correct++;
   showResult(correct, transcript.trim());
@@ -669,7 +481,6 @@ function processResult(transcript) {
 
 function showResult(correct, spokenRaw) {
   const box = document.getElementById('result-box');
-  const answer = normalize(current['Word']);
 
   if (correct) {
     box.className = 'result-box correct';
@@ -678,14 +489,40 @@ function showResult(correct, spokenRaw) {
         <span class="result-icon">✅</span>
         <span class="result-title">Correct! Great pronunciation!</span>
       </div>`;
-  } else {
-    const spokenNorm = normalize(spokenRaw);
-    const bestWord = bestMatchWord(spokenRaw, answer);
+    return;
+  }
 
+  box.className = 'result-box wrong';
+
+  if (practiceMode === 'sentence') {
+    const answerWords = normalize(current['Example Sentence'] || '').split(/\s+/).filter(Boolean);
+    const spokenWords = normalize(spokenRaw).split(/\s+/).filter(Boolean);
+    const spokenSet = new Set(spokenWords);
+    const answerHTML = answerWords.map(w =>
+      spokenSet.has(w)
+        ? `<span class="diff-correct">${w}</span>`
+        : `<span class="diff-wrong-char">${w}</span>`
+    ).join(' ');
+    box.innerHTML = `
+      <div class="result-header">
+        <span class="result-icon">❌</span>
+        <span class="result-title">Try again</span>
+      </div>
+      <div class="diff-detail">
+        <div class="diff-row">
+          <span class="diff-label">You said:</span>
+          <span class="diff-word" style="white-space:normal;line-height:1.6;">${normalize(spokenRaw)}</span>
+        </div>
+        <div class="diff-row">
+          <span class="diff-label">Correct:</span>
+          <span class="diff-word" style="white-space:normal;line-height:1.6;">${answerHTML}</span>
+        </div>
+      </div>`;
+  } else {
+    const answer = normalize(current['Word']);
+    const bestWord = bestMatchWord(spokenRaw, answer);
     const spokenDiffHTML = buildDiffHTML(bestWord, answer);
     const answerDiffHTML = buildAnswerDiffHTML(bestWord, answer);
-
-    box.className = 'result-box wrong';
     box.innerHTML = `
       <div class="result-header">
         <span class="result-icon">❌</span>
@@ -703,7 +540,6 @@ function showResult(correct, spokenRaw) {
       </div>`;
   }
 }
-
 function updateStats() {
   document.getElementById('s-correct').textContent = stats.correct;
   document.getElementById('s-total').textContent = stats.total;
@@ -718,8 +554,8 @@ function updateStats() {
 async function init() {
   if (!SR) {
     app.innerHTML = `<div class="notice">
-      ⚠️ Your browser does not support the Speech Recognition API.<br><br>
-      Please open this page in <strong>Google Chrome</strong>.
+      ⚠️ 您的瀏覽器不支援語音辨識 API。<br><br>
+      請使用 <strong>Google Chrome</strong> 瀏覽器開啟此頁面。
     </div>`;
     return;
   }
@@ -733,8 +569,8 @@ async function init() {
     buildUI();
   } catch (err) {
     app.innerHTML = `<div class="notice">
-      ⚠️ Failed to load vocabulary file.<br><br>
-      Please confirm <code>notebooklm_words.csv</code> exists in the same directory.<br>
+      ⚠️ 無法載入單字檔案。<br><br>
+      請確認 <code>notebooklm_words.csv</code> 存在於同一目錄下。<br>
       <small style="color:#888;">(${err.message})</small>
     </div>`;
   }
