@@ -27,7 +27,6 @@
   --btn-h:   38px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-/* principle 4: Inter variable font, weight 550, ss02 off */
 body {
   background: var(--bg); color: var(--text);
   font-family: "Inter", system-ui, -apple-system, sans-serif;
@@ -36,16 +35,39 @@ body {
   min-height: 100vh; display: flex; flex-direction: column;
   align-items: center; padding: 40px 20px 60px;
 }
-/* principle 9: default left-aligned */
 #app { width: 100%; max-width: 460px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
-/* principle 10: title + subtitle same line */
 .page-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; width: 100%; }
 .page-title { font-size: 1rem; font-weight: 650; letter-spacing: -0.015em; color: var(--text); }
 .page-sub   { font-size: 0.875rem; font-weight: 400; color: var(--muted); }
-/* principle 8: 14px text, line-height 2 */
+
+/* ── Score panel ── */
+.score-panel {
+  width: 100%; background: var(--surf); border-radius: 14px;
+  padding: 14px 18px; display: flex; align-items: center; gap: 0;
+  box-shadow: inset 0 0 0 1px var(--ring-in);
+}
+.score-group { display: flex; gap: 16px; flex: 1; }
+.score-item { display: flex; flex-direction: column; gap: 2px; }
+.score-label { font-family: ui-monospace, monospace; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
+.score-val { font-size: 1.1rem; font-weight: 650; letter-spacing: -0.04em; color: var(--text); }
+.score-val.good { color: var(--sage); }
+.score-val.bad  { color: var(--rose); }
+.score-val.rate-good { color: var(--sage); }
+.score-val.rate-ok   { color: var(--sand); }
+.score-val.rate-bad  { color: var(--rose); }
+#btn-reset {
+  height: 28px; padding: 0 12px; font-family: inherit; font-size: 0.7rem;
+  font-weight: 500; letter-spacing: 0.03em; background: transparent;
+  color: var(--muted); border-radius: var(--r-pill);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
+  transition: color 0.12s, box-shadow 0.12s;
+}
+#btn-reset:hover { color: var(--rose); box-shadow: inset 0 0 0 1px rgba(168,133,133,0.3); }
+
+/* ── Progress counter ── */
 #word-counter { font-size: 0.75rem; color: var(--faint); line-height: 2; width: 100%; }
-/* principle 2: outer 10px - 3px pad = 7px inner
-   principle 3: 5% inset ring */
+
+/* ── Practice mode toggle ── */
 .mode-toggle {
   display: flex; width: 100%; background: var(--surf);
   border-radius: 10px; padding: 3px;
@@ -58,12 +80,30 @@ body {
   border-radius: 7px; letter-spacing: 0.02em; cursor: pointer;
   transition: background 0.15s, color 0.15s, box-shadow 0.15s;
 }
-/* principle 1: active uses shadow ring, no border */
 .mode-btn.active {
   background: #222; color: var(--text);
   box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 1px 4px rgba(0,0,0,0.5);
 }
-/* principle 1: outer ring shadow; no border */
+
+/* ── Card mode selector ── */
+.card-mode-row {
+  width: 100%; display: flex; gap: 6px; flex-wrap: wrap;
+}
+.card-mode-btn {
+  flex: 1; min-width: 0; height: 30px; padding: 0 8px; font-family: inherit;
+  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.02em;
+  background: var(--surf); color: var(--muted); border: none;
+  border-radius: 8px; cursor: pointer;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+.card-mode-btn.active {
+  background: #222; color: var(--text);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 1px 4px rgba(0,0,0,0.4);
+}
+.card-mode-btn:hover:not(.active) { color: var(--sub); }
+
 .card {
   width: 100%; background: var(--surf); border-radius: var(--r-app);
   padding: 24px; display: flex; flex-direction: column;
@@ -72,20 +112,27 @@ body {
 .card-block { padding: 16px 0; }
 .card-block:first-child { padding-top: 0; }
 .card-block:last-of-type { padding-bottom: 18px; }
-/* principle 16: thin decorative horizontal rule */
 .card-divider { height: 1px; background: var(--div); margin: 0 -24px; }
-/* principle 6: mono + uppercase + tracking-wider + xs + gray */
 .eyebrow {
   font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
   font-size: 0.68rem; font-weight: 500; text-transform: uppercase;
   letter-spacing: 0.1em; color: var(--muted); margin-bottom: 10px;
 }
-/* English word — large hero text */
+
+/* ── Word display with status dot ── */
+.word-header { display: flex; align-items: center; gap: 10px; }
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  background: var(--faint); margin-top: 3px;
+  transition: background 0.2s;
+}
+.status-dot.correct { background: var(--sage); }
+.status-dot.wrong   { background: var(--rose); }
+
 .word-display {
   font-size: 2.2rem; font-weight: 650; line-height: 1.15;
   letter-spacing: -0.03em; color: #f4f4f4; text-wrap: balance;
 }
-/* Chinese translation — flip card reveal */
 .translation-toggle { padding: 14px 0 0; display: flex; flex-direction: column; gap: 8px; }
 .trans-btn {
   align-self: flex-start; height: 24px; padding: 0 10px;
@@ -98,16 +145,11 @@ body {
 .translation {
   font-size: 0.85rem; font-weight: 400; color: var(--muted); line-height: 1.6;
 }
-/* principle 7: text-pretty for paragraph
-   principle 11: max-width in ch units */
 .example {
   font-size: 0.9rem; font-weight: 400; color: var(--sub);
   line-height: 1.8; font-style: italic; text-wrap: pretty; max-width: 42ch;
 }
 .example.target { color: #d0d0d0; font-style: normal; }
-/* principle 12: height via calc()
-   principle 13: calc() alignment
-   principle 16: top divider line */
 .speak-row {
   display: flex; gap: 6px; width: 100%;
   border-top: 1px solid var(--div); padding-top: 18px;
@@ -126,8 +168,6 @@ body {
 }
 .speak-row button.speaking { color: var(--slate); box-shadow: inset 0 0 0 1px var(--slate); }
 #btn-speed.slow { color: var(--sage); box-shadow: inset 0 0 0 1px var(--sage); }
-/* principle 1: ring glow instead of border
-   principle 3: inset ring */
 .result-box {
   width: 100%; background: var(--surf); border-radius: 14px;
   padding: 16px 20px; min-height: 56px; display: flex;
@@ -141,7 +181,6 @@ body {
 .result-title { font-weight: 600; font-size: 0.88rem; letter-spacing: -0.01em; }
 .result-box.correct .result-title { color: var(--sage); }
 .result-box.wrong   .result-title { color: var(--rose); }
-/* principle 6 for diff labels; principle 16 divider */
 .diff-detail { font-size: 0.82rem; display: flex; flex-direction: column; gap: 5px; padding-top: 10px; border-top: 1px solid var(--div); }
 .diff-row { display: flex; gap: 10px; align-items: baseline; }
 .diff-label { font-family: ui-monospace, monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); min-width: 64px; }
@@ -149,7 +188,6 @@ body {
 .diff-correct    { color: var(--text); }
 .diff-wrong-char { color: var(--rose); font-weight: 700; }
 .diff-missing    { color: #2a2a2a; }
-/* principle 8: line-height 2 */
 #interim { font-size: 0.75rem; color: #333; line-height: 2; min-height: 28px; width: 100%; }
 button {
   border: none; cursor: pointer;
@@ -160,8 +198,6 @@ button {
 button:active  { transform: scale(0.97); }
 button:disabled { opacity: 0.3; cursor: not-allowed; }
 .btn-row { display: flex; gap: 8px; width: 100%; }
-/* principle 12: --btn-h height, rounded-full
-   principle 1: outer ring, no border */
 #btn-record {
   flex: 1; height: var(--btn-h); padding: 0 20px;
   font-size: 0.875rem; font-weight: 550; background: #1c1c1c; color: var(--text);
@@ -180,24 +216,20 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
   70%  { box-shadow: 0 0 0 8px rgba(168,133,133,0),   0 0 0 1px rgba(168,133,133,0.3); }
   100% { box-shadow: 0 0 0 0   rgba(168,133,133,0),   0 0 0 1px rgba(168,133,133,0.3); }
 }
-/* principle 13: calc() to match #btn-record */
 #btn-next {
   height: var(--btn-h); padding: 0 18px; font-size: 0.8rem; font-weight: 550;
   background: transparent; color: var(--muted); border-radius: var(--r-pill);
   box-shadow: 0 0 0 1px rgba(255,255,255,0.07);
 }
 #btn-next:hover:not(:disabled) { background: #181818; color: var(--text); box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
-/* principle 3 */
 .stats {
   width: 100%; background: var(--surf); border-radius: 14px;
   padding: 16px 20px; display: flex; justify-content: space-between;
   align-items: center; box-shadow: inset 0 0 0 1px var(--ring-in);
 }
 .stats-left { display: flex; flex-direction: column; gap: 3px; }
-/* principle 8 */
 .stats-numbers { font-size: 0.82rem; color: var(--muted); line-height: 2; }
 .stats-numbers strong { color: var(--text); font-weight: 600; }
-/* principle 5: tight tracking on large number */
 .rate { font-size: 1.3rem; font-weight: 650; letter-spacing: -0.04em; }
 .rate.good { color: var(--sage); }
 .rate.ok   { color: var(--sand); }
@@ -244,18 +276,70 @@ function splitCSVLine(line) {
 // ── Speech Recognition setup ────────────────────────────────────────────────
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
+// ── localStorage ─────────────────────────────────────────────────────────────
+const LS_KEY = 'speaking-practice-status';
+
+function loadStatus() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; }
+  catch { return {}; }
+}
+
+function saveStatus() {
+  localStorage.setItem(LS_KEY, JSON.stringify(wordStatus));
+}
+
 // ── State ────────────────────────────────────────────────────────────────────
 let words = [];
 let current = null;
-let usedIndices = new Set();
-let stats = { correct: 0, total: 0 };
+let wordStatus = loadStatus(); // { 'word': 'correct' | 'wrong' }
+let sessionQueue = [];
+let sessionQueueIdx = 0;
+let stats = { correct: 0, wrong: 0 };
 let recognition = null;
 let isRecording = false;
 let practiceMode = 'word';
+let cardMode = 'smart'; // 'smart' | 'all' | 'unlearned' | 'wrong'
 let slowMode = false;
 
 // ── DOM refs ─────────────────────────────────────────────────────────────────
 const app = document.getElementById('app');
+
+// ── Session queue ─────────────────────────────────────────────────────────────
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildQueue() {
+  let pool;
+  const unlIdx = words.map((_, i) => i).filter(i => !wordStatus[words[i]['Word']]);
+  const wrgIdx = words.map((_, i) => i).filter(i => wordStatus[words[i]['Word']] === 'wrong');
+  const allIdx = words.map((_, i) => i);
+
+  if (cardMode === 'unlearned') {
+    pool = unlIdx.length > 0 ? unlIdx : allIdx;
+  } else if (cardMode === 'wrong') {
+    pool = wrgIdx.length > 0 ? wrgIdx : allIdx;
+  } else if (cardMode === 'smart') {
+    if (unlIdx.length > 0) pool = unlIdx;
+    else if (wrgIdx.length > 0) pool = wrgIdx;
+    else pool = allIdx;
+  } else {
+    pool = allIdx;
+  }
+
+  sessionQueue = shuffle(pool);
+  sessionQueueIdx = 0;
+}
+
+function pickNext() {
+  if (sessionQueueIdx >= sessionQueue.length) buildQueue();
+  return words[sessionQueue[sessionQueueIdx++]];
+}
 
 // ── Build UI ─────────────────────────────────────────────────────────────────
 function buildUI() {
@@ -264,15 +348,51 @@ function buildUI() {
       <span class="page-title">Speaking Practice</span>
       <span class="page-sub">English Vocabulary</span>
     </header>
+
+    <!-- Score panel -->
+    <div class="score-panel">
+      <div class="score-group">
+        <div class="score-item">
+          <span class="score-label">答對</span>
+          <span class="score-val good" id="sp-correct">0</span>
+        </div>
+        <div class="score-item">
+          <span class="score-label">答錯</span>
+          <span class="score-val bad" id="sp-wrong">0</span>
+        </div>
+        <div class="score-item">
+          <span class="score-label">正確率</span>
+          <span class="score-val" id="sp-rate">—</span>
+        </div>
+      </div>
+      <button id="btn-reset">重置進度</button>
+    </div>
+
+    <!-- Progress counter -->
     <div id="word-counter"></div>
+
+    <!-- Practice mode (Word / Sentence) -->
     <div class="mode-toggle">
       <button class="mode-btn active" id="mode-word" onclick="setMode('word')">Word</button>
       <button class="mode-btn" id="mode-sentence" onclick="setMode('sentence')">Sentence</button>
     </div>
+
+    <!-- Card selection mode -->
+    <div class="card-mode-row" id="card-mode-row">
+      <button class="card-mode-btn active" data-cmode="smart">智慧順序</button>
+      <button class="card-mode-btn" data-cmode="all">全部隨機</button>
+      <button class="card-mode-btn" data-cmode="unlearned">只出未練習</button>
+      <button class="card-mode-btn" data-cmode="wrong">只出答錯</button>
+    </div>
+
+    <!-- Word card -->
     <div class="card">
       <div class="card-block">
         <div class="eyebrow">Word</div>
-        <div class="word-display" id="word-display"></div>
+        <div class="word-header">
+          <div class="word-display" id="word-display"></div>
+          <div class="status-dot" id="status-dot"></div>
+        </div>
       </div>
       <div class="card-divider"></div>
       <div class="card-block">
@@ -289,12 +409,15 @@ function buildUI() {
         <button id="btn-speed">🐢 Slow</button>
       </div>
     </div>
+
     <div class="result-box" id="result-box"></div>
     <div id="interim"></div>
     <div class="btn-row">
       <button id="btn-record">🎤 Hold to Speak</button>
       <button id="btn-next">Next →</button>
     </div>
+
+    <!-- Session stats (bottom) -->
     <div class="stats">
       <div class="stats-left">
         <div class="eyebrow">Session</div>
@@ -304,35 +427,54 @@ function buildUI() {
     </div>
   `;
 
+  // Card mode buttons
+  document.getElementById('card-mode-row').addEventListener('click', e => {
+    const btn = e.target.closest('.card-mode-btn');
+    if (!btn) return;
+    const mode = btn.dataset.cmode;
+    setCardMode(mode);
+  });
+
+  document.getElementById('btn-reset').addEventListener('click', resetProgress);
   document.getElementById('btn-speak').addEventListener('click', speakWord);
   document.getElementById('btn-speak-sentence').addEventListener('click', speakSentence);
   document.getElementById('btn-speed').addEventListener('click', toggleSpeed);
 
-  document.getElementById('btn-record').addEventListener('mousedown', startRecording);
-  document.getElementById('btn-record').addEventListener('touchstart', e => { e.preventDefault(); startRecording(); });
-  document.getElementById('btn-record').addEventListener('mouseup', stopRecording);
-  document.getElementById('btn-record').addEventListener('touchend', e => { e.preventDefault(); stopRecording(); });
-  document.getElementById('btn-record').addEventListener('mouseleave', () => { if (isRecording) stopRecording(); });
+  const rec = document.getElementById('btn-record');
+  rec.addEventListener('mousedown', startRecording);
+  rec.addEventListener('touchstart', e => { e.preventDefault(); startRecording(); });
+  rec.addEventListener('mouseup', stopRecording);
+  rec.addEventListener('touchend', e => { e.preventDefault(); stopRecording(); });
+  rec.addEventListener('mouseleave', () => { if (isRecording) stopRecording(); });
 
   document.getElementById('btn-next').addEventListener('click', nextWord);
 
+  buildQueue();
   nextWord();
 }
 
-// ── Word logic ────────────────────────────────────────────────────────────────
-function pickRandom() {
-  if (usedIndices.size >= words.length) usedIndices.clear();
-  let idx;
-  do { idx = Math.floor(Math.random() * words.length); } while (usedIndices.has(idx));
-  usedIndices.add(idx);
-  return words[idx];
+// ── Card mode ─────────────────────────────────────────────────────────────────
+function setCardMode(mode) {
+  cardMode = mode;
+  document.querySelectorAll('.card-mode-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.cmode === mode);
+  });
+  buildQueue();
+  nextWord();
 }
 
+// ── Word logic ─────────────────────────────────────────────────────────────────
 function nextWord() {
   if (isRecording) stopRecording();
-  current = pickRandom();
+  current = pickNext();
 
   document.getElementById('word-display').textContent = current['Word'] || '—';
+
+  // Status dot
+  const dot = document.getElementById('status-dot');
+  const st = wordStatus[current['Word']];
+  dot.className = 'status-dot' + (st ? ' ' + st : '');
+
   const transEl = document.getElementById('translation');
   transEl.textContent = current['Translation/Explanation'] || current['Translation'] || '—';
   transEl.style.display = 'none';
@@ -342,13 +484,33 @@ function nextWord() {
   document.getElementById('result-box').className = 'result-box';
   document.getElementById('result-box').innerHTML = '';
   document.getElementById('interim').textContent = '';
-  document.getElementById('word-counter').textContent =
-    `${stats.total} practiced · ${words.length} words total`;
+  updateCounter();
 
   const btn = document.getElementById('btn-record');
   btn.disabled = false;
   btn.textContent = '🎤 Hold to Speak';
   btn.classList.remove('recording');
+}
+
+function updateCounter() {
+  const total = words.length;
+  const practiced = Object.keys(wordStatus).length;
+  const correct = Object.values(wordStatus).filter(v => v === 'correct').length;
+  const wrong = Object.values(wordStatus).filter(v => v === 'wrong').length;
+  const unlearned = total - practiced;
+  document.getElementById('word-counter').textContent =
+    `已練習 ${practiced} / ${total}　·　未練習 ${unlearned}　·　答對 ${correct}　·　答錯 ${wrong}`;
+}
+
+// ── Reset progress ────────────────────────────────────────────────────────────
+function resetProgress() {
+  if (!confirm('確定要清除所有學習紀錄，重新開始嗎？')) return;
+  wordStatus = {};
+  localStorage.removeItem(LS_KEY);
+  stats = { correct: 0, wrong: 0 };
+  updateScorePanel();
+  buildQueue();
+  nextWord();
 }
 
 // ── Mode toggle ───────────────────────────────────────────────────────────────
@@ -375,68 +537,41 @@ function toggleTranslation() {
 
 // ── SpeechSynthesis ──────────────────────────────────────────────────────────
 function speakWord() {
-  if (!current) return;
-  if (!window.speechSynthesis) return;
-
+  if (!current || !window.speechSynthesis) return;
   window.speechSynthesis.cancel();
-
   const utter = new SpeechSynthesisUtterance(current['Word']);
   utter.lang = 'en-US';
   utter.rate = slowMode ? 0.5 : 1.0;
-
   const btn = document.getElementById('btn-speak');
-  btn.classList.add('speaking');
-  btn.disabled = true;
-
-  utter.onend = () => {
-    btn.classList.remove('speaking');
-    btn.disabled = false;
-  };
-  utter.onerror = () => {
-    btn.classList.remove('speaking');
-    btn.disabled = false;
-  };
-
+  btn.classList.add('speaking'); btn.disabled = true;
+  utter.onend = utter.onerror = () => { btn.classList.remove('speaking'); btn.disabled = false; };
   window.speechSynthesis.speak(utter);
 }
 
 function speakSentence() {
-  if (!current) return;
-  if (!window.speechSynthesis) return;
+  if (!current || !window.speechSynthesis) return;
   const sentence = current['Example Sentence'];
   if (!sentence) return;
-
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(sentence);
   utter.lang = 'en-US';
   utter.rate = slowMode ? 0.5 : 1.0;
-
   const btn = document.getElementById('btn-speak-sentence');
-  btn.classList.add('speaking');
-  btn.disabled = true;
-  utter.onend = () => { btn.classList.remove('speaking'); btn.disabled = false; };
-  utter.onerror = () => { btn.classList.remove('speaking'); btn.disabled = false; };
-
+  btn.classList.add('speaking'); btn.disabled = true;
+  utter.onend = utter.onerror = () => { btn.classList.remove('speaking'); btn.disabled = false; };
   window.speechSynthesis.speak(utter);
 }
 
 function toggleSpeed() {
   slowMode = !slowMode;
   const btn = document.getElementById('btn-speed');
-  if (slowMode) {
-    btn.textContent = '🐢 Slow';
-    btn.classList.add('slow');
-  } else {
-    btn.textContent = '▶ Normal';
-    btn.classList.remove('slow');
-  }
+  btn.textContent = slowMode ? '🐢 Slow' : '▶ Normal';
+  btn.classList.toggle('slow', slowMode);
 }
 
 // ── Recording ─────────────────────────────────────────────────────────────────
 function startRecording() {
-  if (isRecording) return;
-  if (!SR) return;
-
+  if (isRecording || !SR) return;
   isRecording = true;
   const btn = document.getElementById('btn-record');
   btn.classList.add('recording');
@@ -468,7 +603,6 @@ function startRecording() {
   };
 
   recognition.onend = () => { resetRecordBtn(); };
-
   recognition.start();
 }
 
@@ -490,13 +624,11 @@ function normalize(s) {
   return s.toLowerCase().trim().replace(/[^a-z\s'-]/g, '');
 }
 
-// Pick the word from transcript closest to answer (edit-distance heuristic)
 function bestMatchWord(transcript, answer) {
   const parts = normalize(transcript).split(/\s+/);
   if (parts.length === 1) return parts[0];
-  return parts.reduce((best, w) => {
-    return charSimilarity(w, answer) >= charSimilarity(best, answer) ? w : best;
-  }, parts[0]);
+  return parts.reduce((best, w) =>
+    charSimilarity(w, answer) >= charSimilarity(best, answer) ? w : best, parts[0]);
 }
 
 function charSimilarity(a, b) {
@@ -508,20 +640,14 @@ function charSimilarity(a, b) {
   return len === 0 ? 1 : matches / len;
 }
 
-// Returns HTML string with wrong chars highlighted
 function buildDiffHTML(word, answer) {
   const maxLen = Math.max(word.length, answer.length);
   let html = '';
   for (let i = 0; i < maxLen; i++) {
-    const wc = word[i];
-    const ac = answer[i];
-    if (!wc) {
-      html += `<span class="diff-missing">_</span>`;
-    } else if (wc === ac) {
-      html += `<span class="diff-correct">${wc}</span>`;
-    } else {
-      html += `<span class="diff-wrong-char">${wc}</span>`;
-    }
+    const wc = word[i], ac = answer[i];
+    if (!wc) html += `<span class="diff-missing">_</span>`;
+    else if (wc === ac) html += `<span class="diff-correct">${wc}</span>`;
+    else html += `<span class="diff-wrong-char">${wc}</span>`;
   }
   return html;
 }
@@ -530,22 +656,16 @@ function buildAnswerDiffHTML(word, answer) {
   const maxLen = Math.max(word.length, answer.length);
   let html = '';
   for (let i = 0; i < maxLen; i++) {
-    const wc = word[i];
-    const ac = answer[i];
-    if (!ac) {
-      html += `<span class="diff-missing">_</span>`;
-    } else if (wc === ac) {
-      html += `<span class="diff-correct">${ac}</span>`;
-    } else {
-      html += `<span class="diff-wrong-char">${ac}</span>`;
-    }
+    const wc = word[i], ac = answer[i];
+    if (!ac) html += `<span class="diff-missing">_</span>`;
+    else if (wc === ac) html += `<span class="diff-correct">${ac}</span>`;
+    else html += `<span class="diff-wrong-char">${ac}</span>`;
   }
   return html;
 }
 
 function processResult(transcript) {
   if (!current) return;
-  stats.total++;
 
   let correct;
   if (practiceMode === 'sentence') {
@@ -559,16 +679,46 @@ function processResult(transcript) {
     correct = spoken === answer || spoken.split(/\s+/).includes(answer);
   }
 
-  if (correct) stats.correct++;
+  // Update session stats
+  if (correct) stats.correct++; else stats.wrong++;
+
+  // Update localStorage status (most recent answer wins)
+  wordStatus[current['Word']] = correct ? 'correct' : 'wrong';
+  saveStatus();
+
+  // Update status dot
+  const dot = document.getElementById('status-dot');
+  if (dot) { dot.className = 'status-dot ' + (correct ? 'correct' : 'wrong'); }
+
   showResult(correct, transcript.trim());
-  updateStats();
+  updateScorePanel();
+  updateCounter();
+  // Also update legacy stats bar
+  const total = stats.correct + stats.wrong;
+  document.getElementById('s-correct').textContent = stats.correct;
+  document.getElementById('s-total').textContent = total;
+  const pct = total ? Math.round(stats.correct / total * 100) : null;
+  const rateEl = document.getElementById('s-rate');
+  if (pct === null) { rateEl.textContent = '—'; rateEl.className = 'rate'; }
+  else { rateEl.textContent = pct + '%'; rateEl.className = 'rate ' + (pct >= 80 ? 'good' : pct >= 50 ? 'ok' : 'bad'); }
+
   resetRecordBtn();
   document.getElementById('btn-record').disabled = true;
 }
 
+function updateScorePanel() {
+  const total = stats.correct + stats.wrong;
+  document.getElementById('sp-correct').textContent = stats.correct;
+  document.getElementById('sp-wrong').textContent = stats.wrong;
+  const rateEl = document.getElementById('sp-rate');
+  if (total === 0) { rateEl.textContent = '—'; rateEl.className = 'score-val'; return; }
+  const pct = Math.round(stats.correct / total * 100);
+  rateEl.textContent = pct + '%';
+  rateEl.className = 'score-val ' + (pct >= 80 ? 'rate-good' : pct >= 50 ? 'rate-ok' : 'rate-bad');
+}
+
 function showResult(correct, spokenRaw) {
   const box = document.getElementById('result-box');
-
   if (correct) {
     box.className = 'result-box correct';
     box.innerHTML = `
@@ -578,9 +728,7 @@ function showResult(correct, spokenRaw) {
       </div>`;
     return;
   }
-
   box.className = 'result-box wrong';
-
   if (practiceMode === 'sentence') {
     const answerWords = normalize(current['Example Sentence'] || '').split(/\s+/).filter(Boolean);
     const spokenWords = normalize(spokenRaw).split(/\s+/).filter(Boolean);
@@ -596,45 +744,22 @@ function showResult(correct, spokenRaw) {
         <span class="result-title">Try again</span>
       </div>
       <div class="diff-detail">
-        <div class="diff-row">
-          <span class="diff-label">You said:</span>
-          <span class="diff-word" style="white-space:normal;line-height:1.6;">${normalize(spokenRaw)}</span>
-        </div>
-        <div class="diff-row">
-          <span class="diff-label">Correct:</span>
-          <span class="diff-word" style="white-space:normal;line-height:1.6;">${answerHTML}</span>
-        </div>
+        <div class="diff-row"><span class="diff-label">You said:</span><span class="diff-word" style="white-space:normal;line-height:1.6;">${normalize(spokenRaw)}</span></div>
+        <div class="diff-row"><span class="diff-label">Correct:</span><span class="diff-word" style="white-space:normal;line-height:1.6;">${answerHTML}</span></div>
       </div>`;
   } else {
     const answer = normalize(current['Word']);
     const bestWord = bestMatchWord(spokenRaw, answer);
-    const spokenDiffHTML = buildDiffHTML(bestWord, answer);
-    const answerDiffHTML = buildAnswerDiffHTML(bestWord, answer);
     box.innerHTML = `
       <div class="result-header">
         <span class="result-icon">❌</span>
         <span class="result-title">Try again</span>
       </div>
       <div class="diff-detail">
-        <div class="diff-row">
-          <span class="diff-label">You said:</span>
-          <span class="diff-word">${spokenDiffHTML}</span>
-        </div>
-        <div class="diff-row">
-          <span class="diff-label">Correct:</span>
-          <span class="diff-word">${answerDiffHTML}</span>
-        </div>
+        <div class="diff-row"><span class="diff-label">You said:</span><span class="diff-word">${buildDiffHTML(bestWord, answer)}</span></div>
+        <div class="diff-row"><span class="diff-label">Correct:</span><span class="diff-word">${buildAnswerDiffHTML(bestWord, answer)}</span></div>
       </div>`;
   }
-}
-function updateStats() {
-  document.getElementById('s-correct').textContent = stats.correct;
-  document.getElementById('s-total').textContent = stats.total;
-  const pct = stats.total ? Math.round(stats.correct / stats.total * 100) : null;
-  const rateEl = document.getElementById('s-rate');
-  if (pct === null) { rateEl.textContent = '—'; rateEl.className = 'rate'; return; }
-  rateEl.textContent = pct + '%';
-  rateEl.className = 'rate ' + (pct >= 80 ? 'good' : pct >= 50 ? 'ok' : 'bad');
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
@@ -646,7 +771,6 @@ async function init() {
     </div>`;
     return;
   }
-
   try {
     const resp = await fetch('./notebooklm_words.csv');
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
