@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>英文單字語音辨識練習</title>
+<title>English Vocabulary Speaking Practice</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -248,10 +248,10 @@
 </head>
 <body>
 
-<h1>英文單字語音辨識練習</h1>
+<h1>English Vocabulary Speaking Practice</h1>
 
 <div id="app">
-  <p id="loading" style="color:#666;text-align:center;">載入單字中…</p>
+  <p id="loading" style="color:#666;text-align:center;">Loading words…</p>
 </div>
 
 <script>
@@ -306,16 +306,16 @@ function buildUI() {
     <div id="word-counter"></div>
     <div class="card">
       <div>
-        <div class="label">中文翻譯</div>
+        <div class="label">Translation</div>
         <div class="translation" id="translation"></div>
       </div>
       <div>
-        <div class="label">例句（請說出英文單字）</div>
+        <div class="label">Example sentence — say the word aloud</div>
         <div class="example" id="example"></div>
       </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button id="btn-speak">🔊 聽單字</button>
-        <button id="btn-speak-sentence">🔊 聽例句</button>
+      <div style="display:flex;gap:10px;">
+        <button id="btn-speak" style="flex:1;">🔊 Word</button>
+        <button id="btn-speak-sentence" style="flex:1;">🔊 Sentence</button>
       </div>
     </div>
 
@@ -323,14 +323,14 @@ function buildUI() {
     <div id="interim"></div>
 
     <div class="btn-row">
-      <button id="btn-record">🎤 按住說話</button>
-      <button id="btn-next">下一題 →</button>
+      <button id="btn-record">🎤 Hold to Speak</button>
+      <button id="btn-next">Next →</button>
     </div>
 
     <div class="stats">
       <div>
-        <div style="margin-bottom:2px">答對 <strong id="s-correct">0</strong> / 共 <strong id="s-total">0</strong> 題</div>
-        <div style="font-size:0.78rem;">本次練習統計</div>
+        <div style="margin-bottom:2px">Correct <strong id="s-correct">0</strong> / Total <strong id="s-total">0</strong></div>
+        <div style="font-size:0.78rem;">Session stats</div>
       </div>
       <div class="rate" id="s-rate">—</div>
     </div>
@@ -364,16 +364,16 @@ function nextWord() {
   current = pickRandom();
 
   document.getElementById('translation').textContent = current['Translation/Explanation'] || current['Translation'] || '—';
-  document.getElementById('example').textContent = current['Example Sentence'] || '（無例句）';
+  document.getElementById('example').textContent = current['Example Sentence'] || '(no example sentence)';
   document.getElementById('result-box').className = 'result-box';
   document.getElementById('result-box').innerHTML = '';
   document.getElementById('interim').textContent = '';
   document.getElementById('word-counter').textContent =
-    `已練習 ${stats.total} 題 · 單字庫共 ${words.length} 個`;
+    `Practiced ${stats.total} · Library: ${words.length} words`;
 
   const btn = document.getElementById('btn-record');
   btn.disabled = false;
-  btn.textContent = '🎤 按住說話';
+  btn.textContent = '🎤 Hold to Speak';
   btn.classList.remove('recording');
 }
 
@@ -428,7 +428,7 @@ function startRecording() {
   isRecording = true;
   const btn = document.getElementById('btn-record');
   btn.classList.add('recording');
-  btn.textContent = '🔴 辨識中…';
+  btn.textContent = '🔴 Listening…';
 
   recognition = new SR();
   recognition.lang = 'en-US';
@@ -451,7 +451,7 @@ function startRecording() {
     console.warn('SR error', e.error);
     resetRecordBtn();
     if (e.error === 'no-speech') {
-      document.getElementById('interim').textContent = '沒有偵測到聲音，請再試一次';
+      document.getElementById('interim').textContent = 'No speech detected, please try again';
     }
   };
 
@@ -470,7 +470,7 @@ function resetRecordBtn() {
   const btn = document.getElementById('btn-record');
   if (!btn) return;
   btn.classList.remove('recording');
-  btn.textContent = '🎤 按住說話';
+  btn.textContent = '🎤 Hold to Speak';
 }
 
 // ── Comparison ────────────────────────────────────────────────────────────────
@@ -555,7 +555,7 @@ function showResult(correct, spokenRaw) {
     box.innerHTML = `
       <div class="result-header">
         <span class="result-icon">✅</span>
-        <span class="result-title">正確！發音很好！</span>
+        <span class="result-title">Correct! Great pronunciation!</span>
       </div>`;
   } else {
     const spokenNorm = normalize(spokenRaw);
@@ -568,15 +568,15 @@ function showResult(correct, spokenRaw) {
     box.innerHTML = `
       <div class="result-header">
         <span class="result-icon">❌</span>
-        <span class="result-title">再試一次</span>
+        <span class="result-title">Try again</span>
       </div>
       <div class="diff-detail">
         <div class="diff-row">
-          <span class="diff-label">你說的：</span>
+          <span class="diff-label">You said:</span>
           <span class="diff-word">${spokenDiffHTML}</span>
         </div>
         <div class="diff-row">
-          <span class="diff-label">正確答案：</span>
+          <span class="diff-label">Correct:</span>
           <span class="diff-word">${answerDiffHTML}</span>
         </div>
       </div>`;
@@ -597,8 +597,8 @@ function updateStats() {
 async function init() {
   if (!SR) {
     app.innerHTML = `<div class="notice">
-      ⚠️ 您的瀏覽器不支援語音辨識 API。<br><br>
-      請使用 <strong>Google Chrome</strong> 瀏覽器開啟此頁面。
+      ⚠️ Your browser does not support the Speech Recognition API.<br><br>
+      Please open this page in <strong>Google Chrome</strong>.
     </div>`;
     return;
   }
@@ -612,8 +612,8 @@ async function init() {
     buildUI();
   } catch (err) {
     app.innerHTML = `<div class="notice">
-      ⚠️ 無法載入單字檔案。<br><br>
-      請確認 <code>notebooklm_words.csv</code> 存在於同一目錄下。<br>
+      ⚠️ Failed to load vocabulary file.<br><br>
+      Please confirm <code>notebooklm_words.csv</code> exists in the same directory.<br>
       <small style="color:#888;">(${err.message})</small>
     </div>`;
   }
