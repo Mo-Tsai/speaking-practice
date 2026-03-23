@@ -313,7 +313,10 @@ function buildUI() {
         <div class="label">例句（請說出英文單字）</div>
         <div class="example" id="example"></div>
       </div>
-      <button id="btn-speak">🔊 聽發音</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button id="btn-speak">🔊 聽單字</button>
+        <button id="btn-speak-sentence">🔊 聽例句</button>
+      </div>
     </div>
 
     <div class="result-box" id="result-box"></div>
@@ -334,6 +337,7 @@ function buildUI() {
   `;
 
   document.getElementById('btn-speak').addEventListener('click', speakWord);
+  document.getElementById('btn-speak-sentence').addEventListener('click', speakSentence);
 
   document.getElementById('btn-record').addEventListener('mousedown', startRecording);
   document.getElementById('btn-record').addEventListener('touchstart', e => { e.preventDefault(); startRecording(); });
@@ -397,6 +401,22 @@ function speakWord() {
     btn.disabled = false;
   };
 
+  window.speechSynthesis.speak(utter);
+}
+
+function speakSentence() {
+  if (!current || !window.speechSynthesis) return;
+  const sentence = current['Example Sentence'];
+  if (!sentence) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(sentence);
+  utter.lang = 'en-US';
+  utter.rate = 0.8;
+  const btn = document.getElementById('btn-speak-sentence');
+  btn.classList.add('speaking');
+  btn.disabled = true;
+  utter.onend = () => { btn.classList.remove('speaking'); btn.disabled = false; };
+  utter.onerror = () => { btn.classList.remove('speaking'); btn.disabled = false; };
   window.speechSynthesis.speak(utter);
 }
 
