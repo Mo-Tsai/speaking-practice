@@ -80,11 +80,23 @@ body {
   font-size: 0.68rem; font-weight: 500; text-transform: uppercase;
   letter-spacing: 0.1em; color: var(--muted); margin-bottom: 10px;
 }
-/* principle 5: tight tracking on 2rem+
-   principle 7: text-balance for heading */
-.translation {
-  font-size: 2rem; font-weight: 650; line-height: 1.15;
+/* English word — large hero text */
+.word-display {
+  font-size: 2.2rem; font-weight: 650; line-height: 1.15;
   letter-spacing: -0.03em; color: #f4f4f4; text-wrap: balance;
+}
+/* Chinese translation — flip card reveal */
+.translation-toggle { padding: 14px 0 0; display: flex; flex-direction: column; gap: 8px; }
+.trans-btn {
+  align-self: flex-start; height: 24px; padding: 0 10px;
+  font-family: inherit; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.04em;
+  background: transparent; color: var(--muted); border-radius: var(--r-pill);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
+  transition: color 0.12s, box-shadow 0.12s; cursor: pointer;
+}
+.trans-btn:hover { color: var(--sub); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12); }
+.translation {
+  font-size: 0.85rem; font-weight: 400; color: var(--muted); line-height: 1.6;
 }
 /* principle 7: text-pretty for paragraph
    principle 11: max-width in ch units */
@@ -259,13 +271,17 @@ function buildUI() {
     </div>
     <div class="card">
       <div class="card-block">
-        <div class="eyebrow">Translation</div>
-        <div class="translation" id="translation"></div>
+        <div class="eyebrow">Word</div>
+        <div class="word-display" id="word-display"></div>
       </div>
       <div class="card-divider"></div>
       <div class="card-block">
         <div class="eyebrow" id="example-label">Example · say the word aloud</div>
         <div class="example" id="example"></div>
+      </div>
+      <div class="translation-toggle">
+        <button class="trans-btn" id="btn-trans" onclick="toggleTranslation()">Translation ▼</button>
+        <div class="translation" id="translation" style="display:none"></div>
       </div>
       <div class="speak-row">
         <button id="btn-speak">🔊 Word</button>
@@ -316,7 +332,12 @@ function nextWord() {
   if (isRecording) stopRecording();
   current = pickRandom();
 
-  document.getElementById('translation').textContent = current['Translation/Explanation'] || current['Translation'] || '—';
+  document.getElementById('word-display').textContent = current['Word'] || '—';
+  const transEl = document.getElementById('translation');
+  transEl.textContent = current['Translation/Explanation'] || current['Translation'] || '—';
+  transEl.style.display = 'none';
+  const transBtn = document.getElementById('btn-trans');
+  if (transBtn) transBtn.textContent = 'Translation ▼';
   document.getElementById('example').textContent = current['Example Sentence'] || '(no example)';
   document.getElementById('result-box').className = 'result-box';
   document.getElementById('result-box').innerHTML = '';
@@ -341,6 +362,15 @@ function setMode(mode) {
     : 'Example · say the word aloud';
   const exEl = document.getElementById('example');
   if (exEl) exEl.classList.toggle('target', mode === 'sentence');
+}
+
+// ── Translation toggle ────────────────────────────────────────────────────────
+function toggleTranslation() {
+  const el = document.getElementById('translation');
+  const btn = document.getElementById('btn-trans');
+  const visible = el.style.display !== 'none';
+  el.style.display = visible ? 'none' : 'block';
+  btn.textContent = visible ? 'Translation ▼' : 'Translation ▲';
 }
 
 // ── SpeechSynthesis ──────────────────────────────────────────────────────────
