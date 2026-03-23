@@ -307,7 +307,7 @@ let usedIndices = new Set();
 let stats = { correct: 0, total: 0 };
 let recognition = null;
 let isRecording = false;
-let speechRate = 0.8;
+let speechRate = 1.0;
 
 // ── DOM refs ─────────────────────────────────────────────────────────────────
 const app = document.getElementById('app');
@@ -394,12 +394,12 @@ function nextWord() {
 // ── SpeechSynthesis ──────────────────────────────────────────────────────────
 function toggleSpeed() {
   const btn = document.getElementById('btn-speed');
-  if (speechRate === 0.8) {
-    speechRate = 0.5;
+  if (speechRate === 1.0) {
+    speechRate = 0.7;
     btn.textContent = '🐢 Slow ✓';
     btn.classList.add('slow');
   } else {
-    speechRate = 0.8;
+    speechRate = 1.0;
     btn.textContent = '🐢 Slow';
     btn.classList.remove('slow');
   }
