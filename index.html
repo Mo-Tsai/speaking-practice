@@ -69,6 +69,19 @@
     padding-left: 12px;
   }
 
+  /* Speak button */
+  #btn-speak {
+    align-self: flex-start;
+    padding: 8px 16px;
+    font-size: 0.88rem;
+    background: #1e3a52;
+    color: #7dd3fc;
+    border: 1px solid #2a5a7a;
+    border-radius: 8px;
+  }
+  #btn-speak:hover:not(:disabled) { background: #1a3048; }
+  #btn-speak.speaking { background: #1a4a6a; color: #38bdf8; }
+
   /* Result */
   .result-box {
     background: #252525;
@@ -76,26 +89,63 @@
     padding: 18px 24px;
     min-height: 64px;
     display: flex;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    gap: 10px;
     font-size: 1.05rem;
     transition: border 0.2s;
     border: 2px solid transparent;
   }
 
-  .result-box.correct {
-    border-color: #22c55e;
-    color: #22c55e;
+  .result-box.correct { border-color: #22c55e; }
+  .result-box.wrong   { border-color: #f97316; }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
-  .result-box.wrong {
-    border-color: #ef4444;
-    color: #ef4444;
+  .result-icon { font-size: 1.3rem; }
+
+  .result-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .result-box.correct .result-title { color: #22c55e; }
+  .result-box.wrong   .result-title { color: #f97316; }
+
+  /* Diff detail */
+  .diff-detail {
+    font-size: 0.88rem;
+    color: #aaa;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 4px;
+    border-top: 1px solid #333;
   }
 
-  .result-icon { font-size: 1.4rem; }
-  .result-text { flex: 1; }
-  .answer-hint { font-size: 0.85rem; color: #aaa; margin-top: 4px; }
+  .diff-row {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+
+  .diff-label {
+    color: #666;
+    min-width: 64px;
+    font-size: 0.8rem;
+  }
+
+  .diff-word {
+    font-family: monospace;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+  }
+
+  .diff-correct { color: #fff; }
+  .diff-wrong-char { color: #f87171; font-weight: 700; text-decoration: underline; }
+  .diff-missing { color: #555; }
 
   /* Buttons row */
   .btn-row {
@@ -263,6 +313,7 @@ function buildUI() {
         <div class="label">例句（請說出英文單字）</div>
         <div class="example" id="example"></div>
       </div>
+      <button id="btn-speak">🔊 聽發音</button>
     </div>
 
     <div class="result-box" id="result-box"></div>
@@ -281,6 +332,8 @@ function buildUI() {
       <div class="rate" id="s-rate">—</div>
     </div>
   `;
+
+  document.getElementById('btn-speak').addEventListener('click', speakWord);
 
   document.getElementById('btn-record').addEventListener('mousedown', startRecording);
   document.getElementById('btn-record').addEventListener('touchstart', e => { e.preventDefault(); startRecording(); });
@@ -318,6 +371,33 @@ function nextWord() {
   btn.disabled = false;
   btn.textContent = '🎤 按住說話';
   btn.classList.remove('recording');
+}
+
+// ── SpeechSynthesis ──────────────────────────────────────────────────────────
+function speakWord() {
+  if (!current) return;
+  if (!window.speechSynthesis) return;
+
+  window.speechSynthesis.cancel();
+
+  const utter = new SpeechSynthesisUtterance(current['Word']);
+  utter.lang = 'en-US';
+  utter.rate = 0.8;
+
+  const btn = document.getElementById('btn-speak');
+  btn.classList.add('speaking');
+  btn.disabled = true;
+
+  utter.onend = () => {
+    btn.classList.remove('speaking');
+    btn.disabled = false;
+  };
+  utter.onerror = () => {
+    btn.classList.remove('speaking');
+    btn.disabled = false;
+  };
+
+  window.speechSynthesis.speak(utter);
 }
 
 // ── Recording ─────────────────────────────────────────────────────────────────
@@ -378,13 +458,65 @@ function normalize(s) {
   return s.toLowerCase().trim().replace(/[^a-z\s'-]/g, '');
 }
 
+// Pick the word from transcript closest to answer (edit-distance heuristic)
+function bestMatchWord(transcript, answer) {
+  const parts = normalize(transcript).split(/\s+/);
+  if (parts.length === 1) return parts[0];
+  return parts.reduce((best, w) => {
+    return charSimilarity(w, answer) >= charSimilarity(best, answer) ? w : best;
+  }, parts[0]);
+}
+
+function charSimilarity(a, b) {
+  let matches = 0;
+  const len = Math.max(a.length, b.length);
+  for (let i = 0; i < Math.min(a.length, b.length); i++) {
+    if (a[i] === b[i]) matches++;
+  }
+  return len === 0 ? 1 : matches / len;
+}
+
+// Returns HTML string with wrong chars highlighted
+function buildDiffHTML(word, answer) {
+  const maxLen = Math.max(word.length, answer.length);
+  let html = '';
+  for (let i = 0; i < maxLen; i++) {
+    const wc = word[i];
+    const ac = answer[i];
+    if (!wc) {
+      html += `<span class="diff-missing">_</span>`;
+    } else if (wc === ac) {
+      html += `<span class="diff-correct">${wc}</span>`;
+    } else {
+      html += `<span class="diff-wrong-char">${wc}</span>`;
+    }
+  }
+  return html;
+}
+
+function buildAnswerDiffHTML(word, answer) {
+  const maxLen = Math.max(word.length, answer.length);
+  let html = '';
+  for (let i = 0; i < maxLen; i++) {
+    const wc = word[i];
+    const ac = answer[i];
+    if (!ac) {
+      html += `<span class="diff-missing">_</span>`;
+    } else if (wc === ac) {
+      html += `<span class="diff-correct">${ac}</span>`;
+    } else {
+      html += `<span class="diff-wrong-char">${ac}</span>`;
+    }
+  }
+  return html;
+}
+
 function processResult(transcript) {
   if (!current) return;
   stats.total++;
 
-  const spoken = normalize(transcript);
   const answer = normalize(current['Word']);
-  // Also check each alternative word in transcript split by space (in case extra words)
+  const spoken = normalize(transcript);
   const correct = spoken === answer || spoken.split(/\s+/).includes(answer);
 
   if (correct) stats.correct++;
@@ -394,18 +526,39 @@ function processResult(transcript) {
   document.getElementById('btn-record').disabled = true;
 }
 
-function showResult(correct, spoken) {
+function showResult(correct, spokenRaw) {
   const box = document.getElementById('result-box');
+  const answer = normalize(current['Word']);
+
   if (correct) {
     box.className = 'result-box correct';
-    box.innerHTML = `<span class="result-icon">✓</span><div class="result-text">正確！<strong>${current['Word']}</strong></div>`;
+    box.innerHTML = `
+      <div class="result-header">
+        <span class="result-icon">✅</span>
+        <span class="result-title">正確！發音很好！</span>
+      </div>`;
   } else {
+    const spokenNorm = normalize(spokenRaw);
+    const bestWord = bestMatchWord(spokenRaw, answer);
+
+    const spokenDiffHTML = buildDiffHTML(bestWord, answer);
+    const answerDiffHTML = buildAnswerDiffHTML(bestWord, answer);
+
     box.className = 'result-box wrong';
     box.innerHTML = `
-      <span class="result-icon">✗</span>
-      <div class="result-text">
-        辨識到：「${spoken}」
-        <div class="answer-hint">正確答案：<strong style="color:#fff;">${current['Word']}</strong></div>
+      <div class="result-header">
+        <span class="result-icon">❌</span>
+        <span class="result-title">再試一次</span>
+      </div>
+      <div class="diff-detail">
+        <div class="diff-row">
+          <span class="diff-label">你說的：</span>
+          <span class="diff-word">${spokenDiffHTML}</span>
+        </div>
+        <div class="diff-row">
+          <span class="diff-label">正確答案：</span>
+          <span class="diff-word">${answerDiffHTML}</span>
+        </div>
       </div>`;
   }
 }
@@ -422,7 +575,6 @@ function updateStats() {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function init() {
-  // Browser support check
   if (!SR) {
     app.innerHTML = `<div class="notice">
       ⚠️ 您的瀏覽器不支援語音辨識 API。<br><br>
