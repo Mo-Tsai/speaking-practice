@@ -239,6 +239,8 @@ let usedIndices = new Set();
 let stats = { correct: 0, total: 0 };
 let recognition = null;
 let isRecording = false;
+let practiceMode = 'word';
+let slowMode = false;
 
 // ── DOM refs ─────────────────────────────────────────────────────────────────
 const app = document.getElementById('app');
@@ -287,6 +289,8 @@ function buildUI() {
   `;
 
   document.getElementById('btn-speak').addEventListener('click', speakWord);
+  document.getElementById('btn-speak-sentence').addEventListener('click', speakSentence);
+  document.getElementById('btn-speed').addEventListener('click', toggleSpeed);
 
   document.getElementById('btn-record').addEventListener('mousedown', startRecording);
   document.getElementById('btn-record').addEventListener('touchstart', e => { e.preventDefault(); startRecording(); });
@@ -313,17 +317,30 @@ function nextWord() {
   current = pickRandom();
 
   document.getElementById('translation').textContent = current['Translation/Explanation'] || current['Translation'] || '—';
-  document.getElementById('example').textContent = current['Example Sentence'] || '（無例句）';
+  document.getElementById('example').textContent = current['Example Sentence'] || '(no example)';
   document.getElementById('result-box').className = 'result-box';
   document.getElementById('result-box').innerHTML = '';
   document.getElementById('interim').textContent = '';
   document.getElementById('word-counter').textContent =
-    `已練習 ${stats.total} 題 · 單字庫共 ${words.length} 個`;
+    `${stats.total} practiced · ${words.length} words total`;
 
   const btn = document.getElementById('btn-record');
   btn.disabled = false;
-  btn.textContent = '🎤 按住說話';
+  btn.textContent = '🎤 Hold to Speak';
   btn.classList.remove('recording');
+}
+
+// ── Mode toggle ───────────────────────────────────────────────────────────────
+function setMode(mode) {
+  practiceMode = mode;
+  document.getElementById('mode-word').classList.toggle('active', mode === 'word');
+  document.getElementById('mode-sentence').classList.toggle('active', mode === 'sentence');
+  const label = document.getElementById('example-label');
+  if (label) label.textContent = mode === 'sentence'
+    ? 'Example · say the full sentence'
+    : 'Example · say the word aloud';
+  const exEl = document.getElementById('example');
+  if (exEl) exEl.classList.toggle('target', mode === 'sentence');
 }
 
 // ── SpeechSynthesis ──────────────────────────────────────────────────────────
@@ -335,7 +352,7 @@ function speakWord() {
 
   const utter = new SpeechSynthesisUtterance(current['Word']);
   utter.lang = 'en-US';
-  utter.rate = 0.8;
+  utter.rate = slowMode ? 0.5 : 1.0;
 
   const btn = document.getElementById('btn-speak');
   btn.classList.add('speaking');
@@ -353,6 +370,38 @@ function speakWord() {
   window.speechSynthesis.speak(utter);
 }
 
+function speakSentence() {
+  if (!current) return;
+  if (!window.speechSynthesis) return;
+  const sentence = current['Example Sentence'];
+  if (!sentence) return;
+
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(sentence);
+  utter.lang = 'en-US';
+  utter.rate = slowMode ? 0.5 : 1.0;
+
+  const btn = document.getElementById('btn-speak-sentence');
+  btn.classList.add('speaking');
+  btn.disabled = true;
+  utter.onend = () => { btn.classList.remove('speaking'); btn.disabled = false; };
+  utter.onerror = () => { btn.classList.remove('speaking'); btn.disabled = false; };
+
+  window.speechSynthesis.speak(utter);
+}
+
+function toggleSpeed() {
+  slowMode = !slowMode;
+  const btn = document.getElementById('btn-speed');
+  if (slowMode) {
+    btn.textContent = '🐢 Slow';
+    btn.classList.add('slow');
+  } else {
+    btn.textContent = '▶ Normal';
+    btn.classList.remove('slow');
+  }
+}
+
 // ── Recording ─────────────────────────────────────────────────────────────────
 function startRecording() {
   if (isRecording) return;
@@ -361,7 +410,7 @@ function startRecording() {
   isRecording = true;
   const btn = document.getElementById('btn-record');
   btn.classList.add('recording');
-  btn.textContent = '🔴 辨識中…';
+  btn.textContent = '🔴 Listening…';
 
   recognition = new SR();
   recognition.lang = 'en-US';
@@ -384,7 +433,7 @@ function startRecording() {
     console.warn('SR error', e.error);
     resetRecordBtn();
     if (e.error === 'no-speech') {
-      document.getElementById('interim').textContent = '沒有偵測到聲音，請再試一次';
+      document.getElementById('interim').textContent = 'No speech detected, please try again.';
     }
   };
 
@@ -403,7 +452,7 @@ function resetRecordBtn() {
   const btn = document.getElementById('btn-record');
   if (!btn) return;
   btn.classList.remove('recording');
-  btn.textContent = '🎤 按住說話';
+  btn.textContent = '🎤 Hold to Speak';
 }
 
 // ── Comparison ────────────────────────────────────────────────────────────────
@@ -468,9 +517,17 @@ function processResult(transcript) {
   if (!current) return;
   stats.total++;
 
-  const answer = normalize(current['Word']);
-  const spoken = normalize(transcript);
-  const correct = spoken === answer || spoken.split(/\s+/).includes(answer);
+  let correct;
+  if (practiceMode === 'sentence') {
+    const answerWords = normalize(current['Example Sentence'] || '').split(/\s+/).filter(Boolean);
+    const spokenWords = new Set(normalize(transcript).split(/\s+/).filter(Boolean));
+    const matched = answerWords.filter(w => spokenWords.has(w)).length;
+    correct = answerWords.length > 0 && matched / answerWords.length >= 0.85;
+  } else {
+    const answer = normalize(current['Word']);
+    const spoken = normalize(transcript);
+    correct = spoken === answer || spoken.split(/\s+/).includes(answer);
+  }
 
   if (correct) stats.correct++;
   showResult(correct, transcript.trim());
