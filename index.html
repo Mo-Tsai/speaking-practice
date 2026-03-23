@@ -272,6 +272,42 @@
     text-align: center;
     width: 100%;
   }
+
+  /* ── Mode toggle ────────────────────────────────────────────────────────── */
+  .mode-toggle {
+    display: flex;
+    width: 100%;
+    background: #111;
+    border-radius: 8px;
+    padding: 3px;
+    border: 1px solid #242424;
+  }
+
+  .mode-btn {
+    flex: 1;
+    padding: 9px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    background: transparent;
+    color: #444;
+    border: none;
+    border-radius: 6px;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .mode-btn.active {
+    background: #1e1e1e;
+    color: #e4e4e4;
+  }
+
+  /* sentence mode — highlight the example more */
+  .example.target {
+    color: #c8c8c8;
+    font-style: normal;
+    border-top-color: #8fa3b1;
+  }
 </style>
 </head>
 <body>
@@ -325,6 +361,7 @@ let stats = { correct: 0, total: 0 };
 let recognition = null;
 let isRecording = false;
 let speechRate = 1.0;
+let practiceMode = 'word'; // 'word' | 'sentence'
 
 // ── DOM refs ─────────────────────────────────────────────────────────────────
 const app = document.getElementById('app');
@@ -333,13 +370,17 @@ const app = document.getElementById('app');
 function buildUI() {
   app.innerHTML = `
     <div id="word-counter"></div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="mode-word" onclick="setMode('word')">Word</button>
+      <button class="mode-btn" id="mode-sentence" onclick="setMode('sentence')">Sentence</button>
+    </div>
     <div class="card">
       <div style="text-align:center;width:100%;">
         <div class="label" style="margin-bottom:10px;">Translation</div>
         <div class="translation" id="translation"></div>
       </div>
       <div style="width:100%;">
-        <div class="label" style="margin-bottom:10px;text-align:center;">Example — say the word aloud</div>
+        <div class="label" id="example-label" style="margin-bottom:10px;text-align:center;">Example — say the word aloud</div>
         <div class="example" id="example"></div>
       </div>
       <div class="speak-row">
@@ -379,6 +420,32 @@ function buildUI() {
   document.getElementById('btn-next').addEventListener('click', nextWord);
 
   nextWord();
+}
+
+// ── Mode ──────────────────────────────────────────────────────────────────────
+function setMode(mode) {
+  practiceMode = mode;
+  document.getElementById('mode-word').classList.toggle('active', mode === 'word');
+  document.getElementById('mode-sentence').classList.toggle('active', mode === 'sentence');
+
+  const exLabel = document.getElementById('example-label');
+  const exEl = document.getElementById('example');
+  if (mode === 'sentence') {
+    exLabel.textContent = 'Say this sentence aloud';
+    exEl.classList.add('target');
+  } else {
+    exLabel.textContent = 'Example — say the word aloud';
+    exEl.classList.remove('target');
+  }
+
+  // reset result & re-enable record
+  document.getElementById('result-box').className = 'result-box';
+  document.getElementById('result-box').innerHTML = '';
+  document.getElementById('interim').textContent = '';
+  const btn = document.getElementById('btn-record');
+  btn.disabled = false;
+  btn.textContent = '🎤 Hold to Speak';
+  btn.classList.remove('recording');
 }
 
 // ── Word logic ────────────────────────────────────────────────────────────────
@@ -579,9 +646,19 @@ function processResult(transcript) {
   if (!current) return;
   stats.total++;
 
-  const answer = normalize(current['Word']);
-  const spoken = normalize(transcript);
-  const correct = spoken === answer || spoken.split(/\s+/).includes(answer);
+  let correct;
+  if (practiceMode === 'sentence') {
+    const answer = normalize(current['Example Sentence'] || '');
+    const spoken = normalize(transcript);
+    const aWords = answer.split(/\s+/).filter(Boolean);
+    const sWords = spoken.split(/\s+/).filter(Boolean);
+    const matched = aWords.filter(w => sWords.includes(w)).length;
+    correct = aWords.length > 0 && matched / aWords.length >= 0.8;
+  } else {
+    const answer = normalize(current['Word']);
+    const spoken = normalize(transcript);
+    correct = spoken === answer || spoken.split(/\s+/).includes(answer);
+  }
 
   if (correct) stats.correct++;
   showResult(correct, transcript.trim());
