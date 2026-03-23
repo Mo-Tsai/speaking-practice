@@ -5,163 +5,173 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>English Vocabulary Speaking Practice</title>
 <style>
+  /* ── Morandi accent palette ──────────────────────────────────────────────
+     sage   #9aab98   dusty-rose #b89898   sand  #c4a882
+     slate  #8fa3b1   lavender   #a8a0ba
+  ──────────────────────────────────────────────────────────────────────── */
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: #1a1a1a;
-    color: #fff;
+    background: #111;
+    color: #e4e4e4;
     font-family: system-ui, -apple-system, sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 24px 16px 40px;
+    justify-content: flex-start;
+    padding: 32px 16px 48px;
   }
 
   h1 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    color: #aaa;
-    margin-bottom: 28px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 32px;
+    text-align: center;
   }
 
   #app {
     width: 100%;
-    max-width: 480px;
+    max-width: 460px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    align-items: center;
+    gap: 14px;
   }
 
-  /* Card */
+  /* ── Card ───────────────────────────────────────────────────────────────── */
   .card {
-    background: #252525;
+    width: 100%;
+    background: #1a1a1a;
     border-radius: 16px;
-    padding: 32px 28px;
-    min-height: 220px;
+    padding: 32px 28px 24px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 18px;
+    align-items: center;
+    gap: 20px;
+    border: 1px solid #242424;
   }
 
   .label {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #666;
+    letter-spacing: 0.12em;
+    color: #444;
+    text-align: center;
   }
 
   .translation {
     font-size: 2rem;
     font-weight: 700;
     line-height: 1.2;
-    color: #fff;
+    color: #f0f0f0;
+    text-align: center;
   }
 
   .example {
-    font-size: 0.95rem;
-    color: #999;
-    line-height: 1.6;
+    font-size: 0.9rem;
+    color: #777;
+    line-height: 1.7;
     font-style: italic;
-    border-left: 3px solid #333;
-    padding-left: 12px;
+    text-align: center;
+    border-top: 1px solid #242424;
+    padding-top: 16px;
+    width: 100%;
   }
 
-  /* Speak button */
-  #btn-speak {
-    align-self: flex-start;
-    padding: 8px 16px;
-    font-size: 0.88rem;
-    background: #1e3a52;
-    color: #7dd3fc;
-    border: 1px solid #2a5a7a;
+  /* ── Audio buttons (Word / Sentence / Slow) ─────────────────────────────── */
+  .speak-row {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .speak-row button {
+    flex: 1;
+    padding: 10px 0;
+    font-size: 0.82rem;
+    background: #111;
+    color: #c8c8c8;
+    border: 1px solid #2e2e2e;
     border-radius: 8px;
+    letter-spacing: 0.03em;
   }
-  #btn-speak:hover:not(:disabled) { background: #1a3048; }
-  #btn-speak.speaking { background: #1a4a6a; color: #38bdf8; }
 
-  #btn-speed {
-    align-self: flex-start;
-    padding: 5px 12px;
-    font-size: 0.78rem;
-    background: #2a2a2a;
-    color: #888;
-    border: 1px solid #444;
-    border-radius: 6px;
+  .speak-row button:hover:not(:disabled) {
+    background: #1e1e1e;
+    border-color: #3a3a3a;
+    color: #fff;
   }
-  #btn-speed.slow { background: #2a3520; color: #86efac; border-color: #4a7a40; }
 
-  /* Result */
+  .speak-row button.speaking {
+    border-color: #8fa3b1;
+    color: #8fa3b1;
+  }
+
+  #btn-speed.slow {
+    border-color: #9aab98;
+    color: #9aab98;
+  }
+
+  /* ── Result ─────────────────────────────────────────────────────────────── */
   .result-box {
-    background: #252525;
+    width: 100%;
+    background: #1a1a1a;
     border-radius: 12px;
-    padding: 18px 24px;
-    min-height: 64px;
+    padding: 16px 20px;
+    min-height: 60px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    font-size: 1.05rem;
-    transition: border 0.2s;
-    border: 2px solid transparent;
+    font-size: 1rem;
+    transition: border 0.25s;
+    border: 1px solid #242424;
   }
 
-  .result-box.correct { border-color: #22c55e; }
-  .result-box.wrong   { border-color: #f97316; }
+  .result-box.correct { border-color: #9aab98; }
+  .result-box.wrong   { border-color: #b89898; }
 
   .result-header {
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    gap: 8px;
   }
 
-  .result-icon { font-size: 1.3rem; }
+  .result-icon { font-size: 1.2rem; }
 
-  .result-title {
-    font-weight: 700;
-    font-size: 1.05rem;
-  }
-  .result-box.correct .result-title { color: #22c55e; }
-  .result-box.wrong   .result-title { color: #f97316; }
+  .result-title { font-weight: 600; font-size: 1rem; }
+  .result-box.correct .result-title { color: #9aab98; }
+  .result-box.wrong   .result-title { color: #b89898; }
 
-  /* Diff detail */
+  /* ── Diff detail ─────────────────────────────────────────────────────────── */
   .diff-detail {
-    font-size: 0.88rem;
-    color: #aaa;
+    font-size: 0.85rem;
+    color: #888;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    padding-top: 4px;
-    border-top: 1px solid #333;
+    padding-top: 8px;
+    border-top: 1px solid #242424;
   }
 
-  .diff-row {
-    display: flex;
-    gap: 8px;
-    align-items: baseline;
-  }
+  .diff-row { display: flex; gap: 10px; align-items: baseline; }
+  .diff-label { color: #444; min-width: 72px; font-size: 0.75rem; text-align: right; }
+  .diff-word { font-family: monospace; font-size: 0.95rem; letter-spacing: 0.04em; }
 
-  .diff-label {
-    color: #666;
-    min-width: 64px;
-    font-size: 0.8rem;
-  }
+  .diff-correct    { color: #e4e4e4; }
+  .diff-wrong-char { color: #b89898; font-weight: 700; text-decoration: underline; }
+  .diff-missing    { color: #3a3a3a; }
 
-  .diff-word {
-    font-family: monospace;
-    font-size: 1rem;
-    letter-spacing: 0.05em;
-  }
-
-  .diff-correct { color: #fff; }
-  .diff-wrong-char { color: #f87171; font-weight: 700; text-decoration: underline; }
-  .diff-missing { color: #555; }
-
-  /* Buttons row */
+  /* ── Main buttons row ───────────────────────────────────────────────────── */
   .btn-row {
     display: flex;
-    gap: 12px;
+    gap: 10px;
+    width: 100%;
   }
 
   button {
@@ -170,90 +180,97 @@
     cursor: pointer;
     font-family: inherit;
     font-weight: 600;
-    transition: opacity 0.15s, transform 0.1s, background 0.2s;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
     -webkit-tap-highlight-color: transparent;
   }
 
-  button:active { transform: scale(0.97); }
-  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  button:active  { transform: scale(0.97); }
+  button:disabled { opacity: 0.35; cursor: not-allowed; }
 
   #btn-record {
     flex: 1;
-    padding: 16px;
-    font-size: 1rem;
-    background: #3a3a3a;
-    color: #fff;
+    padding: 15px;
+    font-size: 0.95rem;
+    background: #1e1e1e;
+    color: #e4e4e4;
+    border: 1px solid #2e2e2e;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
   }
 
+  #btn-record:hover:not(:disabled) { background: #252525; }
+
   #btn-record.recording {
-    background: #ef4444;
-    animation: pulse 1.2s infinite;
+    background: #1e1e1e;
+    border-color: #b89898;
+    color: #b89898;
+    animation: pulse 1.4s infinite;
   }
 
   @keyframes pulse {
-    0%   { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
-    70%  { box-shadow: 0 0 0 12px rgba(239,68,68,0); }
-    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+    0%   { box-shadow: 0 0 0 0 rgba(184,152,152,0.4); }
+    70%  { box-shadow: 0 0 0 10px rgba(184,152,152,0); }
+    100% { box-shadow: 0 0 0 0 rgba(184,152,152,0); }
   }
 
   #btn-next {
-    padding: 16px 22px;
-    font-size: 0.95rem;
-    background: #2a2a2a;
-    color: #aaa;
-    border: 1px solid #333;
+    padding: 15px 20px;
+    font-size: 0.88rem;
+    background: #111;
+    color: #555;
+    border: 1px solid #242424;
   }
 
-  #btn-next:hover:not(:disabled) { background: #333; color: #fff; }
+  #btn-next:hover:not(:disabled) { background: #1a1a1a; color: #ccc; border-color: #333; }
 
-  /* Stats */
+  /* ── Stats ──────────────────────────────────────────────────────────────── */
   .stats {
-    background: #1e1e1e;
+    width: 100%;
+    background: #141414;
     border-radius: 12px;
-    padding: 16px 24px;
+    padding: 14px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.88rem;
-    color: #666;
-    border: 1px solid #2a2a2a;
-  }
-
-  .stats strong { color: #fff; font-size: 1rem; }
-
-  .rate { font-size: 1.4rem; font-weight: 700; }
-  .rate.good { color: #22c55e; }
-  .rate.ok   { color: #f59e0b; }
-  .rate.bad  { color: #ef4444; }
-
-  /* Interim transcript */
-  #interim {
     font-size: 0.82rem;
     color: #555;
-    text-align: center;
-    min-height: 20px;
+    border: 1px solid #1e1e1e;
   }
 
-  /* Error / notice */
+  .stats strong { color: #ccc; }
+
+  .rate { font-size: 1.3rem; font-weight: 700; }
+  .rate.good { color: #9aab98; }
+  .rate.ok   { color: #c4a882; }
+  .rate.bad  { color: #b89898; }
+
+  /* ── Misc ───────────────────────────────────────────────────────────────── */
+  #interim {
+    font-size: 0.8rem;
+    color: #444;
+    text-align: center;
+    min-height: 18px;
+  }
+
   .notice {
-    background: #2a1a1a;
-    border: 1px solid #5a2a2a;
+    background: #1a1414;
+    border: 1px solid #3a2424;
     border-radius: 10px;
     padding: 20px;
-    color: #f87171;
+    color: #b89898;
     font-size: 0.9rem;
     line-height: 1.6;
     text-align: center;
+    width: 100%;
   }
 
   #word-counter {
-    font-size: 0.8rem;
-    color: #555;
-    text-align: right;
+    font-size: 0.75rem;
+    color: #3a3a3a;
+    text-align: center;
+    width: 100%;
   }
 </style>
 </head>
@@ -317,17 +334,17 @@ function buildUI() {
   app.innerHTML = `
     <div id="word-counter"></div>
     <div class="card">
-      <div>
-        <div class="label">Translation</div>
+      <div style="text-align:center;width:100%;">
+        <div class="label" style="margin-bottom:10px;">Translation</div>
         <div class="translation" id="translation"></div>
       </div>
-      <div>
-        <div class="label">Example sentence — say the word aloud</div>
+      <div style="width:100%;">
+        <div class="label" style="margin-bottom:10px;text-align:center;">Example — say the word aloud</div>
         <div class="example" id="example"></div>
       </div>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-        <button id="btn-speak" style="flex:1;">🔊 Word</button>
-        <button id="btn-speak-sentence" style="flex:1;">🔊 Sentence</button>
+      <div class="speak-row">
+        <button id="btn-speak">🔊 Word</button>
+        <button id="btn-speak-sentence">🔊 Sentence</button>
         <button id="btn-speed">🐢 Slow</button>
       </div>
     </div>
