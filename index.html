@@ -82,6 +82,17 @@
   #btn-speak:hover:not(:disabled) { background: #1a3048; }
   #btn-speak.speaking { background: #1a4a6a; color: #38bdf8; }
 
+  #btn-speed {
+    align-self: flex-start;
+    padding: 5px 12px;
+    font-size: 0.78rem;
+    background: #2a2a2a;
+    color: #888;
+    border: 1px solid #444;
+    border-radius: 6px;
+  }
+  #btn-speed.slow { background: #2a3520; color: #86efac; border-color: #4a7a40; }
+
   /* Result */
   .result-box {
     background: #252525;
@@ -296,6 +307,7 @@ let usedIndices = new Set();
 let stats = { correct: 0, total: 0 };
 let recognition = null;
 let isRecording = false;
+let speechRate = 0.8;
 
 // ── DOM refs ─────────────────────────────────────────────────────────────────
 const app = document.getElementById('app');
@@ -313,9 +325,10 @@ function buildUI() {
         <div class="label">Example sentence — say the word aloud</div>
         <div class="example" id="example"></div>
       </div>
-      <div style="display:flex;gap:10px;">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
         <button id="btn-speak" style="flex:1;">🔊 Word</button>
         <button id="btn-speak-sentence" style="flex:1;">🔊 Sentence</button>
+        <button id="btn-speed">🐢 Slow</button>
       </div>
     </div>
 
@@ -338,6 +351,7 @@ function buildUI() {
 
   document.getElementById('btn-speak').addEventListener('click', speakWord);
   document.getElementById('btn-speak-sentence').addEventListener('click', speakSentence);
+  document.getElementById('btn-speed').addEventListener('click', toggleSpeed);
 
   document.getElementById('btn-record').addEventListener('mousedown', startRecording);
   document.getElementById('btn-record').addEventListener('touchstart', e => { e.preventDefault(); startRecording(); });
@@ -378,6 +392,19 @@ function nextWord() {
 }
 
 // ── SpeechSynthesis ──────────────────────────────────────────────────────────
+function toggleSpeed() {
+  const btn = document.getElementById('btn-speed');
+  if (speechRate === 0.8) {
+    speechRate = 0.5;
+    btn.textContent = '🐢 Slow ✓';
+    btn.classList.add('slow');
+  } else {
+    speechRate = 0.8;
+    btn.textContent = '🐢 Slow';
+    btn.classList.remove('slow');
+  }
+}
+
 function speakWord() {
   if (!current) return;
   if (!window.speechSynthesis) return;
@@ -386,7 +413,7 @@ function speakWord() {
 
   const utter = new SpeechSynthesisUtterance(current['Word']);
   utter.lang = 'en-US';
-  utter.rate = 0.8;
+  utter.rate = speechRate;
 
   const btn = document.getElementById('btn-speak');
   btn.classList.add('speaking');
@@ -411,7 +438,7 @@ function speakSentence() {
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(sentence);
   utter.lang = 'en-US';
-  utter.rate = 0.8;
+  utter.rate = speechRate;
   const btn = document.getElementById('btn-speak-sentence');
   btn.classList.add('speaking');
   btn.disabled = true;
