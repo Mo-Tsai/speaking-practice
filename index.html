@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英文單字語音辨識練習</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1a1a;
+    color: #fff;
+    font-family: system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 40px;
+  }
+
+  h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #aaa;
+    margin-bottom: 28px;
+  }
+
+  #app {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Card */
+  .card {
+    background: #252525;
+    border-radius: 16px;
+    padding: 32px 28px;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
+  }
+
+  .label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #666;
+  }
+
+  .translation {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #fff;
+  }
+
+  .example {
+    font-size: 0.95rem;
+    color: #999;
+    line-height: 1.6;
+    font-style: italic;
+    border-left: 3px solid #333;
+    padding-left: 12px;
+  }
+
+  /* Result */
+  .result-box {
+    background: #252525;
+    border-radius: 12px;
+    padding: 18px 24px;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.05rem;
+    transition: border 0.2s;
+    border: 2px solid transparent;
+  }
+
+  .result-box.correct {
+    border-color: #22c55e;
+    color: #22c55e;
+  }
+
+  .result-box.wrong {
+    border-color: #ef4444;
+    color: #ef4444;
+  }
+
+  .result-icon { font-size: 1.4rem; }
+  .result-text { flex: 1; }
+  .answer-hint { font-size: 0.85rem; color: #aaa; margin-top: 4px; }
+
+  /* Buttons row */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+  }
+
+  button {
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    transition: opacity 0.15s, transform 0.1s, background 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:active { transform: scale(0.97); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  #btn-record {
+    flex: 1;
+    padding: 16px;
+    font-size: 1rem;
+    background: #3a3a3a;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  #btn-record.recording {
+    background: #ef4444;
+    animation: pulse 1.2s infinite;
+  }
+
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+    70%  { box-shadow: 0 0 0 12px rgba(239,68,68,0); }
+    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+  }
+
+  #btn-next {
+    padding: 16px 22px;
+    font-size: 0.95rem;
+    background: #2a2a2a;
+    color: #aaa;
+    border: 1px solid #333;
+  }
+
+  #btn-next:hover:not(:disabled) { background: #333; color: #fff; }
+
+  /* Stats */
+  .stats {
+    background: #1e1e1e;
+    border-radius: 12px;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.88rem;
+    color: #666;
+    border: 1px solid #2a2a2a;
+  }
+
+  .stats strong { color: #fff; font-size: 1rem; }
+
+  .rate { font-size: 1.4rem; font-weight: 700; }
+  .rate.good { color: #22c55e; }
+  .rate.ok   { color: #f59e0b; }
+  .rate.bad  { color: #ef4444; }
+
+  /* Interim transcript */
+  #interim {
+    font-size: 0.82rem;
+    color: #555;
+    text-align: center;
+    min-height: 20px;
+  }
+
+  /* Error / notice */
+  .notice {
+    background: #2a1a1a;
+    border: 1px solid #5a2a2a;
+    border-radius: 10px;
+    padding: 20px;
+    color: #f87171;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  #word-counter {
+    font-size: 0.8rem;
+    color: #555;
+    text-align: right;
+  }
+</style>
+</head>
+<body>
+
+<h1>英文單字語音辨識練習</h1>
+
+<div id="app">
+  <p id="loading" style="color:#666;text-align:center;">載入單字中…</p>
+</div>
+
+<script>
+// ── CSV parser ──────────────────────────────────────────────────────────────
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/);
+  if (lines.length < 2) return [];
+  const headers = splitCSVLine(lines[0]);
+  return lines.slice(1).map(line => {
+    const vals = splitCSVLine(line);
+    const obj = {};
+    headers.forEach((h, i) => { obj[h.trim()] = (vals[i] || '').trim(); });
+    return obj;
+  }).filter(r => r['Word']);
+}
+
+function splitCSVLine(line) {
+  const result = [];
+  let cur = '', inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') {
+      if (inQuote && line[i+1] === '"') { cur += '"'; i++; }
+      else inQuote = !inQuote;
+    } else if (c === ',' && !inQuote) {
+      result.push(cur); cur = '';
+    } else {
+      cur += c;
+    }
+  }
+  result.push(cur);
+  return result;
+}
+
+// ── Speech Recognition setup ────────────────────────────────────────────────
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+// ── State ────────────────────────────────────────────────────────────────────
+let words = [];
+let current = null;
+let usedIndices = new Set();
+let stats = { correct: 0, total: 0 };
+let recognition = null;
+let isRecording = false;
+
+// ── DOM refs ─────────────────────────────────────────────────────────────────
+const app = document.getElementById('app');
+
+// ── Build UI ─────────────────────────────────────────────────────────────────
+function buildUI() {
+  app.innerHTML = `
+    <div id="word-counter"></div>
+    <div class="card">
+      <div>
+        <div class="label">中文翻譯</div>
+        <div class="translation" id="translation"></div>
+      </div>
+      <div>
+        <div class="label">例句（請說出英文單字）</div>
+        <div class="example" id="example"></div>
+      </div>
+    </div>
+
+    <div class="result-box" id="result-box"></div>
+    <div id="interim"></div>
+
+    <div class="btn-row">
+      <button id="btn-record">🎤 按住說話</button>
+      <button id="btn-next">下一題 →</button>
+    </div>
+
+    <div class="stats">
+      <div>
+        <div style="margin-bottom:2px">答對 <strong id="s-correct">0</strong> / 共 <strong id="s-total">0</strong> 題</div>
+        <div style="font-size:0.78rem;">本次練習統計</div>
+      </div>
+      <div class="rate" id="s-rate">—</div>
+    </div>
+  `;
+
+  document.getElementById('btn-record').addEventListener('mousedown', startRecording);
+  document.getElementById('btn-record').addEventListener('touchstart', e => { e.preventDefault(); startRecording(); });
+  document.getElementById('btn-record').addEventListener('mouseup', stopRecording);
+  document.getElementById('btn-record').addEventListener('touchend', e => { e.preventDefault(); stopRecording(); });
+  document.getElementById('btn-record').addEventListener('mouseleave', () => { if (isRecording) stopRecording(); });
+
+  document.getElementById('btn-next').addEventListener('click', nextWord);
+
+  nextWord();
+}
+
+// ── Word logic ────────────────────────────────────────────────────────────────
+function pickRandom() {
+  if (usedIndices.size >= words.length) usedIndices.clear();
+  let idx;
+  do { idx = Math.floor(Math.random() * words.length); } while (usedIndices.has(idx));
+  usedIndices.add(idx);
+  return words[idx];
+}
+
+function nextWord() {
+  if (isRecording) stopRecording();
+  current = pickRandom();
+
+  document.getElementById('translation').textContent = current['Translation/Explanation'] || current['Translation'] || '—';
+  document.getElementById('example').textContent = current['Example Sentence'] || '（無例句）';
+  document.getElementById('result-box').className = 'result-box';
+  document.getElementById('result-box').innerHTML = '';
+  document.getElementById('interim').textContent = '';
+  document.getElementById('word-counter').textContent =
+    `已練習 ${stats.total} 題 · 單字庫共 ${words.length} 個`;
+
+  const btn = document.getElementById('btn-record');
+  btn.disabled = false;
+  btn.textContent = '🎤 按住說話';
+  btn.classList.remove('recording');
+}
+
+// ── Recording ─────────────────────────────────────────────────────────────────
+function startRecording() {
+  if (isRecording) return;
+  if (!SR) return;
+
+  isRecording = true;
+  const btn = document.getElementById('btn-record');
+  btn.classList.add('recording');
+  btn.textContent = '🔴 辨識中…';
+
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 3;
+  recognition.continuous = false;
+
+  recognition.onresult = (e) => {
+    let interim = '', final = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) final += t;
+      else interim += t;
+    }
+    if (interim) document.getElementById('interim').textContent = interim;
+    if (final) processResult(final);
+  };
+
+  recognition.onerror = (e) => {
+    console.warn('SR error', e.error);
+    resetRecordBtn();
+    if (e.error === 'no-speech') {
+      document.getElementById('interim').textContent = '沒有偵測到聲音，請再試一次';
+    }
+  };
+
+  recognition.onend = () => { resetRecordBtn(); };
+
+  recognition.start();
+}
+
+function stopRecording() {
+  if (!isRecording || !recognition) return;
+  recognition.stop();
+}
+
+function resetRecordBtn() {
+  isRecording = false;
+  const btn = document.getElementById('btn-record');
+  if (!btn) return;
+  btn.classList.remove('recording');
+  btn.textContent = '🎤 按住說話';
+}
+
+// ── Comparison ────────────────────────────────────────────────────────────────
+function normalize(s) {
+  return s.toLowerCase().trim().replace(/[^a-z\s'-]/g, '');
+}
+
+function processResult(transcript) {
+  if (!current) return;
+  stats.total++;
+
+  const spoken = normalize(transcript);
+  const answer = normalize(current['Word']);
+  // Also check each alternative word in transcript split by space (in case extra words)
+  const correct = spoken === answer || spoken.split(/\s+/).includes(answer);
+
+  if (correct) stats.correct++;
+  showResult(correct, transcript.trim());
+  updateStats();
+  resetRecordBtn();
+  document.getElementById('btn-record').disabled = true;
+}
+
+function showResult(correct, spoken) {
+  const box = document.getElementById('result-box');
+  if (correct) {
+    box.className = 'result-box correct';
+    box.innerHTML = `<span class="result-icon">✓</span><div class="result-text">正確！<strong>${current['Word']}</strong></div>`;
+  } else {
+    box.className = 'result-box wrong';
+    box.innerHTML = `
+      <span class="result-icon">✗</span>
+      <div class="result-text">
+        辨識到：「${spoken}」
+        <div class="answer-hint">正確答案：<strong style="color:#fff;">${current['Word']}</strong></div>
+      </div>`;
+  }
+}
+
+function updateStats() {
+  document.getElementById('s-correct').textContent = stats.correct;
+  document.getElementById('s-total').textContent = stats.total;
+  const pct = stats.total ? Math.round(stats.correct / stats.total * 100) : null;
+  const rateEl = document.getElementById('s-rate');
+  if (pct === null) { rateEl.textContent = '—'; rateEl.className = 'rate'; return; }
+  rateEl.textContent = pct + '%';
+  rateEl.className = 'rate ' + (pct >= 80 ? 'good' : pct >= 50 ? 'ok' : 'bad');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+async function init() {
+  // Browser support check
+  if (!SR) {
+    app.innerHTML = `<div class="notice">
+      ⚠️ 您的瀏覽器不支援語音辨識 API。<br><br>
+      請使用 <strong>Google Chrome</strong> 瀏覽器開啟此頁面。
+    </div>`;
+    return;
+  }
+
+  try {
+    const resp = await fetch('./notebooklm_words.csv');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const text = await resp.text();
+    words = parseCSV(text);
+    if (words.length === 0) throw new Error('CSV 無有效資料');
+    buildUI();
+  } catch (err) {
+    app.innerHTML = `<div class="notice">
+      ⚠️ 無法載入單字檔案。<br><br>
+      請確認 <code>notebooklm_words.csv</code> 存在於同一目錄下。<br>
+      <small style="color:#888;">(${err.message})</small>
+    </div>`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
