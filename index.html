@@ -236,23 +236,39 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 .rate.bad  { color: var(--rose); }
 .notice { background: var(--surf); border-radius: 14px; padding: 24px; color: var(--rose); font-size: 0.875rem; line-height: 2; width: 100%; box-shadow: inset 0 0 0 1px rgba(168,133,133,0.15); }
 
-/* ── Carousel ── */
-#btn-carousel {
-  width: 100%; height: var(--btn-h); padding: 0 20px;
-  font-size: 0.875rem; font-weight: 550;
-  background: var(--surf); color: var(--muted);
-  border-radius: var(--r-pill);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.07);
+/* ── Repeat toggle ── */
+.repeat-row {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  background: var(--surf); border-radius: 12px; padding: 10px 16px;
+  box-shadow: inset 0 0 0 1px var(--ring-in); cursor: pointer;
+  user-select: none;
 }
-#btn-carousel:hover:not(:disabled) { background: #1c1c1c; color: var(--text); box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
-#btn-carousel.active {
-  color: var(--slate); background: #111a20;
-  box-shadow: 0 0 0 1px rgba(125,148,166,0.4), 0 0 16px rgba(125,148,166,0.08);
+.repeat-label { font-size: 0.8rem; font-weight: 500; color: var(--muted); letter-spacing: 0.02em; }
+.repeat-sublabel { font-size: 0.68rem; color: var(--faint); margin-top: 1px; }
+.repeat-label-group { display: flex; flex-direction: column; }
+.toggle-wrap { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+.toggle-wrap input { opacity: 0; width: 0; height: 0; position: absolute; }
+.toggle-track {
+  position: absolute; inset: 0; border-radius: 24px;
+  background: var(--faint);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+  transition: background 0.2s, box-shadow 0.2s;
 }
-.carousel-rep {
-  font-size: 0.75rem; color: var(--slate); line-height: 2;
-  width: 100%; text-align: center; min-height: 24px;
-  letter-spacing: 0.04em;
+.toggle-thumb {
+  position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #555; transition: transform 0.2s, background 0.2s;
+}
+.toggle-wrap input:checked ~ .toggle-track {
+  background: rgba(125,148,166,0.25);
+  box-shadow: inset 0 0 0 1px rgba(125,148,166,0.4);
+}
+.toggle-wrap input:checked ~ .toggle-thumb {
+  transform: translateX(20px); background: var(--slate);
+}
+.repeat-progress {
+  font-size: 0.72rem; color: var(--slate); line-height: 2;
+  width: 100%; text-align: center; min-height: 22px; letter-spacing: 0.06em;
 }
 </style>
 </head>
@@ -319,8 +335,7 @@ let isRecording = false;
 let practiceMode = 'word';
 let cardMode = 'smart'; // 'smart' | 'all' | 'unlearned' | 'wrong'
 let slowMode = false;
-let carouselActive = false;
-let carouselAbortCtrl = null;
+let repeatAbortCtrl = null;
 
 // ── DOM refs ─────────────────────────────────────────────────────────────────
 const app = document.getElementById('app');
@@ -437,8 +452,18 @@ function buildUI() {
       <button id="btn-record">🎤 Hold to Speak</button>
       <button id="btn-next">Next →</button>
     </div>
-    <button id="btn-carousel">▶ 輪播模式（每字念 3 次）</button>
-    <div class="carousel-rep" id="carousel-rep"></div>
+    <label class="repeat-row" id="repeat-row">
+      <span class="repeat-label-group">
+        <span class="repeat-label">Repeat × 3</span>
+        <span class="repeat-sublabel" id="repeat-sublabel">speak this word 3 times</span>
+      </span>
+      <span class="toggle-wrap">
+        <input type="checkbox" id="toggle-repeat">
+        <span class="toggle-track"></span>
+        <span class="toggle-thumb"></span>
+      </span>
+    </label>
+    <div class="repeat-progress" id="repeat-progress"></div>
 
     <!-- Session stats (bottom) -->
     <div class="stats">
@@ -471,7 +496,11 @@ function buildUI() {
   rec.addEventListener('mouseleave', () => { if (isRecording) stopRecording(); });
 
   document.getElementById('btn-next').addEventListener('click', nextWord);
-  document.getElementById('btn-carousel').addEventListener('click', toggleCarousel);
+  document.getElementById('toggle-repeat').addEventListener('change', onRepeatToggle);
+  document.getElementById('repeat-row').addEventListener('click', e => {
+    // Update sublabel when practiceMode changes
+    updateRepeatSublabel();
+  });
 
   buildQueue();
   nextWord();
@@ -489,7 +518,9 @@ function setCardMode(mode) {
 
 // ── Word logic ─────────────────────────────────────────────────────────────────
 function nextWord() {
-  if (carouselActive) stopCarousel();
+  abortRepeat();
+  const chk = document.getElementById('toggle-repeat');
+  if (chk) chk.checked = false;
   if (isRecording) stopRecording();
   current = pickNext();
 
@@ -549,6 +580,7 @@ function setMode(mode) {
     : 'Example · say the word aloud';
   const exEl = document.getElementById('example');
   if (exEl) exEl.classList.toggle('target', mode === 'sentence');
+  updateRepeatSublabel();
 }
 
 // ── Translation toggle ────────────────────────────────────────────────────────
@@ -787,21 +819,17 @@ function showResult(correct, spokenRaw) {
   }
 }
 
-// ── Carousel ─────────────────────────────────────────────────────────────────
-function toggleCarousel() {
-  if (carouselActive) stopCarousel(); else startCarousel();
+// ── Repeat × 3 toggle ────────────────────────────────────────────────────────
+function updateRepeatSublabel() {
+  const el = document.getElementById('repeat-sublabel');
+  if (el) el.textContent = practiceMode === 'sentence' ? 'speak this sentence 3 times' : 'speak this word 3 times';
 }
 
-function stopCarousel() {
-  carouselActive = false;
-  if (carouselAbortCtrl) { carouselAbortCtrl.abort(); carouselAbortCtrl = null; }
+function abortRepeat() {
+  if (repeatAbortCtrl) { repeatAbortCtrl.abort(); repeatAbortCtrl = null; }
   window.speechSynthesis.cancel();
-  const btn = document.getElementById('btn-carousel');
-  if (btn) { btn.textContent = '▶ 輪播模式（每字念 3 次）'; btn.classList.remove('active'); }
-  const rep = document.getElementById('carousel-rep');
-  if (rep) rep.textContent = '';
-  const rec = document.getElementById('btn-record');
-  if (rec) rec.disabled = false;
+  const prog = document.getElementById('repeat-progress');
+  if (prog) prog.textContent = '';
 }
 
 function sleep(ms, signal) {
@@ -825,57 +853,36 @@ function speakOnce(text, signal) {
   });
 }
 
-function loadWordCard(word) {
-  current = word;
-  document.getElementById('word-display').textContent = current['Word'] || '—';
-  const dot = document.getElementById('status-dot');
-  const st = wordStatus[current['Word']];
-  dot.className = 'status-dot' + (st ? ' ' + st : '');
-  const transEl = document.getElementById('translation');
-  transEl.textContent = current['Translation/Explanation'] || current['Translation'] || '—';
-  transEl.style.display = 'none';
-  document.getElementById('btn-trans').textContent = 'Translation ▼';
-  document.getElementById('example').textContent = current['Example Sentence'] || '(no example)';
-  document.getElementById('result-box').className = 'result-box';
-  document.getElementById('result-box').innerHTML = '';
-  document.getElementById('interim').textContent = '';
-  updateCounter();
-}
+async function onRepeatToggle() {
+  const chk = document.getElementById('toggle-repeat');
+  if (!chk.checked) { abortRepeat(); return; }
 
-async function startCarousel() {
-  if (carouselActive) return;
-  carouselActive = true;
+  // Cancel any previous run
+  abortRepeat();
+
   const ctrl = new AbortController();
-  carouselAbortCtrl = ctrl;
+  repeatAbortCtrl = ctrl;
   const sig = ctrl.signal;
 
-  const btn = document.getElementById('btn-carousel');
-  btn.textContent = '⏹ 停止輪播';
-  btn.classList.add('active');
-  document.getElementById('btn-record').disabled = true;
+  const text = practiceMode === 'sentence'
+    ? (current?.['Example Sentence'] || '')
+    : (current?.['Word'] || '');
+  if (!text) { chk.checked = false; return; }
 
-  const REPS = 3;
-  const GAP_REP  = 700;   // ms between repetitions of same word
-  const GAP_NEXT = 1800;  // ms before advancing to next word
-
+  const prog = document.getElementById('repeat-progress');
   try {
-    while (!sig.aborted) {
-      loadWordCard(pickNext());
-      const repEl = document.getElementById('carousel-rep');
-      for (let i = 1; i <= REPS; i++) {
-        if (sig.aborted) break;
-        if (repEl) repEl.textContent = `第 ${i} / ${REPS} 次`;
-        await speakOnce(current['Word'], sig);
-        if (i < REPS) await sleep(GAP_REP, sig);
-      }
-      if (repEl) repEl.textContent = '⏎ 下一個…';
-      await sleep(GAP_NEXT, sig);
+    for (let i = 1; i <= 3; i++) {
+      if (sig.aborted) break;
+      if (prog) prog.textContent = `${i} / 3`;
+      await speakOnce(text, sig);
+      if (i < 3) await sleep(600, sig);
     }
-  } catch (e) {
-    // aborted — fall through
-  }
+  } catch (e) { /* aborted */ }
 
-  stopCarousel();
+  if (prog) prog.textContent = '';
+  // Reset toggle after finishing
+  chk.checked = false;
+  repeatAbortCtrl = null;
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
