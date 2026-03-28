@@ -254,6 +254,28 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 }
 .word-ipa.loading { color: var(--faint); font-size: 0.75rem; }
 
+/* ── Sentence chunks + stress ── */
+.example-chunks {
+  display: flex; flex-wrap: wrap; gap: 4px 2px;
+  align-items: baseline; line-height: 2.2;
+}
+.chunk {
+  display: inline-flex; gap: 3px; align-items: baseline;
+  background: rgba(255,255,255,0.035); border-radius: 7px;
+  padding: 1px 7px; margin: 1px 2px;
+}
+.chunk-sep {
+  color: var(--faint); font-size: 0.7rem;
+  align-self: center; margin: 0 1px; user-select: none;
+}
+.w-stress {
+  color: #dcdcdc; font-weight: 550; font-size: 0.9rem;
+}
+.w-reduce {
+  color: var(--muted); font-weight: 400; font-size: 0.8rem;
+  letter-spacing: 0.01em;
+}
+
 /* ── Repeat toggle ── */
 .repeat-row {
   width: 100%; display: flex; align-items: center; justify-content: space-between;
@@ -355,6 +377,60 @@ let practiceMode = 'word';
 let cardMode = 'smart'; // 'smart' | 'all' | 'unlearned' | 'wrong'
 let slowMode = false;
 let repeatAbortCtrl = null;
+
+// ── Sentence chunks + stress ─────────────────────────────────────────────────
+const FUNC_WORDS = new Set([
+  'the','a','an','is','are','was','were','be','been','being',
+  'have','has','had','do','does','did','will','would','shall',
+  'should','may','might','must','can','could',
+  'to','of','in','on','at','by','for','with','from','up',
+  'about','into','through','during','before','after','above',
+  'below','between','among',
+  'that','which','who','whom','whose',
+  'this','these','those',
+  'it','he','she','they','we','you','i','me','him','her','us','them',
+  'my','your','his','its','our','their',
+  'and','or','but','so','yet','nor',
+  'as','if','than','though','although','because','since',
+  'while','when','where','what','whether'
+]);
+
+const CHUNK_BREAK_BEFORE = new Set([
+  'in','on','at','by','for','with','from','into','through',
+  'during','before','after','above','below','between','among',
+  'and','or','but','so','because','since','while','when','where',
+  'although','though','if','which','who','whom','that'
+]);
+
+function renderSentenceWithStress(sentence) {
+  const tokens = sentence.trim().split(/\s+/);
+  const chunks = [];
+  let cur = [];
+  tokens.forEach((tok, i) => {
+    const clean = tok.toLowerCase().replace(/[^a-z']/g, '');
+    if (i > 0 && CHUNK_BREAK_BEFORE.has(clean) && cur.length > 0) {
+      chunks.push(cur); cur = [];
+    }
+    cur.push(tok);
+    if (cur.length >= 4 && i < tokens.length - 1) {
+      chunks.push(cur); cur = [];
+    }
+  });
+  if (cur.length) chunks.push(cur);
+
+  return '<span class="example-chunks">' +
+    chunks.map((chunk, ci) => {
+      const inner = chunk.map(tok => {
+        const clean = tok.toLowerCase().replace(/[^a-z']/g, '');
+        const cls = FUNC_WORDS.has(clean) ? 'w-reduce' : 'w-stress';
+        return `<span class="${cls}">${tok}</span>`;
+      }).join(' ');
+      const sep = ci < chunks.length - 1
+        ? '<span class="chunk-sep"> | </span>' : '';
+      return `<span class="chunk">${inner}</span>${sep}`;
+    }).join('') +
+  '</span>';
+}
 
 // ── IPA cache ────────────────────────────────────────────────────────────────
 const IPA_CACHE_KEY = 'speaking-practice-ipa';
@@ -595,7 +671,7 @@ function nextWord() {
   transEl.style.display = 'none';
   const transBtn = document.getElementById('btn-trans');
   if (transBtn) transBtn.textContent = 'Translation ▼';
-  document.getElementById('example').textContent = current['Example Sentence'] || '(no example)';
+  renderExample(current['Example Sentence'] || '(no example)');
   document.getElementById('result-box').className = 'result-box';
   document.getElementById('result-box').innerHTML = '';
   document.getElementById('interim').textContent = '';
@@ -639,7 +715,18 @@ function setMode(mode) {
     : 'Example · say the word aloud';
   const exEl = document.getElementById('example');
   if (exEl) exEl.classList.toggle('target', mode === 'sentence');
+  if (current) renderExample(current['Example Sentence'] || '(no example)');
   updateRepeatSublabel();
+}
+
+function renderExample(sentence) {
+  const el = document.getElementById('example');
+  if (!el) return;
+  if (practiceMode === 'sentence') {
+    el.innerHTML = renderSentenceWithStress(sentence);
+  } else {
+    el.textContent = sentence;
+  }
 }
 
 // ── Translation toggle ────────────────────────────────────────────────────────
