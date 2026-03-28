@@ -242,6 +242,18 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 .rate.bad  { color: var(--rose); }
 .notice { background: var(--surf); border-radius: 14px; padding: 24px; color: var(--rose); font-size: 0.875rem; line-height: 2; width: 100%; box-shadow: inset 0 0 0 1px rgba(168,133,133,0.15); }
 
+/* ── IPA phonetic display ── */
+.word-ipa {
+  font-size: 0.95rem;
+  color: var(--muted);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  margin-top: 5px;
+  min-height: 1.4em;
+  font-style: normal;
+}
+.word-ipa.loading { color: var(--faint); font-size: 0.75rem; }
+
 /* ── Repeat toggle ── */
 .repeat-row {
   width: 100%; display: flex; align-items: center; justify-content: space-between;
@@ -344,6 +356,41 @@ let cardMode = 'smart'; // 'smart' | 'all' | 'unlearned' | 'wrong'
 let slowMode = false;
 let repeatAbortCtrl = null;
 
+// ── IPA cache ────────────────────────────────────────────────────────────────
+const IPA_CACHE_KEY = 'speaking-practice-ipa';
+let ipaCache = {};
+try { ipaCache = JSON.parse(localStorage.getItem(IPA_CACHE_KEY)) || {}; } catch {}
+
+async function fetchIPA(word) {
+  const key = word.toLowerCase().trim();
+  if (ipaCache[key] !== undefined) { showIPA(ipaCache[key]); return; }
+  const el = document.getElementById('word-ipa');
+  if (el) { el.className = 'word-ipa loading'; el.textContent = '…'; }
+  try {
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(key)}`);
+    if (!res.ok) throw new Error('not found');
+    const data = await res.json();
+    const phonetic = data[0]?.phonetics?.find(p => p.text)?.text
+      || data[0]?.phonetic
+      || '';
+    ipaCache[key] = phonetic;
+    const entries = Object.keys(ipaCache);
+    if (entries.length > 2000) entries.slice(0, 200).forEach(k => delete ipaCache[k]);
+    localStorage.setItem(IPA_CACHE_KEY, JSON.stringify(ipaCache));
+    showIPA(phonetic);
+  } catch {
+    ipaCache[key] = '';
+    showIPA('');
+  }
+}
+
+function showIPA(text) {
+  const el = document.getElementById('word-ipa');
+  if (!el) return;
+  el.className = 'word-ipa';
+  el.textContent = text || '';
+}
+
 // ── DOM refs ─────────────────────────────────────────────────────────────────
 const app = document.getElementById('app');
 
@@ -436,6 +483,7 @@ function buildUI() {
           <div class="word-display" id="word-display"></div>
           <div class="status-dot" id="status-dot"></div>
         </div>
+        <div class="word-ipa" id="word-ipa"></div>
       </div>
       <div class="card-divider"></div>
       <div class="card-block">
@@ -531,6 +579,11 @@ function nextWord() {
   current = pickNext();
 
   document.getElementById('word-display').textContent = current['Word'] || '—';
+
+  // IPA phonetic
+  const ipaEl = document.getElementById('word-ipa');
+  if (ipaEl) { ipaEl.className = 'word-ipa'; ipaEl.textContent = ''; }
+  if (current['Word']) fetchIPA(current['Word']);
 
   // Status dot
   const dot = document.getElementById('status-dot');
