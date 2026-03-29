@@ -276,6 +276,41 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
   letter-spacing: 0.01em;
 }
 
+/* ── Settings panel ── */
+.settings-toggle-btn {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  background: var(--surf); border-radius: 10px; padding: 10px 16px; cursor: pointer;
+  box-shadow: inset 0 0 0 1px var(--ring-in); font-size: 0.8rem; font-weight: 500;
+  color: var(--muted); letter-spacing: 0.02em; border: none;
+  transition: color 0.12s;
+}
+.settings-toggle-btn:hover { color: var(--sub); }
+.settings-panel {
+  width: 100%; background: var(--surf); border-radius: 14px;
+  padding: 16px 20px; display: flex; flex-direction: column; gap: 12px;
+  box-shadow: inset 0 0 0 1px var(--ring-in);
+}
+.settings-field { display: flex; flex-direction: column; gap: 5px; }
+.settings-label {
+  font-family: ui-monospace, monospace; font-size: 0.65rem;
+  text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted);
+}
+.settings-input {
+  height: 36px; padding: 0 12px; background: var(--bg); color: var(--text);
+  border-radius: 8px; font-family: ui-monospace, monospace; font-size: 0.8rem;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); border: none;
+  width: 100%;
+}
+.settings-input:focus { outline: none; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18); }
+.settings-save-btn {
+  align-self: flex-end; height: 30px; padding: 0 16px;
+  font-size: 0.75rem; font-weight: 550; background: #1c1c1c;
+  color: var(--text); border-radius: var(--r-pill); border: none;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); cursor: pointer;
+  transition: background 0.12s;
+}
+.settings-save-btn:hover { background: #222; }
+
 /* ── Repeat toggle ── */
 .repeat-row {
   width: 100%; display: flex; align-items: center; justify-content: space-between;
@@ -377,6 +412,11 @@ let practiceMode = 'word';
 let cardMode = 'smart'; // 'smart' | 'all' | 'unlearned' | 'wrong'
 let slowMode = false;
 let repeatAbortCtrl = null;
+
+// ── Azure TTS state ───────────────────────────────────────────────────────────
+let azureToken = null;
+let azureTokenExpiry = 0;
+let currentAudio = null;
 
 // ── Sentence chunks + stress ─────────────────────────────────────────────────
 const FUNC_WORDS = new Set([
@@ -603,6 +643,23 @@ function buildUI() {
       </div>
       <div class="rate" id="s-rate">—</div>
     </div>
+
+    <!-- Azure TTS Settings -->
+    <button class="settings-toggle-btn" id="btn-settings-toggle" onclick="toggleSettings()">
+      <span>⚙ Azure TTS Settings</span>
+      <span id="settings-arrow">▼</span>
+    </button>
+    <div class="settings-panel" id="settings-panel" style="display:none">
+      <div class="settings-field">
+        <label class="settings-label" for="input-azure-key">Azure Key</label>
+        <input class="settings-input" type="password" id="input-azure-key" placeholder="Paste your Azure Speech key" autocomplete="off">
+      </div>
+      <div class="settings-field">
+        <label class="settings-label" for="input-azure-region">Region</label>
+        <input class="settings-input" type="text" id="input-azure-region" placeholder="eastus">
+      </div>
+      <button class="settings-save-btn" onclick="saveAzureSettings()">Save</button>
+    </div>
   `;
 
   // Card mode buttons
@@ -738,31 +795,92 @@ function toggleTranslation() {
   btn.textContent = visible ? 'Translation ▼' : 'Translation ▲';
 }
 
-// ── SpeechSynthesis ──────────────────────────────────────────────────────────
+// ── Azure TTS ─────────────────────────────────────────────────────────────────
+async function getAzureToken() {
+  const key = localStorage.getItem('azure_key_en') || '';
+  const region = localStorage.getItem('azure_region_en') || 'eastus';
+  if (!key) throw new Error('no-key');
+  if (azureToken && Date.now() < azureTokenExpiry) return { token: azureToken, region };
+  const res = await fetch(`https://${region}.api.cognitive.microsoft.com/sts/v1.0/issueToken`, {
+    method: 'POST',
+    headers: { 'Ocp-Apim-Subscription-Key': key }
+  });
+  if (!res.ok) throw new Error(`Token error ${res.status}`);
+  azureToken = await res.text();
+  azureTokenExpiry = Date.now() + 9 * 60 * 1000;
+  return { token: azureToken, region };
+}
+
+async function azureTTS(text, signal) {
+  const { token, region } = await getAzureToken();
+  const rate = slowMode ? '-50%' : '0%';
+  const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const ssml = `<speak version='1.0' xml:lang='en-US'><voice name='en-US-JennyNeural'><prosody rate='${rate}'>${escaped}</prosody></voice></speak>`;
+  const res = await fetch(`https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/ssml+xml',
+      'X-Microsoft-OutputFormat': 'audio-16khz-128kbitrate-mono-mp3'
+    },
+    body: ssml,
+    signal
+  });
+  if (!res.ok) throw new Error(`TTS error ${res.status}`);
+  const blob = await res.blob();
+  return URL.createObjectURL(blob);
+}
+
+function stopCurrentAudio() {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.src = '';
+    currentAudio = null;
+  }
+}
+
+async function speakText(text, btn) {
+  const key = localStorage.getItem('azure_key_en') || '';
+  if (!key) {
+    const panel = document.getElementById('settings-panel');
+    const arrow = document.getElementById('settings-arrow');
+    if (panel && panel.style.display === 'none') {
+      panel.style.display = 'block';
+      if (arrow) arrow.textContent = '▲';
+      document.getElementById('input-azure-key')?.focus();
+      const keyInput = document.getElementById('input-azure-key');
+      const regionInput = document.getElementById('input-azure-region');
+      if (keyInput) keyInput.value = localStorage.getItem('azure_key_en') || '';
+      if (regionInput) regionInput.value = localStorage.getItem('azure_region_en') || 'eastus';
+    }
+    return;
+  }
+  stopCurrentAudio();
+  if (btn) { btn.classList.add('speaking'); btn.disabled = true; }
+  try {
+    const url = await azureTTS(text);
+    const audio = new Audio(url);
+    currentAudio = audio;
+    const cleanup = () => { URL.revokeObjectURL(url); currentAudio = null; if (btn) { btn.classList.remove('speaking'); btn.disabled = false; } };
+    audio.onended = cleanup;
+    audio.onerror = cleanup;
+    audio.play();
+  } catch (e) {
+    console.error('Azure TTS:', e);
+    if (btn) { btn.classList.remove('speaking'); btn.disabled = false; }
+  }
+}
+
 function speakWord() {
-  if (!current || !window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(current['Word']);
-  utter.lang = 'en-US';
-  utter.rate = slowMode ? 0.5 : 1.0;
-  const btn = document.getElementById('btn-speak');
-  btn.classList.add('speaking'); btn.disabled = true;
-  utter.onend = utter.onerror = () => { btn.classList.remove('speaking'); btn.disabled = false; };
-  window.speechSynthesis.speak(utter);
+  if (!current) return;
+  speakText(current['Word'], document.getElementById('btn-speak'));
 }
 
 function speakSentence() {
-  if (!current || !window.speechSynthesis) return;
+  if (!current) return;
   const sentence = current['Example Sentence'];
   if (!sentence) return;
-  window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(sentence);
-  utter.lang = 'en-US';
-  utter.rate = slowMode ? 0.5 : 1.0;
-  const btn = document.getElementById('btn-speak-sentence');
-  btn.classList.add('speaking'); btn.disabled = true;
-  utter.onend = utter.onerror = () => { btn.classList.remove('speaking'); btn.disabled = false; };
-  window.speechSynthesis.speak(utter);
+  speakText(sentence, document.getElementById('btn-speak-sentence'));
 }
 
 function toggleSpeed() {
@@ -770,6 +888,32 @@ function toggleSpeed() {
   const btn = document.getElementById('btn-speed');
   btn.textContent = slowMode ? '🐢 Slow' : '▶ Normal';
   btn.classList.toggle('slow', slowMode);
+}
+
+// ── Azure Settings ────────────────────────────────────────────────────────────
+function toggleSettings() {
+  const panel = document.getElementById('settings-panel');
+  const arrow = document.getElementById('settings-arrow');
+  const visible = panel.style.display !== 'none';
+  panel.style.display = visible ? 'none' : 'block';
+  if (arrow) arrow.textContent = visible ? '▼' : '▲';
+  if (!visible) {
+    const keyInput = document.getElementById('input-azure-key');
+    const regionInput = document.getElementById('input-azure-region');
+    if (keyInput) keyInput.value = localStorage.getItem('azure_key_en') || '';
+    if (regionInput) regionInput.value = localStorage.getItem('azure_region_en') || 'eastus';
+  }
+}
+
+function saveAzureSettings() {
+  const key = document.getElementById('input-azure-key')?.value?.trim() || '';
+  const region = document.getElementById('input-azure-region')?.value?.trim() || 'eastus';
+  localStorage.setItem('azure_key_en', key);
+  localStorage.setItem('azure_region_en', region);
+  azureToken = null;
+  azureTokenExpiry = 0;
+  const btn = document.querySelector('.settings-save-btn');
+  if (btn) { btn.textContent = 'Saved ✓'; setTimeout(() => { if (btn) btn.textContent = 'Save'; }, 1500); }
 }
 
 // ── Recording ─────────────────────────────────────────────────────────────────
@@ -973,7 +1117,7 @@ function updateRepeatSublabel() {
 
 function abortRepeat() {
   if (repeatAbortCtrl) { repeatAbortCtrl.abort(); repeatAbortCtrl = null; }
-  window.speechSynthesis.cancel();
+  stopCurrentAudio();
   const prog = document.getElementById('repeat-progress');
   if (prog) prog.textContent = '';
 }
@@ -985,17 +1129,18 @@ function sleep(ms, signal) {
   });
 }
 
-function speakOnce(text, signal) {
+async function speakOnce(text, signal) {
+  if (signal && signal.aborted) throw new DOMException('Aborted', 'AbortError');
+  const url = await azureTTS(text, signal);
   return new Promise((resolve, reject) => {
-    if (signal && signal.aborted) { reject(new DOMException('Aborted', 'AbortError')); return; }
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'en-US';
-    utter.rate = slowMode ? 0.5 : 1.0;
-    utter.onend = resolve;
-    utter.onerror = reject;
-    window.speechSynthesis.speak(utter);
-    if (signal) signal.addEventListener('abort', () => { window.speechSynthesis.cancel(); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
+    if (signal && signal.aborted) { URL.revokeObjectURL(url); reject(new DOMException('Aborted', 'AbortError')); return; }
+    const audio = new Audio(url);
+    currentAudio = audio;
+    const cleanup = (ok) => { URL.revokeObjectURL(url); currentAudio = null; ok ? resolve() : reject(new Error('audio error')); };
+    audio.onended = () => cleanup(true);
+    audio.onerror = () => cleanup(false);
+    if (signal) signal.addEventListener('abort', () => { audio.pause(); cleanup(false); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
+    audio.play();
   });
 }
 
