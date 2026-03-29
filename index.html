@@ -1170,7 +1170,7 @@ async function onRepeatToggle() {
         sig.addEventListener('abort', () => { audio.pause(); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
         audio.play().catch(reject);
       });
-      if (i < 3) await sleep(500, sig);
+      if (i < 3) await sleep(320, sig);
     }
   } catch (e) { /* aborted */ }
 
