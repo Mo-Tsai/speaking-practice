@@ -721,8 +721,8 @@ function updateCounter() {
   const correct = Object.values(wordStatus).filter(v => v === 'correct').length;
   const wrong = Object.values(wordStatus).filter(v => v === 'wrong').length;
   const unlearned = total - practiced;
-  document.getElementById('word-counter').textContent =
-    `Practiced ${practiced} / ${total}  ·  Unlearned ${unlearned}  ·  Correct ${correct}  ·  Wrong ${wrong}`;
+  const wc = document.getElementById('word-counter');
+  if (wc) wc.textContent = `Practiced ${practiced} / ${total}  ·  Unlearned ${unlearned}  ·  Correct ${correct}  ·  Wrong ${wrong}`;
 }
 
 // ── Reset progress ────────────────────────────────────────────────────────────
@@ -932,14 +932,6 @@ function processResult(transcript) {
   showResult(correct, transcript.trim());
   updateScorePanel();
   updateCounter();
-  // Also update legacy stats bar
-  const total = stats.correct + stats.wrong;
-  document.getElementById('s-correct').textContent = stats.correct;
-  document.getElementById('s-total').textContent = total;
-  const pct = total ? Math.round(stats.correct / total * 100) : null;
-  const rateEl = document.getElementById('s-rate');
-  if (pct === null) { rateEl.textContent = '—'; rateEl.className = 'rate'; }
-  else { rateEl.textContent = pct + '%'; rateEl.className = 'rate ' + (pct >= 80 ? 'good' : pct >= 50 ? 'ok' : 'bad'); }
 
   resetRecordBtn();
   document.getElementById('btn-record').disabled = true;
