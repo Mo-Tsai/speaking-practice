@@ -413,9 +413,6 @@ let cardMode = 'smart'; // 'smart' | 'all' | 'unlearned' | 'wrong'
 let slowMode = false;
 let repeatAbortCtrl = null;
 
-// ── Azure TTS state ───────────────────────────────────────────────────────────
-let azureToken = null;
-let azureTokenExpiry = 0;
 let currentAudio = null;
 
 // ── Sentence chunks + stress ─────────────────────────────────────────────────
@@ -644,22 +641,6 @@ function buildUI() {
       <div class="rate" id="s-rate">—</div>
     </div>
 
-    <!-- Azure TTS Settings -->
-    <button class="settings-toggle-btn" id="btn-settings-toggle" onclick="toggleSettings()">
-      <span>⚙ Azure TTS Settings</span>
-      <span id="settings-arrow">▼</span>
-    </button>
-    <div class="settings-panel" id="settings-panel" style="display:none">
-      <div class="settings-field">
-        <label class="settings-label" for="input-azure-key">Azure Key</label>
-        <input class="settings-input" type="password" id="input-azure-key" placeholder="Paste your Azure Speech key" autocomplete="off">
-      </div>
-      <div class="settings-field">
-        <label class="settings-label" for="input-azure-region">Region</label>
-        <input class="settings-input" type="text" id="input-azure-region" placeholder="eastus">
-      </div>
-      <button class="settings-save-btn" onclick="saveAzureSettings()">Save</button>
-    </div>
   `;
 
   // Card mode buttons
@@ -795,80 +776,22 @@ function toggleTranslation() {
   btn.textContent = visible ? 'Translation ▼' : 'Translation ▲';
 }
 
-// ── Azure TTS ─────────────────────────────────────────────────────────────────
-async function getAzureToken() {
-  const key = localStorage.getItem('azure_key_en') || '';
-  const region = localStorage.getItem('azure_region_en') || 'eastus';
-  if (!key) throw new Error('no-key');
-  if (azureToken && Date.now() < azureTokenExpiry) return { token: azureToken, region };
-  const res = await fetch(`https://${region}.api.cognitive.microsoft.com/sts/v1.0/issueToken`, {
-    method: 'POST',
-    headers: { 'Ocp-Apim-Subscription-Key': key }
-  });
-  if (!res.ok) throw new Error(`Token error ${res.status}`);
-  azureToken = await res.text();
-  azureTokenExpiry = Date.now() + 9 * 60 * 1000;
-  return { token: azureToken, region };
-}
-
-async function azureTTS(text, signal) {
-  const { token, region } = await getAzureToken();
-  const rate = slowMode ? '-50%' : '0%';
-  const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const ssml = `<speak version='1.0' xml:lang='en-US'><voice name='en-US-JennyNeural'><prosody rate='${rate}'>${escaped}</prosody></voice></speak>`;
-  const res = await fetch(`https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/ssml+xml',
-      'X-Microsoft-OutputFormat': 'audio-16khz-128kbitrate-mono-mp3'
-    },
-    body: ssml,
-    signal
-  });
-  if (!res.ok) throw new Error(`TTS error ${res.status}`);
-  const blob = await res.blob();
-  return URL.createObjectURL(blob);
-}
 
 function stopCurrentAudio() {
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.src = '';
-    currentAudio = null;
-  }
+  window.speechSynthesis.cancel();
 }
 
-async function speakText(text, btn) {
-  const key = localStorage.getItem('azure_key_en') || '';
-  if (!key) {
-    const panel = document.getElementById('settings-panel');
-    const arrow = document.getElementById('settings-arrow');
-    if (panel && panel.style.display === 'none') {
-      panel.style.display = 'block';
-      if (arrow) arrow.textContent = '▲';
-      document.getElementById('input-azure-key')?.focus();
-      const keyInput = document.getElementById('input-azure-key');
-      const regionInput = document.getElementById('input-azure-region');
-      if (keyInput) keyInput.value = localStorage.getItem('azure_key_en') || '';
-      if (regionInput) regionInput.value = localStorage.getItem('azure_region_en') || 'eastus';
-    }
-    return;
+function speakText(text, btn) {
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'en-US';
+  utter.rate = slowMode ? 0.6 : 1.0;
+  if (btn) {
+    btn.classList.add('speaking'); btn.disabled = true;
+    const done = () => { btn.classList.remove('speaking'); btn.disabled = false; };
+    utter.onend = done; utter.onerror = done;
   }
-  stopCurrentAudio();
-  if (btn) { btn.classList.add('speaking'); btn.disabled = true; }
-  try {
-    const url = await azureTTS(text);
-    const audio = new Audio(url);
-    currentAudio = audio;
-    const cleanup = () => { URL.revokeObjectURL(url); currentAudio = null; if (btn) { btn.classList.remove('speaking'); btn.disabled = false; } };
-    audio.onended = cleanup;
-    audio.onerror = cleanup;
-    audio.play();
-  } catch (e) {
-    console.error('Azure TTS:', e);
-    if (btn) { btn.classList.remove('speaking'); btn.disabled = false; }
-  }
+  window.speechSynthesis.speak(utter);
 }
 
 function speakWord() {
@@ -890,31 +813,6 @@ function toggleSpeed() {
   btn.classList.toggle('slow', slowMode);
 }
 
-// ── Azure Settings ────────────────────────────────────────────────────────────
-function toggleSettings() {
-  const panel = document.getElementById('settings-panel');
-  const arrow = document.getElementById('settings-arrow');
-  const visible = panel.style.display !== 'none';
-  panel.style.display = visible ? 'none' : 'block';
-  if (arrow) arrow.textContent = visible ? '▼' : '▲';
-  if (!visible) {
-    const keyInput = document.getElementById('input-azure-key');
-    const regionInput = document.getElementById('input-azure-region');
-    if (keyInput) keyInput.value = localStorage.getItem('azure_key_en') || '';
-    if (regionInput) regionInput.value = localStorage.getItem('azure_region_en') || 'eastus';
-  }
-}
-
-function saveAzureSettings() {
-  const key = document.getElementById('input-azure-key')?.value?.trim() || '';
-  const region = document.getElementById('input-azure-region')?.value?.trim() || 'eastus';
-  localStorage.setItem('azure_key_en', key);
-  localStorage.setItem('azure_region_en', region);
-  azureToken = null;
-  azureTokenExpiry = 0;
-  const btn = document.querySelector('.settings-save-btn');
-  if (btn) { btn.textContent = 'Saved ✓'; setTimeout(() => { if (btn) btn.textContent = 'Save'; }, 1500); }
-}
 
 // ── Recording ─────────────────────────────────────────────────────────────────
 function startRecording() {
@@ -1145,37 +1043,23 @@ async function onRepeatToggle() {
   if (!text) { chk.checked = false; return; }
 
   const prog = document.getElementById('repeat-progress');
-  let url = null;
-  let audio = null;
   try {
-    if (prog) prog.textContent = '…';
-    url = await azureTTS(text, sig);
-
-    // Build & fully load one Audio object, reuse for all 3 plays
-    audio = new Audio(url);
-    currentAudio = audio;
-    await new Promise((resolve, reject) => {
-      audio.oncanplaythrough = resolve;
-      audio.onerror = reject;
-      sig.addEventListener('abort', reject, { once: true });
-    });
-
     for (let i = 1; i <= 3; i++) {
       if (sig.aborted) break;
       if (prog) prog.textContent = `${i} / 3`;
-      audio.currentTime = 0;
       await new Promise((resolve, reject) => {
-        audio.onended = resolve;
-        audio.onerror = reject;
-        sig.addEventListener('abort', () => { audio.pause(); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
-        audio.play().catch(reject);
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'en-US';
+        utter.rate = slowMode ? 0.6 : 1.0;
+        utter.onend = resolve;
+        utter.onerror = reject;
+        sig.addEventListener('abort', () => { window.speechSynthesis.cancel(); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
+        window.speechSynthesis.speak(utter);
       });
       if (i < 3) await sleep(320, sig);
     }
   } catch (e) { /* aborted */ }
 
-  if (audio) { audio.src = ''; currentAudio = null; }
-  if (url) URL.revokeObjectURL(url);
   if (prog) prog.textContent = '';
   chk.checked = false;
   repeatAbortCtrl = null;
