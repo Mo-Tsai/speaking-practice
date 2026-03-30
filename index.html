@@ -38,24 +38,25 @@ body {
   font-family: "Inter", system-ui, -apple-system, sans-serif;
   font-weight: 450; font-feature-settings: "ss02" 0, "cv05" 1;
   -webkit-font-smoothing: antialiased;
-  min-height: 100vh; display: flex; flex-direction: column;
-  align-items: center; padding: 40px 20px 60px;
+  height: 100dvh; overflow: hidden; display: flex; flex-direction: column;
+  align-items: center; padding: 10px 16px;
 }
-#app { width: 100%; max-width: 460px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
-.page-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; width: 100%; }
+#app { width: 100%; max-width: 460px; height: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; overflow: hidden; }
+.header-mode-row { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.page-header { display: flex; align-items: baseline; gap: 8px; }
 .page-title { font-size: 1rem; font-weight: 650; letter-spacing: -0.015em; color: var(--text); }
 .page-sub   { font-size: 0.875rem; font-weight: 400; color: var(--muted); }
 
 /* ── Score panel ── */
 .score-panel {
-  width: 100%; background: var(--surf); border-radius: 14px;
-  padding: 14px 18px; display: flex; align-items: center; gap: 0;
-  box-shadow: inset 0 0 0 1px var(--ring-in);
+  width: 100%; background: var(--surf); border-radius: 12px;
+  padding: 8px 14px; display: flex; align-items: center; gap: 0;
+  box-shadow: inset 0 0 0 1px var(--ring-in); flex-shrink: 0;
 }
-.score-group { display: flex; gap: 16px; flex: 1; }
-.score-item { display: flex; flex-direction: column; gap: 2px; }
-.score-label { font-family: ui-monospace, monospace; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
-.score-val { font-size: 1.1rem; font-weight: 650; letter-spacing: -0.04em; color: var(--text); }
+.score-group { display: flex; gap: 14px; flex: 1; }
+.score-item { display: flex; flex-direction: column; gap: 1px; }
+.score-label { font-family: ui-monospace, monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
+.score-val { font-size: 0.95rem; font-weight: 650; letter-spacing: -0.04em; color: var(--text); }
 .score-val.good { color: var(--sage); }
 .score-val.bad  { color: var(--rose); }
 .score-val.rate-good { color: var(--sage); }
@@ -75,15 +76,15 @@ body {
 
 /* ── Practice mode toggle ── */
 .mode-toggle {
-  display: flex; width: 100%; background: var(--surf);
-  border-radius: 10px; padding: 3px;
-  box-shadow: inset 0 0 0 1px var(--ring-in);
+  display: flex; width: auto; background: var(--surf);
+  border-radius: 9px; padding: 3px;
+  box-shadow: inset 0 0 0 1px var(--ring-in); flex-shrink: 0;
 }
 .mode-btn {
-  flex: 1; height: 32px; padding: 0; font-family: inherit;
-  font-size: 0.8rem; font-weight: 550; font-feature-settings: "ss02" 0;
+  width: 68px; height: 28px; padding: 0; font-family: inherit;
+  font-size: 0.75rem; font-weight: 550; font-feature-settings: "ss02" 0;
   background: transparent; color: var(--muted); border: none;
-  border-radius: 7px; letter-spacing: 0.02em; cursor: pointer;
+  border-radius: 6px; letter-spacing: 0.02em; cursor: pointer;
   transition: background 0.15s, color 0.15s, box-shadow 0.15s;
 }
 .mode-btn.active {
@@ -93,13 +94,13 @@ body {
 
 /* ── Card mode selector ── */
 .card-mode-row {
-  width: 100%; display: flex; gap: 6px; flex-wrap: wrap;
+  width: 100%; display: flex; gap: 5px; flex-wrap: wrap; flex-shrink: 0;
 }
 .card-mode-btn {
-  flex: 1; min-width: 0; height: 30px; padding: 0 8px; font-family: inherit;
-  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.02em;
+  flex: 1; min-width: 0; height: 26px; padding: 0 6px; font-family: inherit;
+  font-size: 0.68rem; font-weight: 500; letter-spacing: 0.02em;
   background: var(--surf); color: var(--muted); border: none;
-  border-radius: 8px; cursor: pointer;
+  border-radius: 7px; cursor: pointer;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
   transition: background 0.15s, color 0.15s, box-shadow 0.15s;
   white-space: nowrap;
@@ -112,17 +113,18 @@ body {
 
 .card {
   width: 100%; background: var(--surf); border-radius: var(--r-app);
-  padding: 24px; display: flex; flex-direction: column;
+  padding: 14px 16px; display: flex; flex-direction: column;
   box-shadow: 0 0 0 1px var(--ring), 0 4px 20px rgba(0,0,0,0.5);
+  flex: 1; min-height: 0; overflow-y: auto;
 }
-.card-block { padding: 16px 0; }
+.card-block { padding: 8px 0; }
 .card-block:first-child { padding-top: 0; }
-.card-block:last-of-type { padding-bottom: 18px; }
-.card-divider { height: 1px; background: var(--div); margin: 0 -24px; }
+.card-block:last-of-type { padding-bottom: 10px; }
+.card-divider { height: 1px; background: var(--div); margin: 0 -16px; }
 .eyebrow {
   font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
-  font-size: 0.68rem; font-weight: 500; text-transform: uppercase;
-  letter-spacing: 0.1em; color: var(--muted); margin-bottom: 10px;
+  font-size: 0.65rem; font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px;
 }
 
 /* ── Word display with status dot ── */
@@ -136,10 +138,10 @@ body {
 .status-dot.wrong   { background: var(--rose); }
 
 .word-display {
-  font-size: 2.2rem; font-weight: 650; line-height: 1.15;
+  font-size: 1.9rem; font-weight: 650; line-height: 1.15;
   letter-spacing: -0.03em; color: #f4f4f4; text-wrap: balance;
 }
-.translation-toggle { padding: 14px 0 0; display: flex; flex-direction: column; gap: 8px; }
+.translation-toggle { padding: 8px 0 0; display: flex; flex-direction: column; gap: 6px; }
 .trans-btn {
   align-self: flex-start; height: 24px; padding: 0 10px;
   font-family: inherit; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.04em;
@@ -158,7 +160,7 @@ body {
 .example.target { color: #d0d0d0; font-style: normal; }
 .speak-row {
   display: flex; gap: 6px; width: 100%;
-  border-top: 1px solid var(--div); padding-top: 18px;
+  border-top: 1px solid var(--div); padding-top: 10px;
 }
 .speak-row button {
   flex: 1; height: calc(var(--btn-h) - 4px); padding: 0;
@@ -175,11 +177,13 @@ body {
 .speak-row button.speaking { color: var(--slate); box-shadow: inset 0 0 0 1px var(--slate); }
 #btn-speed.slow { color: var(--sage); box-shadow: inset 0 0 0 1px var(--sage); }
 .result-box {
-  width: 100%; background: var(--surf); border-radius: 14px;
-  padding: 16px 20px; min-height: 56px; display: flex;
-  flex-direction: column; gap: 10px; font-size: 0.9rem;
+  width: 100%; background: var(--surf); border-radius: 12px;
+  padding: 10px 14px; min-height: 0; display: flex;
+  flex-direction: column; gap: 6px; font-size: 0.85rem;
   transition: box-shadow 0.25s; box-shadow: inset 0 0 0 1px var(--ring-in);
+  flex-shrink: 0;
 }
+.result-box:empty { display: none; }
 .result-box.correct { box-shadow: inset 0 0 0 1px rgba(138,158,137,0.3), 0 0 0 1px rgba(138,158,137,0.08); }
 .result-box.wrong   { box-shadow: inset 0 0 0 1px rgba(168,133,133,0.3), 0 0 0 1px rgba(168,133,133,0.08); }
 .result-header { display: flex; align-items: center; gap: 8px; }
@@ -194,7 +198,8 @@ body {
 .diff-correct    { color: var(--text); }
 .diff-wrong-char { color: var(--rose); font-weight: 700; }
 .diff-missing    { color: #2a2a2a; }
-#interim { font-size: 0.75rem; color: #333; line-height: 2; min-height: 28px; width: 100%; }
+#interim { font-size: 0.72rem; color: #444; line-height: 1.6; min-height: 0; width: 100%; }
+#interim:empty { display: none; }
 button {
   border: none; cursor: pointer;
   font-family: "Inter", system-ui, sans-serif; font-feature-settings: "ss02" 0;
@@ -314,7 +319,7 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 /* ── Repeat toggle ── */
 .repeat-row {
   width: 100%; display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 0 0; margin-top: 14px;
+  padding: 8px 0 0; margin-top: 8px;
   border-top: 1px solid var(--div);
   cursor: pointer; user-select: none;
 }
@@ -342,10 +347,11 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
   transform: translateX(20px); background: var(--slate);
 }
 .repeat-progress {
-  font-size: 0.72rem; color: var(--slate); line-height: 2;
-  width: 100%; text-align: right; min-height: 20px; letter-spacing: 0.06em;
+  font-size: 0.68rem; color: var(--slate); line-height: 1.4;
+  width: 100%; text-align: right; min-height: 0; letter-spacing: 0.06em;
   padding-right: 2px;
 }
+.repeat-progress:empty { display: none; }
 </style>
 </head>
 <body>
@@ -547,10 +553,16 @@ function pickNext() {
 // ── Build UI ─────────────────────────────────────────────────────────────────
 function buildUI() {
   app.innerHTML = `
-    <header class="page-header">
-      <span class="page-title">Speaking Practice</span>
-      <span class="page-sub">English Vocabulary</span>
-    </header>
+    <div class="header-mode-row">
+      <header class="page-header">
+        <span class="page-title">Speaking Practice</span>
+        <span class="page-sub">EN</span>
+      </header>
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="mode-word" onclick="setMode('word')">Word</button>
+        <button class="mode-btn" id="mode-sentence" onclick="setMode('sentence')">Sentence</button>
+      </div>
+    </div>
 
     <!-- Score panel -->
     <div class="score-panel">
@@ -569,15 +581,6 @@ function buildUI() {
         </div>
       </div>
       <button id="btn-reset">Reset</button>
-    </div>
-
-    <!-- Progress counter -->
-    <div id="word-counter"></div>
-
-    <!-- Practice mode (Word / Sentence) -->
-    <div class="mode-toggle">
-      <button class="mode-btn active" id="mode-word" onclick="setMode('word')">Word</button>
-      <button class="mode-btn" id="mode-sentence" onclick="setMode('sentence')">Sentence</button>
     </div>
 
     <!-- Card selection mode -->
@@ -632,15 +635,6 @@ function buildUI() {
       <button id="btn-record">🎤 Hold to Speak</button>
       <button id="btn-next">Next →</button>
     </div>
-    <!-- Session stats (bottom) -->
-    <div class="stats">
-      <div class="stats-left">
-        <div class="eyebrow">Session</div>
-        <div class="stats-numbers">Correct <strong id="s-correct">0</strong> / <strong id="s-total">0</strong></div>
-      </div>
-      <div class="rate" id="s-rate">—</div>
-    </div>
-
   `;
 
   // Card mode buttons
