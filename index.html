@@ -74,6 +74,104 @@ body {
 /* ── Progress counter ── */
 #word-counter { font-size: 0.75rem; color: var(--faint); line-height: 2; width: 100%; }
 
+/* ── Streak bar ── */
+.streak-bar {
+  width: 100%; background: var(--surf); border-radius: 10px;
+  padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;
+  box-shadow: inset 0 0 0 1px var(--ring-in); flex-shrink: 0; gap: 10px;
+}
+.streak-label { font-family: ui-monospace, monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
+.streak-val { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.04em; color: var(--sand); }
+.streak-dots { display: flex; gap: 5px; }
+.streak-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); transition: background 0.2s; }
+.streak-dot.done { background: var(--sand); }
+.streak-dot.today { background: var(--sage); box-shadow: 0 0 6px rgba(138,158,137,0.5); }
+
+/* ── Mission card ── */
+.mission-card {
+  width: 100%; background: var(--surf); border-radius: 14px;
+  box-shadow: inset 0 0 0 1px var(--ring-in); flex-shrink: 0;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.mission-header {
+  padding: 12px 16px 8px; border-bottom: 1px solid var(--div);
+}
+.mission-week { font-family: ui-monospace, monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 4px; }
+.mission-title { font-size: 1rem; font-weight: 650; letter-spacing: -0.02em; color: var(--text); }
+.mission-scenario {
+  padding: 10px 16px; font-size: 0.8rem; color: var(--sub); line-height: 1.55;
+  border-bottom: 1px solid var(--div);
+}
+.mission-scenario strong { color: var(--text); font-weight: 550; }
+.mission-prompt {
+  padding: 10px 16px 12px;
+  font-size: 0.82rem; color: var(--slate); line-height: 1.5;
+  font-style: italic;
+}
+
+/* ── Mission list ── */
+.mission-list {
+  width: 100%; display: flex; flex-direction: column; gap: 4px;
+  overflow-y: auto; flex: 1; padding-bottom: 4px;
+}
+.mission-item {
+  width: 100%; background: var(--surf); border-radius: 10px;
+  padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+  box-shadow: inset 0 0 0 1px var(--ring-in);
+  cursor: pointer; transition: box-shadow 0.12s;
+}
+.mission-item:active { box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12); }
+.mission-item.locked { opacity: 0.35; cursor: default; }
+.mission-item.completed .mission-item-icon { color: var(--sage); }
+.mission-item.active-mission { box-shadow: inset 0 0 0 1.5px var(--slate); }
+.mission-item-num { font-family: ui-monospace, monospace; font-size: 0.7rem; color: var(--muted); min-width: 20px; }
+.mission-item-name { flex: 1; font-size: 0.82rem; font-weight: 500; color: var(--text); }
+.mission-item-icon { font-size: 0.9rem; }
+.mission-week-label {
+  font-family: ui-monospace, monospace; font-size: 0.58rem; text-transform: uppercase;
+  letter-spacing: 0.09em; color: var(--muted); padding: 6px 2px 2px; width: 100%;
+}
+
+/* ── Self-evaluation box ── */
+.self-eval {
+  width: 100%; background: var(--surf); border-radius: 12px;
+  box-shadow: inset 0 0 0 1px var(--ring-in);
+  padding: 12px 14px; flex-shrink: 0; display: none;
+}
+.self-eval.visible { display: block; }
+.self-eval .eval-label { font-family: ui-monospace, monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 8px; }
+.self-eval .eval-buttons { display: flex; gap: 6px; }
+.self-eval .eval-btn {
+  flex: 1; height: 34px; font-family: inherit; font-size: 0.75rem; font-weight: 550;
+  border: none; border-radius: 8px; cursor: pointer;
+  transition: background 0.12s, box-shadow 0.12s;
+}
+.eval-btn.excellent { background: rgba(138,158,137,0.15); color: var(--sage); box-shadow: inset 0 0 0 1px rgba(138,158,137,0.3); }
+.eval-btn.excellent:hover { background: rgba(138,158,137,0.25); }
+.eval-btn.good { background: rgba(184,152,112,0.15); color: var(--sand); box-shadow: inset 0 0 0 1px rgba(184,152,112,0.3); }
+.eval-btn.good:hover { background: rgba(184,152,112,0.25); }
+.eval-btn.needs-work { background: rgba(168,133,133,0.15); color: var(--rose); box-shadow: inset 0 0 0 1px rgba(168,133,133,0.3); }
+.eval-btn.needs-work:hover { background: rgba(168,133,133,0.25); }
+.eval-btn:disabled { opacity: 0.4; cursor: default; }
+.eval-result { margin-top: 8px; font-size: 0.8rem; color: var(--sub); line-height: 1.5; }
+
+/* ── Mission complete overlay ── */
+.mission-complete {
+  width: 100%; background: var(--surf); border-radius: 14px;
+  box-shadow: inset 0 0 0 1px rgba(138,158,137,0.3);
+  padding: 20px 16px; text-align: center; flex-shrink: 0; display: none;
+}
+.mission-complete.visible { display: block; }
+.mission-complete-icon { font-size: 2.2rem; margin-bottom: 8px; }
+.mission-complete-title { font-size: 1rem; font-weight: 650; color: var(--sage); margin-bottom: 4px; }
+.mission-complete-sub { font-size: 0.78rem; color: var(--sub); line-height: 1.5; }
+
+/* ── Mission view layout ── */
+.mission-view { display: flex; flex-direction: column; gap: 6px; width: 100%; height: 100%; overflow: hidden; }
+.mission-practice-area { display: flex; flex-direction: column; gap: 6px; flex: 1; overflow-y: auto; }
+.mission-nav-row { display: flex; gap: 6px; width: 100%; flex-shrink: 0; }
+.mission-nav-row button { flex: 1; }
+
 /* ── Practice mode toggle ── */
 .mode-toggle {
   display: flex; width: auto; background: var(--surf);
@@ -561,6 +659,7 @@ function buildUI() {
       <div class="mode-toggle">
         <button class="mode-btn active" id="mode-word" onclick="setMode('word')">Word</button>
         <button class="mode-btn" id="mode-sentence" onclick="setMode('sentence')">Sentence</button>
+        <button class="mode-btn" id="mode-mission" onclick="setMode('mission')">Mission</button>
       </div>
     </div>
 
@@ -668,6 +767,296 @@ function buildUI() {
   nextWord();
 }
 
+// ── Mission Data ─────────────────────────────────────────────────────────────
+const MISSIONS = [
+  // Week 1
+  { week:1, id:1,  title:'30-Second Introduction',      scenario:'A foreign client just walked into your first meeting. They ask: <strong>"So, tell me about yourself and your firm."</strong>', prompt:'Introduce yourself and ON Design Lab in 30 seconds. Include your name, what you do, and one thing that makes your work special.', tip:'Start with: "Hi, my name is..." and end with what makes ON Design Lab different.' },
+  { week:1, id:2,  title:'Opening a Meeting',            scenario:'You are starting a kickoff call with a new overseas client. Everyone is on the video call.', prompt:'Open the meeting: welcome the client, confirm the agenda, and hand over to them to introduce their team.', tip:'Try: "Thank you for joining today. Today we\'d like to go through..."' },
+  { week:1, id:3,  title:'Confirming the Schedule',      scenario:'The client asks about your project timeline. They seem concerned it may be too long.', prompt:'Explain your typical project phases and timeline. Be confident but flexible.', tip:'Use: "Typically we work in three phases..." and "We can adjust based on your needs."' },
+  { week:1, id:4,  title:'Asking for Clarification',     scenario:'The client said something fast and you missed part of it. This happens in every real meeting.', prompt:'Ask the client to repeat or clarify — use at least 2 different polite phrases naturally in context.', tip:'"Could you say that again?" and "Just to make sure I understand..." are your friends.' },
+  { week:1, id:5,  title:'Buying Time to Think',         scenario:'The client just asked a complex question you are not ready to answer immediately.', prompt:'Use 3 different "buying time" phrases and give a short placeholder answer before promising a follow-up.', tip:'"That\'s a great question. Let me think for a moment..." then "I\'ll confirm and get back to you."' },
+  { week:1, id:6,  title:'Agreeing and Confirming',      scenario:'The client has just summarized what they want from the project. You agree with everything they said.', prompt:'Confirm that you understood and agree. Summarize back 2–3 key points the client mentioned.', tip:'"That\'s exactly what we had in mind." and "So what I\'m hearing is..." to confirm understanding.' },
+  { week:1, id:7,  title:'Wrapping Up a Call',           scenario:'The meeting is coming to an end. You have 2 minutes left.', prompt:'Close the meeting professionally: summarize next steps, confirm follow-up action, and say goodbye.', tip:'"Before we wrap up..." and "I\'ll send a summary email by end of day."' },
+  // Week 2
+  { week:2, id:8,  title:'Presenting a Design Concept',  scenario:'You are presenting your initial concept to the client for the first time over video call.', prompt:'Describe your design concept in 60 seconds. Explain the mood, key materials, and how it fits their brief.', tip:'"The concept is inspired by..." and "We chose these materials because..."' },
+  { week:2, id:9,  title:'Responding to Questions',      scenario:'After your presentation, the client asks: "Why did you choose this layout over a more open plan?"', prompt:'Defend your design decision clearly and confidently. Then invite further feedback.', tip:'"We considered both options, and here\'s why we went with this..."' },
+  { week:2, id:10, title:'Proposing an Alternative',     scenario:'The client is not satisfied with the first concept. They want something different but are not sure what.', prompt:'Propose an alternative direction. Explain what you would change and why it might work better.', tip:'"Based on your feedback, I\'d suggest we explore..." and "This approach would give you..."' },
+  { week:2, id:11, title:'Discussing Budget',            scenario:'The client says your estimate is higher than expected. They want to negotiate.', prompt:'Explain your pricing rationale, offer one area where you could adjust, and hold firm on the rest.', tip:'"The reason for this cost is..." and "One area where we could reduce is..."' },
+  { week:2, id:12, title:'Handling a Complaint',         scenario:'The client is unhappy that a delivery was delayed. They are frustrated on the call.', prompt:'Acknowledge the problem, apologize appropriately, and explain what you are doing to fix it.', tip:'"I completely understand your frustration." — then give a concrete next step with a date.' },
+  { week:2, id:13, title:'Video Call Opening',           scenario:'You are joining a video call 2 minutes late. There are already 4 people on.', prompt:'Join gracefully, apologize briefly, and get up to speed without derailing the meeting.', tip:'"Sorry for the delay — I\'m here now. What did I miss?"' },
+  { week:2, id:14, title:'Closing & Next Steps',         scenario:'End of a design review meeting. You need to lock in next actions before everyone leaves.', prompt:'Summarize 3 action items, assign who is responsible, and set a next check-in date.', tip:'"So to summarize, we agreed that..." and "I\'ll handle X, and you\'ll take care of Y — does that work?"' },
+  // Week 3
+  { week:3, id:15, title:'Comprehend & Repeat',          scenario:'The client gives you a fast verbal briefing. You need to confirm you understood correctly.', prompt:'Listen to this scenario in your head, then repeat back the 3 main points in your own words.', tip:'"Let me just confirm what I heard..." — summarize, don\'t repeat word for word.' },
+  { week:3, id:16, title:'Extracting Key Points',        scenario:'You just sat through a long client monologue. Your job is to extract what actually matters.', prompt:'From a complex brief, identify and state: budget priority, style preference, and deadline constraint.', tip:'"The three things I want to make sure we nail are..."' },
+  { week:3, id:17, title:'Understanding Accents',        scenario:'Your client has a strong British or Australian accent. Some phrases are unfamiliar.', prompt:'Practice these phrases out loud: "sort it out", "knock it on the head", "quite good", "brilliant", "I reckon". Use each in a full sentence.', tip:'Say each 3 times, then build a sentence you\'d actually say at work.' },
+  { week:3, id:18, title:'Handling Vague Requirements',  scenario:'The client says: "I want it to feel... modern but warm. You know what I mean?"', prompt:'Clarify what they mean by asking 2–3 specific questions that narrow down their vision.', tip:'"When you say modern, do you mean...?" and "Can you share an example that felt right?"' },
+  { week:3, id:19, title:'Finding Your Turn to Speak',   scenario:'You are in a group call. Two people keep talking over each other. You have something important to add.', prompt:'Use 3 different interjection phrases to politely enter the conversation without being rude.', tip:'"If I could just add something here..." and "Sorry to jump in, but..." are natural and professional.' },
+  { week:3, id:20, title:'Handling Technical Issues',    scenario:'Midway through your presentation, your screen share stops working. The client is waiting.', prompt:'Handle the situation calmly: inform the client, buy time, and keep the conversation moving.', tip:'"Bear with me for a second..." and "While I sort this out, let me tell you about..."' },
+  { week:3, id:21, title:'Confirming Action Items Live', scenario:'At the end of a meeting, you are taking notes live and want to confirm everything out loud.', prompt:'Read back 3 action items as if confirming in real time. Include who, what, and when for each.', tip:'"So [Name] will [action] by [date] — is that correct?"' },
+  // Week 4
+  { week:4, id:22, title:'Full Simulation — Round 1',    scenario:'Complete simulation: 10-min client kickoff for a residential interior project. You are the designer.', prompt:'Run a full meeting arc: open → present brief understanding → ask 3 questions → confirm next steps → close.', tip:'Don\'t script it. Use your emergency phrases when stuck. Mistakes are fine — keep moving.' },
+  { week:4, id:23, title:'Pitch Revision',               scenario:'Your first concept pitch was rejected. You have one more chance to win this client back.', prompt:'Re-pitch the concept with changes based on feedback you received. Show you listened.', tip:'"Based on what you shared last time, we rethought the direction..." — show evolution, not defensiveness.' },
+  { week:4, id:24, title:'Handling Objections',          scenario:'The client says: "We\'ve worked with other designers and they never charged this much."', prompt:'Address this objection without getting defensive. Explain your value and stand your ground.', tip:'"I understand that comparison. What sets our work apart is..."' },
+  { week:4, id:25, title:'Cross-Cultural Communication', scenario:'Your client is very indirect. They say "That\'s interesting" about your concept — which likely means they don\'t like it.', prompt:'Navigate diplomatically: read between the lines, invite honest feedback, and respond to what they actually mean.', tip:'"I want to make sure this is really working for you — what would you change?"' },
+  { week:4, id:26, title:'Defending Under Pressure',     scenario:'The client and their team are questioning your structural choices in front of everyone.', prompt:'Stay calm, defend your reasoning clearly, and acknowledge what is valid in their concern.', tip:'"That\'s a fair point. Here\'s the reasoning behind our decision..."' },
+  { week:4, id:27, title:'Basic Negotiation',            scenario:'You want to add a scope item. The client\'s budget is fixed. You need to negotiate.', prompt:'Propose a trade-off: offer to reduce something else in exchange for adding the new item.', tip:'"What if we adjusted X to make room for Y? Here\'s how the trade-off would work..."' },
+  { week:4, id:28, title:'Full Simulation — Round 2',    scenario:'Same as Mission 22, but the client is more challenging — they interrupt, ask hard questions, and push back on timeline.', prompt:'Handle a difficult client meeting: stay professional, adapt in real time, and close with clear next steps.', tip:'Focus on composure over perfection. The client is difficult on purpose — that\'s the training.' },
+  { week:4, id:29, title:'Weak Spot Reinforcement',      scenario:'Look back at the missions where you struggled most. Pick the hardest one and redo it.', prompt:'Redo your hardest mission. Compare your performance to the first attempt. Name what improved.', tip:'Self-awareness is the skill. Name what was hard and what changed.' },
+  { week:4, id:30, title:'Final Assessment: Day 1 vs 30',scenario:'Record yourself doing Mission 1 again. Compare it to your very first attempt.', prompt:'Do the 30-second introduction one more time, as naturally as possible. Then reflect: what changed?', tip:'"Thirty days ago I would have said... Now I say this without thinking about it."' },
+];
+
+// ── Mission State ─────────────────────────────────────────────────────────────
+const MISSION_LS = 'sp-missions-v1';
+const STREAK_LS  = 'sp-streak-v1';
+
+function loadMissionState() { try { return JSON.parse(localStorage.getItem(MISSION_LS)) || {}; } catch { return {}; } }
+function saveMissionState(s) { localStorage.setItem(MISSION_LS, JSON.stringify(s)); }
+function loadStreak() { try { return JSON.parse(localStorage.getItem(STREAK_LS)) || { days:0, lastDate:null, history:[] }; } catch { return { days:0, lastDate:null, history:[] }; } }
+function saveStreak(s) { localStorage.setItem(STREAK_LS, JSON.stringify(s)); }
+function todayStr() { return new Date().toISOString().slice(0,10); }
+
+function updateStreakOnComplete() {
+  const s = loadStreak();
+  const today = todayStr();
+  if (s.lastDate === today) return s;
+  const yest = new Date(); yest.setDate(yest.getDate()-1);
+  const yStr = yest.toISOString().slice(0,10);
+  s.days = s.lastDate === yStr ? s.days + 1 : 1;
+  s.lastDate = today;
+  if (!s.history) s.history = [];
+  if (!s.history.includes(today)) s.history.push(today);
+  saveStreak(s); return s;
+}
+
+// ── Mission UI ────────────────────────────────────────────────────────────────
+let activeMissionId = null;
+let missionRecording = false;
+let missionTranscript = '';
+
+function renderStreakBar() {
+  const s = loadStreak();
+  const today = todayStr();
+  const last7 = [];
+  for (let i=6;i>=0;i--) { const d=new Date(); d.setDate(d.getDate()-i); last7.push(d.toISOString().slice(0,10)); }
+  const hist = s.history || [];
+  const dots = last7.map(d => {
+    if (d===today && hist.includes(d)) return `<div class="streak-dot today"></div>`;
+    if (hist.includes(d)) return `<div class="streak-dot done"></div>`;
+    return `<div class="streak-dot"></div>`;
+  }).join('');
+  return `<div class="streak-bar">
+    <div><div class="streak-label">Streak</div><div class="streak-val">${s.days} day${s.days!==1?'s':''} 🔥</div></div>
+    <div class="streak-dots">${dots}</div>
+  </div>`;
+}
+
+function getUnlockedUpTo() {
+  const st = loadMissionState();
+  let max = 1;
+  for (const m of MISSIONS) { if (st[m.id]==='done') max = Math.min(m.id+1, 30); }
+  return max;
+}
+
+function renderMissionList() {
+  const st = loadMissionState();
+  const unlocked = getUnlockedUpTo();
+  let html = ''; let lastWeek = 0;
+  for (const m of MISSIONS) {
+    if (m.week !== lastWeek) { html += `<div class="mission-week-label">Week ${m.week}</div>`; lastWeek = m.week; }
+    const done = st[m.id]==='done', locked = m.id>unlocked, active = m.id===activeMissionId;
+    const icon = done?'✅':locked?'🔒':'▶';
+    const cls = ['mission-item', done?'completed':'', locked?'locked':'', active?'active-mission':''].filter(Boolean).join(' ');
+    html += `<div class="${cls}" onclick="selectMission(${m.id})">
+      <span class="mission-item-num">${String(m.id).padStart(2,'0')}</span>
+      <span class="mission-item-name">${m.title}</span>
+      <span class="mission-item-icon">${icon}</span>
+    </div>`;
+  }
+  return html;
+}
+
+function buildMissionView() {
+  const mv = document.getElementById('mission-view');
+  if (!mv) return;
+
+  if (!activeMissionId) {
+    mv.innerHTML = renderStreakBar() + `<div class="mission-list">${renderMissionList()}</div>`;
+    return;
+  }
+
+  const m = MISSIONS.find(x => x.id===activeMissionId);
+  if (!m) return;
+  const st = loadMissionState();
+  const done = st[m.id]==='done';
+  const savedFb = st['fb_'+m.id] || '';
+
+  mv.innerHTML = `
+    ${renderStreakBar()}
+    <div class="mission-practice-area">
+      <div class="mission-card">
+        <div class="mission-header">
+          <div class="mission-week">Week ${m.week} · Mission ${m.id} / 30</div>
+          <div class="mission-title">${m.title}</div>
+        </div>
+        <div class="mission-scenario">${m.scenario}</div>
+        <div class="mission-prompt">🎯 ${m.prompt}</div>
+      </div>
+      <div style="font-size:0.72rem;color:var(--muted);padding:0 2px;line-height:1.5;flex-shrink:0;">💡 ${m.tip}</div>
+      <div id="mission-interim" style="min-height:36px;font-size:0.8rem;color:var(--sub);padding:6px 10px;background:var(--surf);border-radius:10px;box-shadow:inset 0 0 0 1px var(--ring-in);"></div>
+      <div class="self-eval${done?' visible':''}" id="mission-eval">
+        <div class="eval-label">How did you do?</div>
+        <div class="eval-buttons">
+          <button class="eval-btn excellent" onclick="missionSelfEval('Excellent')"${done?' disabled':''}>Excellent</button>
+          <button class="eval-btn good" onclick="missionSelfEval('Good')"${done?' disabled':''}>Good</button>
+          <button class="eval-btn needs-work" onclick="missionSelfEval('Needs Work')"${done?' disabled':''}>Needs Work</button>
+        </div>
+        ${savedFb ? `<div class="eval-result">${savedFb}</div>` : ''}
+      </div>
+      <div class="mission-complete${done?' visible':''}" id="mission-complete">
+        <div class="mission-complete-icon">🎉</div>
+        <div class="mission-complete-title">Mission Complete!</div>
+        <div class="mission-complete-sub">Great work. Move to the next mission when ready.</div>
+      </div>
+    </div>
+    <div class="mission-nav-row">
+      <button onclick="selectMission(null)" style="flex:0 0 auto;padding:0 16px;">← Back</button>
+      <button id="btn-mission-record">${done?'🔁 Redo':'🎤 Hold to Speak'}</button>
+      ${done && m.id<30 ? `<button onclick="goNextMission()" style="flex:0 0 auto;padding:0 16px;">Next →</button>` : ''}
+    </div>`;
+
+  const recBtn = document.getElementById('btn-mission-record');
+  recBtn.addEventListener('mousedown', missionStartRecording);
+  recBtn.addEventListener('touchstart', e=>{e.preventDefault();missionStartRecording();});
+  recBtn.addEventListener('mouseup', missionStopRecording);
+  recBtn.addEventListener('touchend', e=>{e.preventDefault();missionStopRecording();});
+  recBtn.addEventListener('mouseleave', ()=>{if(missionRecording)missionStopRecording();});
+}
+
+function selectMission(id) {
+  if (id && id > getUnlockedUpTo()) return;
+  activeMissionId = id;
+  buildMissionView();
+}
+
+function goNextMission() {
+  if (activeMissionId < 30) selectMission(activeMissionId + 1);
+}
+
+// ── Mission Recording ─────────────────────────────────────────────────────────
+let missionRecognition = null;
+
+function missionStartRecording() {
+  if (missionRecording || !SR) return;
+  missionRecording = true; missionTranscript = '';
+  const btn = document.getElementById('btn-mission-record');
+  if (btn) { btn.classList.add('recording'); btn.textContent='🔴 Listening…'; }
+
+  missionRecognition = new SR();
+  missionRecognition.lang = 'en-US';
+  missionRecognition.interimResults = true;
+  missionRecognition.continuous = true;
+
+  missionRecognition.onresult = e => {
+    let interim='', final='';
+    for (let i=e.resultIndex;i<e.results.length;i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) final += t+' '; else interim += t;
+    }
+    missionTranscript += final;
+    const el = document.getElementById('mission-interim');
+    if (el) el.textContent = (missionTranscript+interim).trim();
+  };
+  missionRecognition.onerror = ()=>missionResetRecordBtn();
+  missionRecognition.onend = ()=>missionResetRecordBtn();
+  missionRecognition.start();
+}
+
+function missionStopRecording() {
+  if (!missionRecording||!missionRecognition) return;
+  missionRecognition.stop();
+  setTimeout(()=>{
+    if(missionTranscript.trim().length>5) {
+      const evalBox = document.getElementById('mission-eval');
+      if (evalBox) evalBox.classList.add('visible');
+    }
+  }, 500);
+}
+
+function missionResetRecordBtn() {
+  missionRecording = false;
+  const btn = document.getElementById('btn-mission-record');
+  if (btn) { btn.classList.remove('recording'); btn.textContent='🎤 Hold to Speak'; }
+}
+
+function missionSelfEval(score) {
+  const m = MISSIONS.find(x=>x.id===activeMissionId);
+  if (!m) return;
+
+  // Disable buttons after selection
+  document.querySelectorAll('.eval-btn').forEach(b => b.disabled = true);
+
+  // Save result
+  const resultText = `You rated: <strong>${score}</strong>`;
+  const evalBox = document.getElementById('mission-eval');
+  let resultEl = evalBox?.querySelector('.eval-result');
+  if (!resultEl) {
+    resultEl = document.createElement('div');
+    resultEl.className = 'eval-result';
+    evalBox?.appendChild(resultEl);
+  }
+  resultEl.innerHTML = resultText;
+
+  const st = loadMissionState();
+  st[m.id] = 'done'; st['fb_'+m.id] = resultText;
+  saveMissionState(st);
+  updateStreakOnComplete();
+
+  const completeEl = document.getElementById('mission-complete');
+  if (completeEl) completeEl.classList.add('visible');
+
+  const navRow = document.querySelector('.mission-nav-row');
+  if (navRow && m.id<30 && !document.getElementById('btn-m-next')) {
+    const nb = document.createElement('button');
+    nb.id='btn-m-next'; nb.style.cssText='flex:0 0 auto;padding:0 16px;';
+    nb.textContent='Next →'; nb.onclick=()=>goNextMission();
+    navRow.appendChild(nb);
+  }
+}
+
+// ── Mission mode switch ───────────────────────────────────────────────────────
+function showMissionView() {
+  ['card-mode-row','word-counter'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.display='none';
+  });
+  document.querySelector('.score-panel')?.style.setProperty('display','none');
+  document.querySelector('.card')?.style.setProperty('display','none');
+  document.getElementById('result-box')?.style.setProperty('display','none');
+  document.getElementById('interim')?.style.setProperty('display','none');
+  document.querySelector('.btn-row')?.style.setProperty('display','none');
+
+  let mv = document.getElementById('mission-view');
+  if (!mv) {
+    mv = document.createElement('div');
+    mv.id='mission-view'; mv.className='mission-view';
+    document.getElementById('app').appendChild(mv);
+  }
+  mv.style.display='flex';
+  buildMissionView();
+}
+
+function hideMissionView() {
+  const mv = document.getElementById('mission-view');
+  if (mv) mv.style.display='none';
+  ['card-mode-row','word-counter'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.display='';
+  });
+  document.querySelector('.score-panel')?.style.removeProperty('display');
+  document.querySelector('.card')?.style.removeProperty('display');
+  document.getElementById('result-box')?.style.removeProperty('display');
+  document.getElementById('interim')?.style.removeProperty('display');
+  document.querySelector('.btn-row')?.style.removeProperty('display');
+}
+
 // ── Card mode ─────────────────────────────────────────────────────────────────
 function setCardMode(mode) {
   cardMode = mode;
@@ -739,15 +1128,18 @@ function resetProgress() {
 // ── Mode toggle ───────────────────────────────────────────────────────────────
 function setMode(mode) {
   practiceMode = mode;
-  document.getElementById('mode-word').classList.toggle('active', mode === 'word');
-  document.getElementById('mode-sentence').classList.toggle('active', mode === 'sentence');
+  document.getElementById('mode-word').classList.toggle('active', mode==='word');
+  document.getElementById('mode-sentence').classList.toggle('active', mode==='sentence');
+  document.getElementById('mode-mission').classList.toggle('active', mode==='mission');
+  if (mode==='mission') {
+    showMissionView(); return;
+  }
+  hideMissionView();
   const label = document.getElementById('example-label');
-  if (label) label.textContent = mode === 'sentence'
-    ? 'Example · say the full sentence'
-    : 'Example · say the word aloud';
+  if (label) label.textContent = mode==='sentence' ? 'Example · say the full sentence' : 'Example · say the word aloud';
   const exEl = document.getElementById('example');
-  if (exEl) exEl.classList.toggle('target', mode === 'sentence');
-  if (current) renderExample(current['Example Sentence'] || '(no example)');
+  if (exEl) exEl.classList.toggle('target', mode==='sentence');
+  if (current) renderExample(current['Example Sentence']||'(no example)');
   updateRepeatSublabel();
 }
 
