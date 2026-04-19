@@ -233,6 +233,67 @@ body {
 .listen-first-btn:disabled { opacity: 0.5; cursor: default; }
 .listen-first-btn.done { color: var(--sage); box-shadow: inset 0 0 0 1px rgba(138,158,137,0.3); }
 
+/* ── v4.0: PACK PROGRESS BAR ── */
+.pack-progress-wrap { padding: 4px 16px 10px; display: flex; flex-direction: column; gap: 4px; }
+.pack-progress-text { font-family: ui-monospace, monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.04em; }
+.pack-progress-bar { height: 4px; width: 100%; background: var(--faint); border-radius: 2px; overflow: hidden; }
+.pack-progress-fill { height: 100%; background: var(--slate); border-radius: 2px; transition: width 0.3s; }
+
+/* ── v4.0: PACK MISSION LIST (on today card) ── */
+.pack-mission-list { padding: 4px 12px 12px; display: flex; flex-direction: column; gap: 2px; }
+.pack-mission-row {
+  display: flex; align-items: center; gap: 10px; padding: 8px 8px;
+  border-radius: 8px; cursor: pointer; transition: background 0.12s;
+}
+.pack-mission-row:hover { background: rgba(255,255,255,0.04); }
+.pack-mission-row:active { background: rgba(255,255,255,0.06); }
+.pack-mission-num { font-family: ui-monospace, monospace; font-size: 0.68rem; color: var(--muted); min-width: 14px; text-align: center; }
+.pack-mission-title { flex: 1; font-size: 0.78rem; font-weight: 500; color: var(--text); letter-spacing: -0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pack-mission-steps { display: flex; gap: 3px; }
+.step-dot {
+  font-size: 0.55rem; padding: 2px 5px; border-radius: 4px;
+  font-family: inherit; font-weight: 500;
+  background: var(--faint); color: var(--muted);
+  min-width: 18px; text-align: center; letter-spacing: 0.02em;
+}
+.step-dot.done { background: rgba(138,158,137,0.18); color: var(--sage); }
+
+/* ── v4.0: LOOP STEP (4-step card inside mission view) ── */
+.loop-step { border-top: 1px solid var(--div); padding: 10px 16px 12px; }
+.loop-step.done .loop-step-label { color: var(--sage); }
+.loop-step-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px;
+}
+.loop-step-label {
+  font-family: ui-monospace, monospace; font-size: 0.68rem;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--slate);
+  font-weight: 600;
+}
+.loop-step-icon { font-size: 0.9rem; }
+.loop-step-body { display: flex; flex-direction: column; gap: 6px; }
+.loop-step-btn {
+  height: 34px; font-family: inherit; font-size: 0.78rem; font-weight: 550;
+  background: var(--bg); color: var(--text); border: none;
+  border-radius: var(--r-pill); cursor: pointer; letter-spacing: 0.02em;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  transition: background 0.12s, color 0.12s, box-shadow 0.12s;
+}
+.loop-step-btn:hover:not(:disabled) { background: #1c1c1c; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.14); }
+.loop-step-btn.done {
+  color: var(--sage); background: rgba(138,158,137,0.08);
+  box-shadow: inset 0 0 0 1px rgba(138,158,137,0.3);
+}
+.loop-step-btn:disabled { opacity: 0.7; cursor: default; }
+
+/* ── v4.0: VERSION FOOTER ── */
+.app-version {
+  position: fixed; bottom: 4px; right: 8px;
+  font-family: ui-monospace, monospace; font-size: 0.55rem;
+  color: var(--faint); letter-spacing: 0.05em;
+  pointer-events: none; user-select: none;
+}
+
 /* ── RESULT BOX ── */
 .result-box {
   width: 100%; background: var(--surf); border-radius: 12px;
@@ -416,6 +477,7 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
 </style>
 </head>
 <body>
+<div class="app-version">v4.0</div>
 <div id="app">
   <p style="color:#333;font-size:0.8rem;line-height:2;width:100%;">Loading…</p>
 </div>
@@ -544,50 +606,234 @@ function pickNext() {
   return words[sessionQueue[sessionQueueIdx++]];
 }
 
-// ── MISSION DATA ──
-const MISSIONS = [
-  { week:1, id:1, title:'Say Your Name', promptZh:'說出自己的基本介紹', script:'Hi, my name is Yao-Mou. I\'m from Taiwan. I work in interior design.' },
-  { week:1, id:2, title:'I Didn\'t Catch That', promptZh:'沒聽清楚的3個救援句', script:'Sorry, could you say that again? Could you speak a little slower, please? What does that word mean?' },
-  { week:1, id:3, title:'Buying Time', promptZh:'需要時間想的3個過渡句', script:'Let me think for a second. That\'s a good question. How do I say this in English?' },
-  { week:1, id:4, title:'My Job', promptZh:'描述你的工作內容', script:'I design residential and commercial interiors. I work with clients to understand what kind of space they want. I use software like Rhino and AutoCAD for my projects.' },
-  { week:1, id:5, title:'Why I Learn English', promptZh:'解釋為何學英文', script:'I want to communicate with international clients. I think English opens up more opportunities in my field. I also enjoy learning — it keeps my mind active.' },
-  { week:1, id:6, title:'Counter-Questions', promptZh:'反擊問題的5句切換', script:'What about you, where are you from? How long have you been doing this? What do you like most about your work? What would you recommend for someone visiting your country? What are you working on these days?' },
-  { week:1, id:7, title:'Full Introduction', promptZh:'完整介紹（結合第1-6句）', script:'Hi there! My name is Yao-Mou, and I\'m from Taiwan. I work as an interior designer — I help people create spaces they love. I\'m currently learning English because I want to communicate more confidently at work. I\'m still learning, so please feel free to correct me! What about you?' },
-  { week:2, id:8, title:'Agreeing', promptZh:'4 個表達同意句型', script:'I agree with you. That makes sense. That\'s exactly what I was thinking. Right, I think so too.' },
-  { week:2, id:9, title:'Polite Disagreement', promptZh:'3 個禮貌不同意句型', script:'I see your point, but I think we should try a different approach. I\'m not sure about that — could we look at other options? That\'s interesting, but I think there might be a better way.' },
-  { week:2, id:10, title:'Describe a Room', promptZh:'描述一個房間', script:'My living room is not very big. The walls are white and the floor is light wood. There is a wooden table and a gray sofa in the center. It feels clean and simple.' },
-  { week:2, id:11, title:'Making Suggestions', promptZh:'3 個提出建議的句型', script:'I suggest we use a lighter color because it will make the space feel bigger. How about we try a different layout? Maybe we could add some plants to make it more natural.' },
-  { week:2, id:12, title:'Small Talk', promptZh:'天氣和週末的閒聊', script:'The weather is really nice today, isn\'t it? This weekend I plan to visit a new café in the city. Have you been to any good restaurants lately? I\'m always looking for new places to try.' },
-  { week:2, id:13, title:'Giving Directions', promptZh:'給路人的指路句型', script:'Go straight for about two blocks. Then turn left at the traffic light. Walk past the convenience store. You will see it on your right — it\'s next to the park.' },
-  { week:2, id:14, title:'Coffee Shop Intro', promptZh:'在咖啡廳初次見到在臺外人', script:'Hi, nice to meet you! I\'m Yao-Mou. I\'m an interior designer here in Taiwan. The weather is nice today, isn\'t it? I mostly work on residential and commercial projects. What do you do for work?' },
-  { week:3, id:15, title:'Opening a Meeting', promptZh:'開場一個設計初步會議', script:'Hi, thank you for joining today. I appreciate you taking the time. Today I\'d like to go through three things: your project goals, the timeline, and next steps. Does that sound good?' },
-  { week:3, id:16, title:'Explaining Your Design', promptZh:'解說設計概念', script:'The idea is to create a warm and modern space. We would use natural wood and soft lighting because they make the room feel comfortable. The overall feeling should be clean but inviting.' },
-  { week:3, id:17, title:'Asking Client Questions', promptZh:'問客戶3個必問問題', script:'What style do you prefer — more modern or more traditional? What is your budget range for this project? When do you need this to be completed by?' },
-  { week:3, id:18, title:'Explaining the Timeline', promptZh:'解說工程時間表', script:'The first phase is the design concept, which takes about two weeks. Then we move to detailed drawings, that\'s another three weeks. The whole project should take around two to three months.' },
-  { week:3, id:19, title:'Ending a Meeting', promptZh:'結束會議 + 下一步', script:'So today we discussed your design preferences and the project timeline. I will send you a summary email by end of day. Let\'s schedule our next call for next week. Thank you for your time!' },
-  { week:3, id:20, title:'Email Follow-Up', promptZh:'跟進昨天的會議', script:'Thank you for your time today. Just to confirm, we discussed the overall design direction and the budget range. I will prepare a concept proposal and send it to you by Friday. Please let me know if you have any questions.' },
-  { week:3, id:21, title:'Mini Meeting', promptZh:'一段完整初步會議', script:'Hi, thank you for joining. Today I\'d like to understand your project better. What kind of space are you looking for? What is your budget range? Great. Based on what you shared, I would suggest a clean, modern design using natural materials. I can prepare a concept for you within two weeks. I\'ll send a summary email today. Thank you!' },
-  { week:4, id:22, title:'I Don\'t Understand', promptZh:'碰不懂的字的應對句型', script:'Sorry, I\'m not familiar with that word. What does it mean? Could you give me an example? So you mean you want something more minimal — is that correct?' },
-  { week:4, id:23, title:'Saying No Politely', promptZh:'婉拒請求 + 替代方案', script:'I\'m sorry, that\'s not something we can do within this budget. But we could use a similar material that costs less. Would you like me to show you some options?' },
-  { week:4, id:24, title:'Simple Proposal', promptZh:'60 秒提案', script:'Here is our plan. We will redesign your living area with a focus on natural light and open space. This takes about eight weeks from start to finish. The benefit for you is a space that feels bigger and more comfortable for your family.' },
-  { week:4, id:25, title:'Responding to Feedback', promptZh:'客戶給反饋時的回應', script:'I\'m glad you like the overall direction. For the colors, I understand your concern. We can prepare two or three additional options for you to compare. Would you like me to send those by next week?' },
-  { week:4, id:26, title:'Talking About Price', promptZh:'報價溝通', script:'This project includes design, materials, and project management. The total cost is around five hundred thousand. This covers everything from the initial concept to the final walkthrough. I think it\'s a good value for what you\'re getting.' },
-  { week:4, id:27, title:'Delivering Bad News', promptZh:'延遲通知的處理方式', script:'I need to let you know that there is a delay with the materials. I\'m sorry about this. Here is what we will do: we have already contacted another supplier and we expect to get back on schedule within one week.' },
-  { week:4, id:28, title:'Full Client Meeting', promptZh:'完整客戶會議', script:'Hi, thank you for meeting with me today. I understand you\'re looking to redesign your apartment. Could you tell me more about what you have in mind? What is your budget range? Based on what you\'ve shared, I would suggest a modern, minimal approach. The project would take about two months. I\'ll send you a detailed proposal by Friday. Thank you for your time!' },
-  { week:4, id:29, title:'Handling Objections', promptZh:'客戶質疑時的應對', script:'I understand your concern. The reason we chose this approach is because it gives you more flexibility in the long run. If you\'d prefer, we can adjust the scope. What matters most is that the result works for you.' },
-  { week:4, id:30, title:'Day 30 Introduction', promptZh:'最終版：說出自己介紹', script:'Hi, my name is Yao-Mou. I\'m an interior designer from Taiwan. I help people create spaces they love. I\'ve been working on improving my English so I can communicate better with international clients. I\'m still learning, but I\'m getting more confident every day. It\'s great to meet you — what do you do?' },
+// ── PACK DATA (v4.0: 5 Packs × 6 Missions × 14-day loop) ──
+// Each pack = 6 頁核心素材 · 用戶跑 14 天閉環直到肌肉記憶
+const PACKS = [
+  {
+    id: 1, emoji: '💼', zh: '商務會議核心',
+    title: 'Business Meeting Core',
+    desc: '從開場到收尾 · 5/4 deadline 首選',
+    missions: [
+      { idx: 1, title: 'Opening a Meeting', promptZh: '開場商務會議', script: 'Hi, thank you for joining today. I appreciate you taking the time. Today I\'d like to go through three things: your project goals, the timeline, and next steps. Does that sound good?' },
+      { idx: 2, title: 'Asking Client Questions', promptZh: '問客戶 3 個必問問題', script: 'What style do you prefer — more modern or more traditional? What is your budget range for this project? When do you need this to be completed by?' },
+      { idx: 3, title: 'Explaining Your Design', promptZh: '解說設計概念', script: 'The idea is to create a warm and modern space. We would use natural wood and soft lighting because they make the room feel comfortable. The overall feeling should be clean but inviting.' },
+      { idx: 4, title: 'Explaining the Timeline', promptZh: '解說工程時間表', script: 'The first phase is the design concept, which takes about two weeks. Then we move to detailed drawings, that\'s another three weeks. The whole project should take around two to three months.' },
+      { idx: 5, title: 'Ending a Meeting', promptZh: '結束會議 + 下一步', script: 'So today we discussed your design preferences and the project timeline. I will send you a summary email by end of day. Let\'s schedule our next call for next week. Thank you for your time!' },
+      { idx: 6, title: 'Email Follow-Up', promptZh: '會議後的跟進郵件', script: 'Thank you for your time today. Just to confirm, we discussed the overall design direction and the budget range. I will prepare a concept proposal and send it to you by Friday. Please let me know if you have any questions.' },
+    ],
+  },
+  {
+    id: 2, emoji: '🛟', zh: '臨場應對',
+    title: 'Handling Pressure',
+    desc: '聽不懂、要時間、委婉拒絕',
+    missions: [
+      { idx: 1, title: 'I Didn\'t Catch That', promptZh: '沒聽清楚的 3 個救援句', script: 'Sorry, could you say that again? Could you speak a little slower, please? What does that word mean?' },
+      { idx: 2, title: 'Buying Time', promptZh: '需要時間想的 3 個過渡句', script: 'Let me think for a second. That\'s a good question. How do I say this in English?' },
+      { idx: 3, title: 'I Don\'t Understand', promptZh: '碰到不懂的字', script: 'Sorry, I\'m not familiar with that word. What does it mean? Could you give me an example? So you mean you want something more minimal — is that correct?' },
+      { idx: 4, title: 'Saying No Politely', promptZh: '婉拒 + 替代方案', script: 'I\'m sorry, that\'s not something we can do within this budget. But we could use a similar material that costs less. Would you like me to show you some options?' },
+      { idx: 5, title: 'Responding to Feedback', promptZh: '客戶反饋時的回應', script: 'I\'m glad you like the overall direction. For the colors, I understand your concern. We can prepare two or three additional options for you to compare. Would you like me to send those by next week?' },
+      { idx: 6, title: 'Delivering Bad News', promptZh: '延遲通知', script: 'I need to let you know that there is a delay with the materials. I\'m sorry about this. Here is what we will do: we have already contacted another supplier and we expect to get back on schedule within one week.' },
+    ],
+  },
+  {
+    id: 3, emoji: '💡', zh: '提案與報價',
+    title: 'Selling & Proposing',
+    desc: '60 秒提案、時間表、價格、建議',
+    missions: [
+      { idx: 1, title: 'My Job', promptZh: '描述你的工作內容', script: 'I design residential and commercial interiors. I work with clients to understand what kind of space they want. I use software like Rhino and AutoCAD for my projects.' },
+      { idx: 2, title: 'Simple Proposal', promptZh: '60 秒提案', script: 'Here is our plan. We will redesign your living area with a focus on natural light and open space. This takes about eight weeks from start to finish. The benefit for you is a space that feels bigger and more comfortable for your family.' },
+      { idx: 3, title: 'Making Suggestions', promptZh: '3 個提出建議的句型', script: 'I suggest we use a lighter color because it will make the space feel bigger. How about we try a different layout? Maybe we could add some plants to make it more natural.' },
+      { idx: 4, title: 'Talking About Price', promptZh: '報價溝通', script: 'This project includes design, materials, and project management. The total cost is around five hundred thousand. This covers everything from the initial concept to the final walkthrough. I think it\'s a good value for what you\'re getting.' },
+      { idx: 5, title: 'Handling Objections', promptZh: '客戶質疑時的應對', script: 'I understand your concern. The reason we chose this approach is because it gives you more flexibility in the long run. If you\'d prefer, we can adjust the scope. What matters most is that the result works for you.' },
+      { idx: 6, title: 'Mini Meeting', promptZh: '一段完整初步會議', script: 'Hi, thank you for joining. Today I\'d like to understand your project better. What kind of space are you looking for? What is your budget range? Great. Based on what you shared, I would suggest a clean, modern design using natural materials. I can prepare a concept for you within two weeks. I\'ll send a summary email today. Thank you!' },
+    ],
+  },
+  {
+    id: 4, emoji: '☕', zh: '閒聊與氛圍',
+    title: 'Small Talk & Rapport',
+    desc: '初見面、天氣、週末、反問',
+    missions: [
+      { idx: 1, title: 'Say Your Name', promptZh: '基本自我介紹', script: 'Hi, my name is Yao-Mou. I\'m from Taiwan. I work in interior design.' },
+      { idx: 2, title: 'Coffee Shop Intro', promptZh: '咖啡廳初次見面', script: 'Hi, nice to meet you! I\'m Yao-Mou. I\'m an interior designer here in Taiwan. The weather is nice today, isn\'t it? I mostly work on residential and commercial projects. What do you do for work?' },
+      { idx: 3, title: 'Small Talk', promptZh: '天氣和週末的閒聊', script: 'The weather is really nice today, isn\'t it? This weekend I plan to visit a new café in the city. Have you been to any good restaurants lately? I\'m always looking for new places to try.' },
+      { idx: 4, title: 'Giving Directions', promptZh: '給路人指路', script: 'Go straight for about two blocks. Then turn left at the traffic light. Walk past the convenience store. You will see it on your right — it\'s next to the park.' },
+      { idx: 5, title: 'Counter-Questions', promptZh: '反擊問題的 5 句切換', script: 'What about you, where are you from? How long have you been doing this? What do you like most about your work? What would you recommend for someone visiting your country? What are you working on these days?' },
+      { idx: 6, title: 'Describe a Room', promptZh: '描述一個房間', script: 'My living room is not very big. The walls are white and the floor is light wood. There is a wooden table and a gray sofa in the center. It feels clean and simple.' },
+    ],
+  },
+  {
+    id: 5, emoji: '🎬', zh: '整合測試',
+    title: 'Integration',
+    desc: '完整會議、異議處理、最終版介紹',
+    missions: [
+      { idx: 1, title: 'Why I Learn English', promptZh: '解釋為何學英文', script: 'I want to communicate with international clients. I think English opens up more opportunities in my field. I also enjoy learning — it keeps my mind active.' },
+      { idx: 2, title: 'Full Introduction', promptZh: '完整介紹', script: 'Hi there! My name is Yao-Mou, and I\'m from Taiwan. I work as an interior designer — I help people create spaces they love. I\'m currently learning English because I want to communicate more confidently at work. I\'m still learning, so please feel free to correct me! What about you?' },
+      { idx: 3, title: 'Agreeing', promptZh: '4 個表達同意句型', script: 'I agree with you. That makes sense. That\'s exactly what I was thinking. Right, I think so too.' },
+      { idx: 4, title: 'Polite Disagreement', promptZh: '3 個禮貌不同意句型', script: 'I see your point, but I think we should try a different approach. I\'m not sure about that — could we look at other options? That\'s interesting, but I think there might be a better way.' },
+      { idx: 5, title: 'Full Client Meeting', promptZh: '完整客戶會議', script: 'Hi, thank you for meeting with me today. I understand you\'re looking to redesign your apartment. Could you tell me more about what you have in mind? What is your budget range? Based on what you\'ve shared, I would suggest a modern, minimal approach. The project would take about two months. I\'ll send you a detailed proposal by Friday. Thank you for your time!' },
+      { idx: 6, title: 'Final Introduction', promptZh: '最終版自我介紹', script: 'Hi, my name is Yao-Mou. I\'m an interior designer from Taiwan. I help people create spaces they love. I\'ve been working on improving my English so I can communicate better with international clients. I\'m still learning, but I\'m getting more confident every day. It\'s great to meet you — what do you do?' },
+    ],
+  },
 ];
 
-// ── Mission State ──
-const MISSION_LS = 'sp-missions-v1';
-const STREAK_LS  = 'sp-streak-v1';
-function loadMissionState() { try { return JSON.parse(localStorage.getItem(MISSION_LS)) || {}; } catch { return {}; } }
-function saveMissionState(s) { localStorage.setItem(MISSION_LS, JSON.stringify(s)); }
+function getPack(id) { return PACKS.find(p => p.id === id); }
+function getMission(packId, missionIdx) {
+  const p = getPack(packId); return p ? p.missions.find(m => m.idx === missionIdx) : null;
+}
+
+// ── PACK STATE (v4.0) ──
+// Structure:
+// {
+//   activePackId: 1,
+//   packs: {
+//     1: {
+//       startDate: '2026-04-19',
+//       log: { '2026-04-19': { 1: {l:1,p:1,s:1,r:0}, 2: {...} } },
+//       completed: false
+//     }
+//   }
+// }
+const PACK_LS   = 'sp-packs-v4';
+const STREAK_LS = 'sp-streak-v1';
+const STEPS = ['l','p','s','r']; // 聽 拆 說 場
+
+function loadPackState() {
+  try { return JSON.parse(localStorage.getItem(PACK_LS)) || { activePackId: 1, packs: {} }; }
+  catch { return { activePackId: 1, packs: {} }; }
+}
+function savePackState(s) { localStorage.setItem(PACK_LS, JSON.stringify(s)); }
+
 function loadStreak() { try { return JSON.parse(localStorage.getItem(STREAK_LS)) || { days:0, lastDate:null, history:[] }; } catch { return { days:0, lastDate:null, history:[] }; } }
 function saveStreak(s) { localStorage.setItem(STREAK_LS, JSON.stringify(s)); }
 function todayStr() { return new Date().toISOString().slice(0,10); }
 
-function updateStreakOnComplete() {
+function daysSince(iso) {
+  const d1 = new Date(iso + 'T00:00:00');
+  const d2 = new Date(todayStr() + 'T00:00:00');
+  return Math.round((d2 - d1) / 86400000);
+}
+
+function ensurePack(packId) {
+  const s = loadPackState();
+  if (!s.packs[packId]) {
+    s.packs[packId] = { startDate: todayStr(), log: {}, completed: false };
+    savePackState(s);
+  }
+  return s;
+}
+
+// Current day number in pack (1-14, capped)
+function getPackDay(packId) {
+  const s = loadPackState();
+  const p = s.packs[packId];
+  if (!p) return 1;
+  const d = daysSince(p.startDate) + 1;
+  return Math.max(1, Math.min(14, d));
+}
+
+// Get today's log for a specific mission
+function getMissionTodayLog(packId, missionIdx) {
+  const s = loadPackState();
+  const p = s.packs[packId];
+  if (!p) return { l:0, p:0, s:0, r:0 };
+  const today = todayStr();
+  const day = p.log[today] || {};
+  return day[missionIdx] || { l:0, p:0, s:0, r:0 };
+}
+
+// Mark a step done for today (step: 'l'|'p'|'s'|'r')
+function markStep(packId, missionIdx, step) {
+  const s = ensurePack(packId);
+  const today = todayStr();
+  if (!s.packs[packId].log[today]) s.packs[packId].log[today] = {};
+  if (!s.packs[packId].log[today][missionIdx]) s.packs[packId].log[today][missionIdx] = { l:0, p:0, s:0, r:0 };
+  s.packs[packId].log[today][missionIdx][step] = 1;
+  savePackState(s);
+  updateStreakOnStep();
+}
+
+// Unmark (for 'r' toggle off)
+function unmarkStep(packId, missionIdx, step) {
+  const s = loadPackState();
+  if (!s.packs[packId]) return;
+  const today = todayStr();
+  if (s.packs[packId].log[today] && s.packs[packId].log[today][missionIdx]) {
+    s.packs[packId].log[today][missionIdx][step] = 0;
+    savePackState(s);
+  }
+}
+
+// Today's total steps completed in the pack (out of 24)
+function getTodayStepCount(packId) {
+  const s = loadPackState();
+  const p = s.packs[packId];
+  if (!p) return 0;
+  const today = todayStr();
+  const day = p.log[today] || {};
+  let n = 0;
+  for (let i = 1; i <= 6; i++) {
+    const m = day[i]; if (!m) continue;
+    STEPS.forEach(k => { if (m[k]) n++; });
+  }
+  return n;
+}
+
+// Is a specific day "substantial" (all 6 × 聽+拆+說 done)?
+function isDaySubstantial(packId, dateStr) {
+  const s = loadPackState();
+  const p = s.packs[packId];
+  if (!p) return false;
+  const day = p.log[dateStr] || {};
+  for (let i = 1; i <= 6; i++) {
+    const m = day[i]; if (!m) return false;
+    if (!m.l || !m.p || !m.s) return false;
+  }
+  return true;
+}
+
+// Count substantial days in a pack
+function countSubstantialDays(packId) {
+  const s = loadPackState();
+  const p = s.packs[packId];
+  if (!p) return 0;
+  return Object.keys(p.log).filter(d => isDaySubstantial(packId, d)).length;
+}
+
+function isPackComplete(packId) {
+  const s = loadPackState();
+  const p = s.packs[packId];
+  if (!p) return false;
+  if (p.completed) return true;
+  if (countSubstantialDays(packId) >= 14) {
+    p.completed = true;
+    savePackState(s);
+    return true;
+  }
+  return false;
+}
+
+function isPackUnlocked(packId) {
+  if (packId === 1) return true;
+  return isPackComplete(packId - 1);
+}
+
+function getActivePackId() {
+  const s = loadPackState();
+  // If current pack is complete, auto-advance
+  for (let i = 1; i <= 5; i++) {
+    if (!isPackComplete(i) && isPackUnlocked(i)) return i;
+  }
+  return s.activePackId || 1;
+}
+
+function setActivePackId(id) {
+  const s = loadPackState();
+  s.activePackId = id;
+  ensurePack(id);
+  savePackState(s);
+}
+
+function updateStreakOnStep() {
   const s = loadStreak();
   const today = todayStr();
   if (s.lastDate === today) return s;
@@ -600,11 +846,14 @@ function updateStreakOnComplete() {
   saveStreak(s); return s;
 }
 
-let activeMissionId = null;
+// State variables
+let activePackId = 1;
+let activeMissionIdx = null;
 let missionRecording = false;
 let missionTranscript = '';
-let missionWeekTab = 1;
-let missionListened = false; // NEW: track if user listened before speaking
+let missionListened = false;
+
+const APP_VERSION = 'v4.0';
 
 // ── Streak render (big version for today card) ──
 function renderStreakBig() {
@@ -627,59 +876,71 @@ function renderStreakBig() {
   </div>`;
 }
 
-function getNextMissionId() {
-  const st = loadMissionState();
-  // Find first unlocked not yet done
-  for (const m of MISSIONS) {
-    if (st[m.id] !== 'done') return m.id;
-  }
-  // All done
-  return MISSIONS[MISSIONS.length - 1].id;
-}
-
-function getUnlockedUpTo() {
-  const st = loadMissionState();
-  let max = 1;
-  for (const m of MISSIONS) { if (st[m.id]==='done') max = Math.min(m.id+1, 30); }
-  return max;
-}
-
-// ── TODAY CARD (new home screen) ──
+// ── TODAY CARD (v4.0: Pack + Day N/14 + 6 missions with 4-step) ──
 function buildTodayCard() {
-  const nextId = getNextMissionId();
-  const m = MISSIONS.find(x => x.id === nextId);
-  const st = loadMissionState();
-  const allDone = Object.keys(st).filter(k => st[k]==='done').length === 30;
-  
-  const weekLabels = ['基礎反射','場景化練習','聽力強化','壓力測試'];
-  const weekLabel = m ? weekLabels[m.week-1] : '';
-  const totalDone = Object.keys(st).filter(k => st[k]==='done').length;
+  activePackId = getActivePackId();
+  const pack = getPack(activePackId);
+  if (!pack) return '';
+  ensurePack(activePackId);
+  const day = getPackDay(activePackId);
+  const totalSteps = getTodayStepCount(activePackId);
+  const allComplete = [1,2,3,4,5].every(id => isPackComplete(id));
+  const packComplete = isPackComplete(activePackId);
+
+  const stepLabels = { l:'聽', p:'拆', s:'說', r:'場' };
+  const missionRows = pack.missions.map(m => {
+    const log = getMissionTodayLog(activePackId, m.idx);
+    const dots = STEPS.map(k => {
+      const done = log[k];
+      const cls = done ? 'step-dot done' : 'step-dot';
+      return `<span class="${cls}" title="${stepLabels[k]}">${stepLabels[k]}</span>`;
+    }).join('');
+    return `<div class="pack-mission-row" onclick="openMission(${m.idx})">
+      <span class="pack-mission-num">${m.idx}</span>
+      <span class="pack-mission-title">${m.title}</span>
+      <span class="pack-mission-steps">${dots}</span>
+    </div>`;
+  }).join('');
+
+  const progressPct = Math.round(totalSteps / 24 * 100);
 
   return `
     <div class="today-card">
       <div class="today-card-header">
-        <div class="today-label">今天的任務</div>
-        <div class="today-meta">${totalDone}/30 完成</div>
+        <div class="today-label">${pack.emoji} PACK ${pack.id} · ${pack.zh}</div>
+        <div class="today-meta">Day ${day} / 14</div>
       </div>
-      ${m ? `
-        <div class="today-title">${m.title}</div>
-        <div class="today-prompt">Week ${m.week} · ${weekLabel}<br>${m.promptZh}</div>
-        <button class="today-btn" onclick="launchTodayMission()">🎤 開始說話</button>
-      ` : `
-        <div class="today-title" style="color:var(--sage)">全部完成！🎉</div>
-        <div class="today-prompt">30 個 Mission 都練完了。繼續保持 Streak！</div>
-        <button class="today-btn" onclick="launchTodayMission()">🔁 再練一次</button>
-      `}
+      <div class="today-title" style="font-size:1.05rem;margin-top:2px;">${pack.title}</div>
+      <div class="today-prompt" style="padding-bottom:8px;">${pack.desc}</div>
+      <div class="pack-progress-wrap">
+        <div class="pack-progress-text">今日 ${totalSteps}/24 · ${progressPct}%</div>
+        <div class="pack-progress-bar"><div class="pack-progress-fill" style="width:${progressPct}%"></div></div>
+      </div>
+      <div class="pack-mission-list">${missionRows}</div>
+      ${packComplete
+        ? `<div style="padding:8px 16px 14px;color:var(--sage);font-size:0.82rem;">✅ Pack ${pack.id} 已完成 14 天閉環</div>`
+        : `<button class="today-btn" onclick="openNextIncomplete()">▶ 繼續今日閉環</button>`
+      }
     </div>`;
 }
 
-function launchTodayMission() {
-  const nextId = getNextMissionId();
-  // switch UI to mission view and select this mission
+// Open the next mission that still has incomplete steps today
+function openNextIncomplete() {
+  const pack = getPack(activePackId);
+  for (const m of pack.missions) {
+    const log = getMissionTodayLog(activePackId, m.idx);
+    if (!log.l || !log.p || !log.s) { openMission(m.idx); return; }
+  }
+  // All l+p+s done, open mission 1 so user can do 場 step
+  openMission(1);
+}
+
+function openMission(idx) {
   practiceMode = 'mission';
+  activeMissionIdx = idx;
+  missionListened = false;
   updateOtherModeBtns();
   showMissionView();
-  selectMission(nextId);
 }
 
 // ── MAIN UI BUILD ──
@@ -692,7 +953,7 @@ function buildUI() {
       </header>
       <div id="other-modes-row" class="other-modes">
         <button class="other-mode-btn active" id="mode-today" onclick="switchToToday()">今日</button>
-        <button class="other-mode-btn" id="mode-mission-list" onclick="switchToMissionList()">All Missions</button>
+        <button class="other-mode-btn" id="mode-mission-list" onclick="switchToMissionList()">Packs</button>
         <button class="other-mode-btn" id="mode-word" onclick="setMode('word')">Word</button>
         <button class="other-mode-btn" id="mode-sentence" onclick="setMode('sentence')">Sentence</button>
       </div>
@@ -827,7 +1088,7 @@ function switchToToday() {
 
 function switchToMissionList() {
   practiceMode = 'mission';
-  activeMissionId = null;
+  activeMissionIdx = null;
   updateOtherModeBtns();
   document.getElementById('home-view').style.display = 'none';
   hideWordView();
@@ -868,126 +1129,165 @@ function showWordView() {
   document.getElementById('word-btn-row').style.display = 'flex';
 }
 
-// ── MISSION VIEW ──
-function renderMissionStreakBar() {
-  return renderStreakBig();
-}
-
-function renderWeekTabs() {
-  const st = loadMissionState();
-  return `<div class="week-tabs">${[1,2,3,4].map(w => {
-    const wm = MISSIONS.filter(m=>m.week===w);
-    const done = wm.filter(m=>st[m.id]==='done').length;
-    return `<button class="week-tab${missionWeekTab===w?' active':''}" onclick="setMissionWeek(${w})">W${w}<span class="week-tab-progress"> ${done}/${wm.length}</span></button>`;
-  }).join('')}</div>`;
-}
-
-function renderMissionList() {
-  const st = loadMissionState();
-  const unlocked = getUnlockedUpTo();
-  const weekMissions = MISSIONS.filter(m => m.week === missionWeekTab);
-  let html = '';
-  for (const m of weekMissions) {
-    const done = st[m.id]==='done', locked = m.id>unlocked;
-    const icon = done?'✅':locked?'🔒':'▶';
-    const cls = ['mission-item', done?'completed':'', locked?'locked':''].filter(Boolean).join(' ');
-    html += `<div class="${cls}" onclick="selectMission(${m.id})">
-      <span class="mission-item-num">${String(m.id).padStart(2,'0')}</span>
+// ── PACKS LIST VIEW (all 5 packs overview) ──
+function buildPacksListView() {
+  return `<div class="mission-list">${PACKS.map(p => {
+    const unlocked = isPackUnlocked(p.id);
+    const complete = isPackComplete(p.id);
+    const subDays  = countSubstantialDays(p.id);
+    const active   = p.id === activePackId;
+    const cls = ['mission-item', complete?'completed':'', !unlocked?'locked':'', active?'active-mission':''].filter(Boolean).join(' ');
+    const icon = complete ? '✅' : !unlocked ? '🔒' : (active ? '▶' : '○');
+    return `<div class="${cls}" onclick="${unlocked ? `switchToPack(${p.id})` : ''}">
+      <span class="mission-item-num">${p.emoji}</span>
       <span class="mission-item-text">
-        <span class="mission-item-name">${m.title}</span>
-        <span class="mission-item-sub">${m.promptZh}</span>
+        <span class="mission-item-name">Pack ${p.id} · ${p.zh}</span>
+        <span class="mission-item-sub">${p.desc} · ${subDays}/14 天完成</span>
       </span>
       <span class="mission-item-icon">${icon}</span>
     </div>`;
-  }
-  return html;
+  }).join('')}</div>`;
 }
 
-function setMissionWeek(w) { missionWeekTab = w; buildMissionView(); }
+function switchToPack(id) {
+  if (!isPackUnlocked(id)) return;
+  setActivePackId(id);
+  activePackId = id;
+  activeMissionIdx = null;
+  switchToToday();
+}
 
+// ── MISSION VIEW (4-step closed loop) ──
 function buildMissionView() {
   const mv = document.getElementById('mission-view');
   if (!mv) return;
 
-  if (!activeMissionId) {
-    mv.innerHTML = renderMissionStreakBar() + renderWeekTabs() + `<div class="mission-list">${renderMissionList()}</div>`;
+  if (activeMissionIdx === null) {
+    mv.innerHTML = renderStreakBig() + buildPacksListView();
     return;
   }
 
-  const m = MISSIONS.find(x => x.id===activeMissionId);
-  if (!m) return;
-  const st = loadMissionState();
-  const done = st[m.id]==='done';
-  missionListened = false; // reset on mission open
+  const pack = getPack(activePackId);
+  const m = getMission(activePackId, activeMissionIdx);
+  if (!pack || !m) { activeMissionIdx = null; return buildMissionView(); }
 
-  const weekLabels = ['基礎反射','場景化練習','聽力強化','壓力測試'];
+  const log = getMissionTodayLog(activePackId, m.idx);
+  const day = getPackDay(activePackId);
+  const chunkedScript = renderSentenceWithStress(m.script);
 
   mv.innerHTML = `
     <div class="mission-back-row">
-      <button class="mission-back-btn" onclick="selectMission(null)">← Back</button>
-      <span class="mission-progress-text">Mission ${m.id} / 30</span>
+      <button class="mission-back-btn" onclick="backToToday()">← Back</button>
+      <span class="mission-progress-text">${pack.emoji} Pack ${pack.id} · ${m.idx}/6 · Day ${day}/14</span>
     </div>
-    ${renderMissionStreakBar()}
     <div class="mission-practice-area">
       <div class="mission-card">
         <div class="mission-header">
-          <div class="mission-week">Week ${m.week} · ${weekLabels[m.week-1]}</div>
+          <div class="mission-week">${pack.title}</div>
           <div class="mission-title">${m.title}</div>
         </div>
         <div style="padding:10px 16px 6px;border-bottom:1px solid var(--div);font-size:0.8rem;color:var(--muted);">${m.promptZh}</div>
-        <div style="padding:10px 16px 12px;">
-          <div class="eyebrow" style="margin-bottom:8px;">Script</div>
-          <div style="font-size:0.85rem;color:var(--text);line-height:1.8;">${m.script}</div>
+
+        <!-- Step 1: 聽 -->
+        <div class="loop-step ${log.l?'done':''}" id="step-l">
+          <div class="loop-step-header">
+            <span class="loop-step-label">① 聽 · Listen</span>
+            <span class="loop-step-icon">${log.l?'✅':''}</span>
+          </div>
+          <button class="listen-first-btn${log.l?' done':''}" id="btn-listen-first">🔊 ${log.l?'Listen Again':'Play Script'}</button>
+        </div>
+
+        <!-- Step 2: 拆 -->
+        <div class="loop-step ${log.p?'done':''}" id="step-p">
+          <div class="loop-step-header">
+            <span class="loop-step-label">② 拆 · Break Down</span>
+            <span class="loop-step-icon">${log.p?'✅':''}</span>
+          </div>
+          <div class="loop-step-body">
+            <div style="font-size:0.88rem;line-height:1.6;color:var(--text);">${chunkedScript}</div>
+            <button class="loop-step-btn${log.p?' done':''}" onclick="markStepAndRefresh('p')" ${log.p?'disabled':''}>${log.p?'已看過':'看完 → 標記完成'}</button>
+          </div>
+        </div>
+
+        <!-- Step 3: 說 -->
+        <div class="loop-step ${log.s?'done':''}" id="step-s">
+          <div class="loop-step-header">
+            <span class="loop-step-label">③ 說 · Speak</span>
+            <span class="loop-step-icon">${log.s?'✅':''}</span>
+          </div>
+          <div class="loop-step-body">
+            <button id="btn-mission-record" ${!missionListened && !log.s?'style="opacity:0.5"':''} onclick="missionToggleRecording()">🎤 ${log.s?'Redo Speak':'Hold to Speak'}</button>
+            <div id="mission-interim" style="min-height:0;font-size:0.8rem;color:var(--sub);padding:6px 10px;background:var(--surf);border-radius:10px;box-shadow:inset 0 0 0 1px var(--ring-in);display:none;margin-top:6px;"></div>
+            <div class="result-box" id="mission-result" style="margin-top:6px;"></div>
+          </div>
+        </div>
+
+        <!-- Step 4: 場 -->
+        <div class="loop-step ${log.r?'done':''}" id="step-r">
+          <div class="loop-step-header">
+            <span class="loop-step-label">④ 場 · Real Scene</span>
+            <span class="loop-step-icon">${log.r?'✅':''}</span>
+          </div>
+          <div class="loop-step-body">
+            <div style="font-size:0.78rem;color:var(--sub);line-height:1.5;margin-bottom:8px;">今天有用到真實場景嗎？<br>（真人對話、AI roleplay、寫給客戶、Gemini Live）</div>
+            <button class="loop-step-btn${log.r?' done':''}" onclick="toggleStageStep()">${log.r?'✓ 已用於真實場景（取消）':'✓ 我今天用過了'}</button>
+          </div>
         </div>
       </div>
-      <!-- LISTEN FIRST -->
-      <button class="listen-first-btn" id="btn-listen-first" onclick="missionListenFirst()">🔊 先聽一遍 Listen First</button>
-      <div class="mission-nav-row" style="gap:6px;">
-        <button id="btn-mission-record" ${!missionListened?'style="opacity:0.5"':''} onclick="missionToggleRecording()">🎤 Speak</button>
-      </div>
-      <div id="mission-interim" style="min-height:0;font-size:0.8rem;color:var(--sub);padding:6px 10px;background:var(--surf);border-radius:10px;box-shadow:inset 0 0 0 1px var(--ring-in);display:none;"></div>
-      <div class="result-box" id="mission-result"></div>
-      <div class="mission-complete${done?' visible':''}" id="mission-complete">
-        <div class="mission-complete-icon">🎉</div>
-        <div class="mission-complete-title">Mission Complete!</div>
-        <div class="mission-complete-sub">Great work. Move to the next mission when ready.</div>
-      </div>
-    </div>
-    <div class="mission-nav-row" id="mission-next-row">
-      ${done && m.id<30 ? `<button onclick="goNextMission()">Next →</button>` : ''}
+
+      <div class="mission-nav-row" id="mission-next-row"></div>
     </div>`;
 
   document.getElementById('btn-listen-first').addEventListener('click', missionListenFirst);
-  document.getElementById('btn-mission-record').addEventListener('click', missionToggleRecording);
+  updateMissionNavRow();
+}
+
+function markStepAndRefresh(step) {
+  markStep(activePackId, activeMissionIdx, step);
+  buildMissionView();
+}
+
+function toggleStageStep() {
+  const log = getMissionTodayLog(activePackId, activeMissionIdx);
+  if (log.r) unmarkStep(activePackId, activeMissionIdx, 'r');
+  else markStep(activePackId, activeMissionIdx, 'r');
+  buildMissionView();
+}
+
+function updateMissionNavRow() {
+  const row = document.getElementById('mission-next-row');
+  if (!row) return;
+  const pack = getPack(activePackId);
+  const nextIdx = activeMissionIdx < 6 ? activeMissionIdx + 1 : null;
+  const prevIdx = activeMissionIdx > 1 ? activeMissionIdx - 1 : null;
+  let html = '';
+  if (prevIdx) html += `<button onclick="openMission(${prevIdx})">← Prev</button>`;
+  if (nextIdx) html += `<button onclick="openMission(${nextIdx})">Next →</button>`;
+  else html += `<button onclick="backToToday()">✓ Done — Back</button>`;
+  row.innerHTML = html;
+}
+
+function backToToday() {
+  activeMissionIdx = null;
+  switchToToday();
 }
 
 function missionListenFirst() {
-  const m = MISSIONS.find(x => x.id===activeMissionId);
+  const m = getMission(activePackId, activeMissionIdx);
   if (!m) return;
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(m.script);
   utter.lang = 'en-US';
   utter.rate = slowMode ? 0.6 : 0.82;
   const btn = document.getElementById('btn-listen-first');
-  const recBtn = document.getElementById('btn-mission-record');
   if (btn) { btn.disabled = true; btn.textContent = '🔊 Listening…'; }
   utter.onend = () => {
     missionListened = true;
-    if (btn) { btn.disabled = false; btn.textContent = '🔊 Listen Again'; btn.classList.add('done'); }
-    if (recBtn) recBtn.style.opacity = '1';
+    markStep(activePackId, activeMissionIdx, 'l');
+    buildMissionView();
   };
   utter.onerror = utter.onend;
   window.speechSynthesis.speak(utter);
-}
-
-function selectMission(id) {
-  if (id && id > getUnlockedUpTo()) return;
-  activeMissionId = id;
-  buildMissionView();
-}
-
-function goNextMission() {
-  if (activeMissionId < 30) selectMission(activeMissionId + 1);
 }
 
 // ── Mission Recording ──
@@ -1058,7 +1358,7 @@ const FEEDBACK_TRY = [
 ];
 
 function missionAutoComplete() {
-  const m = MISSIONS.find(x=>x.id===activeMissionId);
+  const m = getMission(activePackId, activeMissionIdx);
   if (!m) return;
   const scriptWords = normalize(m.script).split(/\s+/).filter(Boolean);
   const spokenWords = normalize(missionTranscript).split(/\s+/).filter(Boolean);
@@ -1093,29 +1393,11 @@ function missionAutoComplete() {
       </div>`;
   }
 
-  const st = loadMissionState();
-  st[m.id] = 'done';
-  saveMissionState(st);
-  updateStreakOnComplete();
+  // Mark step 3 (說) done for today
+  markStep(activePackId, activeMissionIdx, 's');
 
-  const completeEl = document.getElementById('mission-complete');
-  if (completeEl) completeEl.classList.add('visible');
-
-  const recBtn = document.getElementById('btn-mission-record');
-  if (recBtn) recBtn.textContent = '↩ Redo';
-
-  const navRow = document.getElementById('mission-next-row');
-  if (navRow && m.id<30 && !navRow.querySelector('button')) {
-    const nb = document.createElement('button');
-    nb.textContent='Next →'; nb.onclick=()=>goNextMission();
-    navRow.appendChild(nb);
-  }
-
-  // Refresh today card streak
-  const homeView = document.getElementById('home-view');
-  if (homeView && homeView.style.display !== 'none') {
-    homeView.innerHTML = buildTodayCard() + renderStreakBig();
-  }
+  // Rebuild mission view to reflect the step update (green check + next button)
+  setTimeout(() => buildMissionView(), 800);
 }
 
 // ── Mode toggle ──
