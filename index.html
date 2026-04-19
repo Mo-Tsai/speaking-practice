@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Speaking Practice · English Vocabulary</title>
+<title>Speaking Practice · English</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Speaking">
-<meta name="theme-color" content="#1a1a1a">
+<meta name="theme-color" content="#0f0f0f">
 <link rel="manifest" href="manifest.json">
 <style>
 :root {
@@ -47,7 +47,72 @@ body {
 .page-title { font-size: 1rem; font-weight: 650; letter-spacing: -0.015em; color: var(--text); }
 .page-sub   { font-size: 0.875rem; font-weight: 400; color: var(--muted); }
 
-/* ── Score panel ── */
+/* ── TODAY CARD (NEW hero element) ── */
+.today-card {
+  width: 100%; background: var(--surf); border-radius: 16px;
+  box-shadow: inset 0 0 0 1px var(--ring-in), 0 0 0 1px rgba(125,148,166,0.12);
+  flex-shrink: 0; overflow: hidden;
+}
+.today-card-header {
+  padding: 14px 16px 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.today-label {
+  font-family: ui-monospace, monospace; font-size: 0.58rem;
+  text-transform: uppercase; letter-spacing: 0.09em; color: var(--slate);
+}
+.today-meta { font-size: 0.68rem; color: var(--muted); }
+.today-title {
+  padding: 6px 16px 0;
+  font-size: 1.3rem; font-weight: 700; letter-spacing: -0.03em; color: var(--text);
+}
+.today-prompt {
+  padding: 4px 16px 14px;
+  font-size: 0.8rem; color: var(--sub); line-height: 1.5;
+}
+.today-btn {
+  width: calc(100% - 32px); margin: 0 16px 16px;
+  height: 48px; font-family: inherit; font-size: 0.95rem; font-weight: 600;
+  background: var(--slate); color: #fff; border: none;
+  border-radius: var(--r-pill); cursor: pointer; letter-spacing: 0.02em;
+  transition: background 0.12s, transform 0.08s;
+  box-shadow: 0 2px 12px rgba(125,148,166,0.3);
+}
+.today-btn:hover { background: #8fa8bc; }
+.today-btn:active { transform: scale(0.97); }
+.today-btn.listened {
+  background: var(--sage);
+  box-shadow: 0 2px 12px rgba(138,158,137,0.3);
+}
+
+/* ── STREAK BAR (enlarged) ── */
+.streak-bar {
+  width: 100%; background: var(--surf); border-radius: 12px;
+  padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;
+  box-shadow: inset 0 0 0 1px var(--ring-in); flex-shrink: 0; gap: 10px;
+}
+.streak-left { display: flex; flex-direction: column; gap: 1px; }
+.streak-label { font-family: ui-monospace, monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
+.streak-val { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.04em; color: var(--sand); line-height: 1; }
+.streak-dots { display: flex; gap: 6px; align-items: center; }
+.streak-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--faint); transition: background 0.2s; }
+.streak-dot.done { background: var(--sand); }
+.streak-dot.today { background: var(--sage); box-shadow: 0 0 8px rgba(138,158,137,0.6); }
+
+/* ── OTHER MODES link row ── */
+.other-modes {
+  width: 100%; display: flex; gap: 5px; flex-shrink: 0;
+}
+.other-mode-btn {
+  flex: 1; height: 30px; font-family: inherit; font-size: 0.7rem; font-weight: 550;
+  background: var(--surf); color: var(--muted); border: none; border-radius: 8px;
+  cursor: pointer; box-shadow: inset 0 0 0 1px var(--ring-in);
+  transition: background 0.12s, color 0.12s;
+}
+.other-mode-btn:hover { color: var(--sub); }
+.other-mode-btn.active { background: #222; color: var(--text); box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
+
+/* ── SCORE PANEL ── */
 .score-panel {
   width: 100%; background: var(--surf); border-radius: 12px;
   padding: 8px 14px; display: flex; align-items: center; gap: 0;
@@ -71,45 +136,10 @@ body {
 }
 #btn-reset:hover { color: var(--rose); box-shadow: inset 0 0 0 1px rgba(168,133,133,0.3); }
 
-/* ── Progress counter ── */
+/* ── WORD COUNTER ── */
 #word-counter { font-size: 0.75rem; color: var(--faint); line-height: 2; width: 100%; }
 
-/* ── Streak bar ── */
-.streak-bar {
-  width: 100%; background: var(--surf); border-radius: 10px;
-  padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;
-  box-shadow: inset 0 0 0 1px var(--ring-in); flex-shrink: 0; gap: 10px;
-}
-.streak-label { font-family: ui-monospace, monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
-.streak-val { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.04em; color: var(--sand); }
-.streak-dots { display: flex; gap: 5px; }
-.streak-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); transition: background 0.2s; }
-.streak-dot.done { background: var(--sand); }
-.streak-dot.today { background: var(--sage); box-shadow: 0 0 6px rgba(138,158,137,0.5); }
-
-/* ── Mission card ── */
-.mission-card {
-  width: 100%; background: var(--surf); border-radius: 14px;
-  box-shadow: inset 0 0 0 1px var(--ring-in); flex-shrink: 0;
-  display: flex; flex-direction: column; overflow: hidden;
-}
-.mission-header {
-  padding: 12px 16px 8px; border-bottom: 1px solid var(--div);
-}
-.mission-week { font-family: ui-monospace, monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 4px; }
-.mission-title { font-size: 1rem; font-weight: 650; letter-spacing: -0.02em; color: var(--text); }
-.mission-scenario {
-  padding: 10px 16px; font-size: 0.8rem; color: var(--sub); line-height: 1.55;
-  border-bottom: 1px solid var(--div);
-}
-.mission-scenario strong { color: var(--text); font-weight: 550; }
-.mission-prompt {
-  padding: 10px 16px 12px;
-  font-size: 0.82rem; color: var(--slate); line-height: 1.5;
-  font-style: italic;
-}
-
-/* ── Mission list ── */
+/* ── MISSION LIST & CARDS ── */
 .mission-list {
   width: 100%; display: flex; flex-direction: column; gap: 4px;
   overflow-y: auto; flex: 1; padding-bottom: 4px;
@@ -126,36 +156,22 @@ body {
 .mission-item.active-mission { box-shadow: inset 0 0 0 1.5px var(--slate); }
 .mission-item-num { font-family: ui-monospace, monospace; font-size: 0.7rem; color: var(--muted); min-width: 20px; }
 .mission-item-name { flex: 1; font-size: 0.82rem; font-weight: 500; color: var(--text); }
+.mission-item-sub { font-size: 0.68rem; color: var(--muted); margin-top: 1px; }
+.mission-item-text { display: flex; flex-direction: column; flex: 1; }
 .mission-item-icon { font-size: 0.9rem; }
-.mission-week-label {
-  font-family: ui-monospace, monospace; font-size: 0.58rem; text-transform: uppercase;
-  letter-spacing: 0.09em; color: var(--muted); padding: 6px 2px 2px; width: 100%;
-}
 
-/* ── Self-evaluation box ── */
-.self-eval {
-  width: 100%; background: var(--surf); border-radius: 12px;
-  box-shadow: inset 0 0 0 1px var(--ring-in);
-  padding: 12px 14px; flex-shrink: 0; display: none;
+.week-tabs { width: 100%; display: flex; gap: 4px; flex-shrink: 0; }
+.week-tab {
+  flex: 1; height: 30px; font-family: inherit; font-size: 0.7rem; font-weight: 550;
+  background: var(--surf); color: var(--muted); border: none; border-radius: 8px;
+  cursor: pointer; box-shadow: inset 0 0 0 1px var(--ring-in);
+  transition: background 0.12s, color 0.12s;
 }
-.self-eval.visible { display: block; }
-.self-eval .eval-label { font-family: ui-monospace, monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 8px; }
-.self-eval .eval-buttons { display: flex; gap: 6px; }
-.self-eval .eval-btn {
-  flex: 1; height: 34px; font-family: inherit; font-size: 0.75rem; font-weight: 550;
-  border: none; border-radius: 8px; cursor: pointer;
-  transition: background 0.12s, box-shadow 0.12s;
-}
-.eval-btn.excellent { background: rgba(138,158,137,0.15); color: var(--sage); box-shadow: inset 0 0 0 1px rgba(138,158,137,0.3); }
-.eval-btn.excellent:hover { background: rgba(138,158,137,0.25); }
-.eval-btn.good { background: rgba(184,152,112,0.15); color: var(--sand); box-shadow: inset 0 0 0 1px rgba(184,152,112,0.3); }
-.eval-btn.good:hover { background: rgba(184,152,112,0.25); }
-.eval-btn.needs-work { background: rgba(168,133,133,0.15); color: var(--rose); box-shadow: inset 0 0 0 1px rgba(168,133,133,0.3); }
-.eval-btn.needs-work:hover { background: rgba(168,133,133,0.25); }
-.eval-btn:disabled { opacity: 0.4; cursor: default; }
-.eval-result { margin-top: 8px; font-size: 0.8rem; color: var(--sub); line-height: 1.5; }
+.week-tab.active { background: #222; color: var(--text); box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
+.week-tab:hover:not(.active) { color: var(--sub); }
+.week-tab .week-tab-progress { font-size: 0.58rem; color: var(--muted); margin-left: 2px; }
 
-/* ── Mission complete overlay ── */
+/* ── MISSION COMPLETE ── */
 .mission-complete {
   width: 100%; background: var(--surf); border-radius: 14px;
   box-shadow: inset 0 0 0 1px rgba(138,158,137,0.3);
@@ -166,31 +182,84 @@ body {
 .mission-complete-title { font-size: 1rem; font-weight: 650; color: var(--sage); margin-bottom: 4px; }
 .mission-complete-sub { font-size: 0.78rem; color: var(--sub); line-height: 1.5; }
 
-/* ── Mission view layout ── */
+/* ── MISSION PRACTICE VIEW ── */
 .mission-view { display: flex; flex-direction: column; gap: 6px; width: 100%; height: 100%; overflow: hidden; }
 .mission-practice-area { display: flex; flex-direction: column; gap: 6px; flex: 1; overflow-y: auto; }
 .mission-nav-row { display: flex; gap: 6px; width: 100%; flex-shrink: 0; }
 .mission-nav-row button { flex: 1; }
-
-/* ── Practice mode toggle ── */
-.mode-toggle {
-  display: flex; width: auto; background: var(--surf);
-  border-radius: 9px; padding: 3px;
+#btn-mission-record {
+  height: 42px; font-size: 0.9rem; font-weight: 600; letter-spacing: 0.04em;
+  background: #1c1c1c; color: var(--text);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 2px 8px rgba(0,0,0,0.4);
+  border-radius: var(--r-pill);
+}
+#btn-mission-record:hover { background: #222; }
+#btn-mission-record.recording {
+  background: #1c1c1c; color: var(--rose);
+  box-shadow: 0 0 0 1px rgba(168,133,133,0.3);
+  animation: pulse 1.4s infinite;
+}
+.mission-back-row { display: flex; align-items: center; gap: 8px; width: 100%; flex-shrink: 0; }
+.mission-back-btn {
+  height: 28px; padding: 0 12px; font-family: inherit; font-size: 0.75rem;
+  font-weight: 500; background: transparent; color: var(--muted); border: none;
+  border-radius: var(--r-pill); cursor: pointer;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
+}
+.mission-back-btn:hover { color: var(--sub); }
+.mission-progress-text {
+  font-family: ui-monospace, monospace; font-size: 0.6rem; color: var(--muted);
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.mission-card {
+  width: 100%; background: var(--surf); border-radius: 14px;
   box-shadow: inset 0 0 0 1px var(--ring-in); flex-shrink: 0;
+  display: flex; flex-direction: column; overflow: hidden;
 }
-.mode-btn {
-  width: 68px; height: 28px; padding: 0; font-family: inherit;
-  font-size: 0.75rem; font-weight: 550; font-feature-settings: "ss02" 0;
-  background: transparent; color: var(--muted); border: none;
-  border-radius: 6px; letter-spacing: 0.02em; cursor: pointer;
-  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
-}
-.mode-btn.active {
-  background: #222; color: var(--text);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 1px 4px rgba(0,0,0,0.5);
-}
+.mission-header { padding: 12px 16px 8px; border-bottom: 1px solid var(--div); }
+.mission-week { font-family: ui-monospace, monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 4px; }
+.mission-title { font-size: 1rem; font-weight: 650; letter-spacing: -0.02em; color: var(--text); }
 
-/* ── Card mode selector ── */
+/* ── LISTEN FIRST BUTTON ── */
+.listen-first-btn {
+  width: calc(100% - 32px); margin: 12px 16px 4px;
+  height: 38px; font-family: inherit; font-size: 0.82rem; font-weight: 550;
+  background: rgba(125,148,166,0.12); color: var(--slate); border: none;
+  border-radius: var(--r-pill); cursor: pointer; letter-spacing: 0.02em;
+  box-shadow: inset 0 0 0 1px rgba(125,148,166,0.2);
+  transition: background 0.12s;
+}
+.listen-first-btn:hover { background: rgba(125,148,166,0.2); }
+.listen-first-btn:disabled { opacity: 0.5; cursor: default; }
+.listen-first-btn.done { color: var(--sage); box-shadow: inset 0 0 0 1px rgba(138,158,137,0.3); }
+
+/* ── RESULT BOX ── */
+.result-box {
+  width: 100%; background: var(--surf); border-radius: 12px;
+  padding: 10px 14px; min-height: 0; display: flex;
+  flex-direction: column; gap: 6px; font-size: 0.85rem;
+  transition: box-shadow 0.25s; box-shadow: inset 0 0 0 1px var(--ring-in);
+  flex-shrink: 0;
+}
+.result-box:empty { display: none; }
+.result-box.correct { box-shadow: inset 0 0 0 1px rgba(138,158,137,0.3), 0 0 0 1px rgba(138,158,137,0.08); }
+.result-box.wrong   { box-shadow: inset 0 0 0 1px rgba(168,133,133,0.3), 0 0 0 1px rgba(168,133,133,0.08); }
+.result-header { display: flex; align-items: center; gap: 8px; }
+.result-icon { font-size: 1rem; }
+.result-title { font-weight: 600; font-size: 0.88rem; letter-spacing: -0.01em; }
+.result-box.correct .result-title { color: var(--sage); }
+.result-box.wrong   .result-title { color: var(--rose); }
+/* humanized feedback line */
+.result-feedback { font-size: 0.78rem; color: var(--sub); line-height: 1.5; margin-top: 2px; }
+.diff-detail { font-size: 0.82rem; display: flex; flex-direction: column; gap: 5px; padding-top: 10px; border-top: 1px solid var(--div); }
+.diff-row { display: flex; gap: 10px; align-items: baseline; }
+.diff-label { font-family: ui-monospace, monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); min-width: 64px; }
+.diff-word { font-family: ui-monospace, monospace; font-size: 0.88rem; letter-spacing: 0.02em; }
+.diff-correct    { color: var(--text); }
+.diff-wrong-char { color: var(--rose); font-weight: 700; }
+.diff-missing    { color: #2a2a2a; }
+
+/* ── WORD CARD MODE ── */
 .card-mode-row {
   width: 100%; display: flex; gap: 5px; flex-wrap: wrap; flex-shrink: 0;
 }
@@ -200,8 +269,7 @@ body {
   background: var(--surf); color: var(--muted); border: none;
   border-radius: 7px; cursor: pointer;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
-  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
-  white-space: nowrap;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s; white-space: nowrap;
 }
 .card-mode-btn.active {
   background: #222; color: var(--text);
@@ -224,21 +292,22 @@ body {
   font-size: 0.65rem; font-weight: 500; text-transform: uppercase;
   letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px;
 }
-
-/* ── Word display with status dot ── */
 .word-header { display: flex; align-items: center; gap: 10px; }
 .status-dot {
   width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
-  background: var(--faint); margin-top: 3px;
-  transition: background 0.2s;
+  background: var(--faint); margin-top: 3px; transition: background 0.2s;
 }
 .status-dot.correct { background: var(--sage); }
 .status-dot.wrong   { background: var(--rose); }
-
 .word-display {
   font-size: 1.9rem; font-weight: 650; line-height: 1.15;
   letter-spacing: -0.03em; color: #f4f4f4; text-wrap: balance;
 }
+.word-ipa {
+  font-size: 0.95rem; color: var(--muted); font-weight: 400;
+  letter-spacing: 0.04em; margin-top: 5px; min-height: 1.4em;
+}
+.word-ipa.loading { color: var(--faint); font-size: 0.75rem; }
 .translation-toggle { padding: 8px 0 0; display: flex; flex-direction: column; gap: 6px; }
 .trans-btn {
   align-self: flex-start; height: 24px; padding: 0 10px;
@@ -248,14 +317,14 @@ body {
   transition: color 0.12s, box-shadow 0.12s; cursor: pointer;
 }
 .trans-btn:hover { color: var(--sub); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12); }
-.translation {
-  font-size: 0.85rem; font-weight: 400; color: var(--muted); line-height: 1.6;
-}
-.example {
-  font-size: 0.9rem; font-weight: 400; color: var(--sub);
-  line-height: 1.8; font-style: italic; text-wrap: pretty; max-width: 42ch;
-}
+.translation { font-size: 0.85rem; font-weight: 400; color: var(--muted); line-height: 1.6; }
+.example { font-size: 0.9rem; font-weight: 400; color: var(--sub); line-height: 1.8; font-style: italic; text-wrap: pretty; max-width: 42ch; }
 .example.target { color: #d0d0d0; font-style: normal; }
+.example-chunks { display: flex; flex-wrap: wrap; gap: 4px 2px; align-items: baseline; line-height: 2.2; }
+.chunk { display: inline-flex; gap: 3px; align-items: baseline; background: rgba(255,255,255,0.035); border-radius: 7px; padding: 1px 7px; margin: 1px 2px; }
+.chunk-sep { color: var(--faint); font-size: 0.7rem; align-self: center; margin: 0 1px; user-select: none; }
+.w-stress { color: #dcdcdc; font-weight: 550; font-size: 0.9rem; }
+.w-reduce { color: var(--muted); font-weight: 400; font-size: 0.8rem; letter-spacing: 0.01em; }
 .speak-row {
   display: flex; gap: 6px; width: 100%;
   border-top: 1px solid var(--div); padding-top: 10px;
@@ -274,36 +343,37 @@ body {
 }
 .speak-row button.speaking { color: var(--slate); box-shadow: inset 0 0 0 1px var(--slate); }
 #btn-speed.slow { color: var(--sage); box-shadow: inset 0 0 0 1px var(--sage); }
-.result-box {
-  width: 100%; background: var(--surf); border-radius: 12px;
-  padding: 10px 14px; min-height: 0; display: flex;
-  flex-direction: column; gap: 6px; font-size: 0.85rem;
-  transition: box-shadow 0.25s; box-shadow: inset 0 0 0 1px var(--ring-in);
-  flex-shrink: 0;
+.repeat-row {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0 0; margin-top: 8px;
+  border-top: 1px solid var(--div); cursor: pointer; user-select: none;
 }
-.result-box:empty { display: none; }
-.result-box.correct { box-shadow: inset 0 0 0 1px rgba(138,158,137,0.3), 0 0 0 1px rgba(138,158,137,0.08); }
-.result-box.wrong   { box-shadow: inset 0 0 0 1px rgba(168,133,133,0.3), 0 0 0 1px rgba(168,133,133,0.08); }
-.result-header { display: flex; align-items: center; gap: 8px; }
-.result-icon { font-size: 1rem; }
-.result-title { font-weight: 600; font-size: 0.88rem; letter-spacing: -0.01em; }
-.result-box.correct .result-title { color: var(--sage); }
-.result-box.wrong   .result-title { color: var(--rose); }
-.diff-detail { font-size: 0.82rem; display: flex; flex-direction: column; gap: 5px; padding-top: 10px; border-top: 1px solid var(--div); }
-.diff-row { display: flex; gap: 10px; align-items: baseline; }
-.diff-label { font-family: ui-monospace, monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); min-width: 64px; }
-.diff-word { font-family: ui-monospace, monospace; font-size: 0.88rem; letter-spacing: 0.02em; }
-.diff-correct    { color: var(--text); }
-.diff-wrong-char { color: var(--rose); font-weight: 700; }
-.diff-missing    { color: #2a2a2a; }
-#interim { font-size: 0.72rem; color: #444; line-height: 1.6; min-height: 0; width: 100%; }
-#interim:empty { display: none; }
-button {
-  border: none; cursor: pointer;
-  font-family: "Inter", system-ui, sans-serif; font-feature-settings: "ss02" 0;
-  transition: background 0.12s, box-shadow 0.12s, color 0.12s, transform 0.08s;
-  -webkit-tap-highlight-color: transparent;
+.repeat-label { font-size: 0.8rem; font-weight: 500; color: var(--muted); letter-spacing: 0.02em; }
+.repeat-sublabel { font-size: 0.68rem; color: var(--faint); margin-top: 1px; }
+.repeat-label-group { display: flex; flex-direction: column; }
+.toggle-wrap { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+.toggle-wrap input { opacity: 0; width: 0; height: 0; position: absolute; }
+.toggle-track {
+  position: absolute; inset: 0; border-radius: 24px;
+  background: var(--faint);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+  transition: background 0.2s, box-shadow 0.2s;
 }
+.toggle-thumb {
+  position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #555; transition: transform 0.2s, background 0.2s;
+}
+.toggle-wrap input:checked ~ .toggle-track {
+  background: rgba(125,148,166,0.25);
+  box-shadow: inset 0 0 0 1px rgba(125,148,166,0.4);
+}
+.toggle-wrap input:checked ~ .toggle-thumb { transform: translateX(20px); background: var(--slate); }
+.repeat-progress { font-size: 0.68rem; color: var(--slate); line-height: 1.4; width: 100%; text-align: right; min-height: 0; letter-spacing: 0.06em; padding-right: 2px; }
+.repeat-progress:empty { display: none; }
+
+/* ── BUTTONS ── */
+button { border: none; cursor: pointer; font-family: "Inter", system-ui, sans-serif; font-feature-settings: "ss02" 0; transition: background 0.12s, box-shadow 0.12s, color 0.12s, transform 0.08s; -webkit-tap-highlight-color: transparent; }
 button:active  { transform: scale(0.97); }
 button:disabled { opacity: 0.3; cursor: not-allowed; }
 .btn-row { display: flex; gap: 8px; width: 100%; }
@@ -331,133 +401,26 @@ button:disabled { opacity: 0.3; cursor: not-allowed; }
   box-shadow: 0 0 0 1px rgba(255,255,255,0.07);
 }
 #btn-next:hover:not(:disabled) { background: #181818; color: var(--text); box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
-.stats {
-  width: 100%; background: var(--surf); border-radius: 14px;
-  padding: 16px 20px; display: flex; justify-content: space-between;
-  align-items: center; box-shadow: inset 0 0 0 1px var(--ring-in);
-}
-.stats-left { display: flex; flex-direction: column; gap: 3px; }
-.stats-numbers { font-size: 0.82rem; color: var(--muted); line-height: 2; }
-.stats-numbers strong { color: var(--text); font-weight: 600; }
-.rate { font-size: 1.3rem; font-weight: 650; letter-spacing: -0.04em; }
-.rate.good { color: var(--sage); }
-.rate.ok   { color: var(--sand); }
-.rate.bad  { color: var(--rose); }
 .notice { background: var(--surf); border-radius: 14px; padding: 24px; color: var(--rose); font-size: 0.875rem; line-height: 2; width: 100%; box-shadow: inset 0 0 0 1px rgba(168,133,133,0.15); }
 
-/* ── IPA phonetic display ── */
-.word-ipa {
-  font-size: 0.95rem;
-  color: var(--muted);
-  font-weight: 400;
-  letter-spacing: 0.04em;
-  margin-top: 5px;
-  min-height: 1.4em;
-  font-style: normal;
+/* ── MISSION COMPLETE ANIMATION ── */
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.8); }
+  80% { transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
 }
-.word-ipa.loading { color: var(--faint); font-size: 0.75rem; }
+.mission-complete.visible { display: block; animation: pop-in 0.35s ease; }
 
-/* ── Sentence chunks + stress ── */
-.example-chunks {
-  display: flex; flex-wrap: wrap; gap: 4px 2px;
-  align-items: baseline; line-height: 2.2;
-}
-.chunk {
-  display: inline-flex; gap: 3px; align-items: baseline;
-  background: rgba(255,255,255,0.035); border-radius: 7px;
-  padding: 1px 7px; margin: 1px 2px;
-}
-.chunk-sep {
-  color: var(--faint); font-size: 0.7rem;
-  align-self: center; margin: 0 1px; user-select: none;
-}
-.w-stress {
-  color: #dcdcdc; font-weight: 550; font-size: 0.9rem;
-}
-.w-reduce {
-  color: var(--muted); font-weight: 400; font-size: 0.8rem;
-  letter-spacing: 0.01em;
-}
-
-/* ── Settings panel ── */
-.settings-toggle-btn {
-  width: 100%; display: flex; justify-content: space-between; align-items: center;
-  background: var(--surf); border-radius: 10px; padding: 10px 16px; cursor: pointer;
-  box-shadow: inset 0 0 0 1px var(--ring-in); font-size: 0.8rem; font-weight: 500;
-  color: var(--muted); letter-spacing: 0.02em; border: none;
-  transition: color 0.12s;
-}
-.settings-toggle-btn:hover { color: var(--sub); }
-.settings-panel {
-  width: 100%; background: var(--surf); border-radius: 14px;
-  padding: 16px 20px; display: flex; flex-direction: column; gap: 12px;
-  box-shadow: inset 0 0 0 1px var(--ring-in);
-}
-.settings-field { display: flex; flex-direction: column; gap: 5px; }
-.settings-label {
-  font-family: ui-monospace, monospace; font-size: 0.65rem;
-  text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted);
-}
-.settings-input {
-  height: 36px; padding: 0 12px; background: var(--bg); color: var(--text);
-  border-radius: 8px; font-family: ui-monospace, monospace; font-size: 0.8rem;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); border: none;
-  width: 100%;
-}
-.settings-input:focus { outline: none; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18); }
-.settings-save-btn {
-  align-self: flex-end; height: 30px; padding: 0 16px;
-  font-size: 0.75rem; font-weight: 550; background: #1c1c1c;
-  color: var(--text); border-radius: var(--r-pill); border: none;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); cursor: pointer;
-  transition: background 0.12s;
-}
-.settings-save-btn:hover { background: #222; }
-
-/* ── Repeat toggle ── */
-.repeat-row {
-  width: 100%; display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 0 0; margin-top: 8px;
-  border-top: 1px solid var(--div);
-  cursor: pointer; user-select: none;
-}
-.repeat-label { font-size: 0.8rem; font-weight: 500; color: var(--muted); letter-spacing: 0.02em; }
-.repeat-sublabel { font-size: 0.68rem; color: var(--faint); margin-top: 1px; }
-.repeat-label-group { display: flex; flex-direction: column; }
-.toggle-wrap { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
-.toggle-wrap input { opacity: 0; width: 0; height: 0; position: absolute; }
-.toggle-track {
-  position: absolute; inset: 0; border-radius: 24px;
-  background: var(--faint);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
-  transition: background 0.2s, box-shadow 0.2s;
-}
-.toggle-thumb {
-  position: absolute; top: 3px; left: 3px;
-  width: 18px; height: 18px; border-radius: 50%;
-  background: #555; transition: transform 0.2s, background 0.2s;
-}
-.toggle-wrap input:checked ~ .toggle-track {
-  background: rgba(125,148,166,0.25);
-  box-shadow: inset 0 0 0 1px rgba(125,148,166,0.4);
-}
-.toggle-wrap input:checked ~ .toggle-thumb {
-  transform: translateX(20px); background: var(--slate);
-}
-.repeat-progress {
-  font-size: 0.68rem; color: var(--slate); line-height: 1.4;
-  width: 100%; text-align: right; min-height: 0; letter-spacing: 0.06em;
-  padding-right: 2px;
-}
-.repeat-progress:empty { display: none; }
+#interim { font-size: 0.72rem; color: #444; line-height: 1.6; min-height: 0; width: 100%; }
+#interim:empty { display: none; }
 </style>
 </head>
 <body>
 <div id="app">
-  <p style="color:#333;font-size:0.8rem;line-height:2;width:100%;">Loading words…</p>
+  <p style="color:#333;font-size:0.8rem;line-height:2;width:100%;">Loading…</p>
 </div>
 <script>
-// ── CSV parser ──────────────────────────────────────────────────────────────
+// ── CSV parser ──
 function parseCSV(text) {
   const lines = text.trim().split(/\r?\n/);
   if (lines.length < 2) return [];
@@ -469,79 +432,40 @@ function parseCSV(text) {
     return obj;
   }).filter(r => r['Word']);
 }
-
 function splitCSVLine(line) {
   const result = [];
   let cur = '', inQuote = false;
   for (let i = 0; i < line.length; i++) {
     const c = line[i];
-    if (c === '"') {
-      if (inQuote && line[i+1] === '"') { cur += '"'; i++; }
-      else inQuote = !inQuote;
-    } else if (c === ',' && !inQuote) {
-      result.push(cur); cur = '';
-    } else {
-      cur += c;
-    }
+    if (c === '"') { if (inQuote && line[i+1] === '"') { cur += '"'; i++; } else inQuote = !inQuote; }
+    else if (c === ',' && !inQuote) { result.push(cur); cur = ''; }
+    else { cur += c; }
   }
   result.push(cur);
   return result;
 }
 
-// ── Speech Recognition setup ────────────────────────────────────────────────
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-// ── localStorage ─────────────────────────────────────────────────────────────
 const LS_KEY = 'speaking-practice-status';
+function loadStatus() { try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; } catch { return {}; } }
+function saveStatus() { localStorage.setItem(LS_KEY, JSON.stringify(wordStatus)); }
 
-function loadStatus() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; }
-  catch { return {}; }
-}
-
-function saveStatus() {
-  localStorage.setItem(LS_KEY, JSON.stringify(wordStatus));
-}
-
-// ── State ────────────────────────────────────────────────────────────────────
 let words = [];
 let current = null;
-let wordStatus = loadStatus(); // { 'word': 'correct' | 'wrong' }
+let wordStatus = loadStatus();
 let sessionQueue = [];
 let sessionQueueIdx = 0;
 let stats = { correct: 0, wrong: 0 };
 let recognition = null;
 let isRecording = false;
 let practiceMode = 'word';
-let cardMode = 'smart'; // 'smart' | 'all' | 'unlearned' | 'wrong'
+let cardMode = 'smart';
 let slowMode = false;
 let repeatAbortCtrl = null;
 
-let currentAudio = null;
-
-// ── Sentence chunks + stress ─────────────────────────────────────────────────
-const FUNC_WORDS = new Set([
-  'the','a','an','is','are','was','were','be','been','being',
-  'have','has','had','do','does','did','will','would','shall',
-  'should','may','might','must','can','could',
-  'to','of','in','on','at','by','for','with','from','up',
-  'about','into','through','during','before','after','above',
-  'below','between','among',
-  'that','which','who','whom','whose',
-  'this','these','those',
-  'it','he','she','they','we','you','i','me','him','her','us','them',
-  'my','your','his','its','our','their',
-  'and','or','but','so','yet','nor',
-  'as','if','than','though','although','because','since',
-  'while','when','where','what','whether'
-]);
-
-const CHUNK_BREAK_BEFORE = new Set([
-  'in','on','at','by','for','with','from','into','through',
-  'during','before','after','above','below','between','among',
-  'and','or','but','so','because','since','while','when','where',
-  'although','though','if','which','who','whom','that'
-]);
+// ── Sentence chunks ──
+const FUNC_WORDS = new Set(['the','a','an','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','shall','should','may','might','must','can','could','to','of','in','on','at','by','for','with','from','up','about','into','through','during','before','after','above','below','between','among','that','which','who','whom','whose','this','these','those','it','he','she','they','we','you','i','me','him','her','us','them','my','your','his','its','our','their','and','or','but','so','yet','nor','as','if','than','though','although','because','since','while','when','where','what','whether']);
+const CHUNK_BREAK_BEFORE = new Set(['in','on','at','by','for','with','from','into','through','during','before','after','above','below','between','among','and','or','but','so','because','since','while','when','where','although','though','if','which','who','whom','that']);
 
 function renderSentenceWithStress(sentence) {
   const tokens = sentence.trim().split(/\s+/);
@@ -549,16 +473,11 @@ function renderSentenceWithStress(sentence) {
   let cur = [];
   tokens.forEach((tok, i) => {
     const clean = tok.toLowerCase().replace(/[^a-z']/g, '');
-    if (i > 0 && CHUNK_BREAK_BEFORE.has(clean) && cur.length > 0) {
-      chunks.push(cur); cur = [];
-    }
+    if (i > 0 && CHUNK_BREAK_BEFORE.has(clean) && cur.length > 0) { chunks.push(cur); cur = []; }
     cur.push(tok);
-    if (cur.length >= 4 && i < tokens.length - 1) {
-      chunks.push(cur); cur = [];
-    }
+    if (cur.length >= 4 && i < tokens.length - 1) { chunks.push(cur); cur = []; }
   });
   if (cur.length) chunks.push(cur);
-
   return '<span class="example-chunks">' +
     chunks.map((chunk, ci) => {
       const inner = chunk.map(tok => {
@@ -566,17 +485,15 @@ function renderSentenceWithStress(sentence) {
         const cls = FUNC_WORDS.has(clean) ? 'w-reduce' : 'w-stress';
         return `<span class="${cls}">${tok}</span>`;
       }).join(' ');
-      const sep = ci < chunks.length - 1
-        ? '<span class="chunk-sep"> | </span>' : '';
+      const sep = ci < chunks.length - 1 ? '<span class="chunk-sep"> | </span>' : '';
       return `<span class="chunk">${inner}</span>${sep}`;
-    }).join('') +
-  '</span>';
+    }).join('') + '</span>';
 }
 
-// ── IPA cache ────────────────────────────────────────────────────────────────
-const IPA_CACHE_KEY = 'speaking-practice-ipa';
+// ── IPA cache ──
+const IPA_KEY = 'speaking-practice-ipa';
 let ipaCache = {};
-try { ipaCache = JSON.parse(localStorage.getItem(IPA_CACHE_KEY)) || {}; } catch {}
+try { ipaCache = JSON.parse(localStorage.getItem(IPA_KEY)) || {}; } catch {}
 
 async function fetchIPA(word) {
   const key = word.toLowerCase().trim();
@@ -587,20 +504,14 @@ async function fetchIPA(word) {
     const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(key)}`);
     if (!res.ok) throw new Error('not found');
     const data = await res.json();
-    const phonetic = data[0]?.phonetics?.find(p => p.text)?.text
-      || data[0]?.phonetic
-      || '';
+    const phonetic = data[0]?.phonetics?.find(p => p.text)?.text || data[0]?.phonetic || '';
     ipaCache[key] = phonetic;
     const entries = Object.keys(ipaCache);
     if (entries.length > 2000) entries.slice(0, 200).forEach(k => delete ipaCache[k]);
-    localStorage.setItem(IPA_CACHE_KEY, JSON.stringify(ipaCache));
+    localStorage.setItem(IPA_KEY, JSON.stringify(ipaCache));
     showIPA(phonetic);
-  } catch {
-    ipaCache[key] = '';
-    showIPA('');
-  }
+  } catch { ipaCache[key] = ''; showIPA(''); }
 }
-
 function showIPA(text) {
   const el = document.getElementById('word-ipa');
   if (!el) return;
@@ -608,47 +519,170 @@ function showIPA(text) {
   el.textContent = text || '';
 }
 
-// ── DOM refs ─────────────────────────────────────────────────────────────────
 const app = document.getElementById('app');
 
-// ── Session queue ─────────────────────────────────────────────────────────────
+// ── Session queue ──
 function shuffle(arr) {
   const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
   return a;
 }
-
 function buildQueue() {
   let pool;
   const unlIdx = words.map((_, i) => i).filter(i => !wordStatus[words[i]['Word']]);
   const wrgIdx = words.map((_, i) => i).filter(i => wordStatus[words[i]['Word']] === 'wrong');
   const allIdx = words.map((_, i) => i);
-
-  if (cardMode === 'unlearned') {
-    pool = unlIdx.length > 0 ? unlIdx : allIdx;
-  } else if (cardMode === 'wrong') {
-    pool = wrgIdx.length > 0 ? wrgIdx : allIdx;
-  } else if (cardMode === 'smart') {
-    if (unlIdx.length > 0) pool = unlIdx;
-    else if (wrgIdx.length > 0) pool = wrgIdx;
-    else pool = allIdx;
-  } else {
-    pool = allIdx;
-  }
-
+  if (cardMode === 'unlearned') pool = unlIdx.length > 0 ? unlIdx : allIdx;
+  else if (cardMode === 'wrong') pool = wrgIdx.length > 0 ? wrgIdx : allIdx;
+  else if (cardMode === 'smart') { if (unlIdx.length > 0) pool = unlIdx; else if (wrgIdx.length > 0) pool = wrgIdx; else pool = allIdx; }
+  else pool = allIdx;
   sessionQueue = shuffle(pool);
   sessionQueueIdx = 0;
 }
-
 function pickNext() {
   if (sessionQueueIdx >= sessionQueue.length) buildQueue();
   return words[sessionQueue[sessionQueueIdx++]];
 }
 
-// ── Build UI ─────────────────────────────────────────────────────────────────
+// ── MISSION DATA ──
+const MISSIONS = [
+  { week:1, id:1, title:'Say Your Name', promptZh:'說出自己的基本介紹', script:'Hi, my name is Yao-Mou. I\'m from Taiwan. I work in interior design.' },
+  { week:1, id:2, title:'I Didn\'t Catch That', promptZh:'沒聽清楚的3個救援句', script:'Sorry, could you say that again? Could you speak a little slower, please? What does that word mean?' },
+  { week:1, id:3, title:'Buying Time', promptZh:'需要時間想的3個過渡句', script:'Let me think for a second. That\'s a good question. How do I say this in English?' },
+  { week:1, id:4, title:'My Job', promptZh:'描述你的工作內容', script:'I design residential and commercial interiors. I work with clients to understand what kind of space they want. I use software like Rhino and AutoCAD for my projects.' },
+  { week:1, id:5, title:'Why I Learn English', promptZh:'解釋為何學英文', script:'I want to communicate with international clients. I think English opens up more opportunities in my field. I also enjoy learning — it keeps my mind active.' },
+  { week:1, id:6, title:'Counter-Questions', promptZh:'反擊問題的5句切換', script:'What about you, where are you from? How long have you been doing this? What do you like most about your work? What would you recommend for someone visiting your country? What are you working on these days?' },
+  { week:1, id:7, title:'Full Introduction', promptZh:'完整介紹（結合第1-6句）', script:'Hi there! My name is Yao-Mou, and I\'m from Taiwan. I work as an interior designer — I help people create spaces they love. I\'m currently learning English because I want to communicate more confidently at work. I\'m still learning, so please feel free to correct me! What about you?' },
+  { week:2, id:8, title:'Agreeing', promptZh:'4 個表達同意句型', script:'I agree with you. That makes sense. That\'s exactly what I was thinking. Right, I think so too.' },
+  { week:2, id:9, title:'Polite Disagreement', promptZh:'3 個禮貌不同意句型', script:'I see your point, but I think we should try a different approach. I\'m not sure about that — could we look at other options? That\'s interesting, but I think there might be a better way.' },
+  { week:2, id:10, title:'Describe a Room', promptZh:'描述一個房間', script:'My living room is not very big. The walls are white and the floor is light wood. There is a wooden table and a gray sofa in the center. It feels clean and simple.' },
+  { week:2, id:11, title:'Making Suggestions', promptZh:'3 個提出建議的句型', script:'I suggest we use a lighter color because it will make the space feel bigger. How about we try a different layout? Maybe we could add some plants to make it more natural.' },
+  { week:2, id:12, title:'Small Talk', promptZh:'天氣和週末的閒聊', script:'The weather is really nice today, isn\'t it? This weekend I plan to visit a new café in the city. Have you been to any good restaurants lately? I\'m always looking for new places to try.' },
+  { week:2, id:13, title:'Giving Directions', promptZh:'給路人的指路句型', script:'Go straight for about two blocks. Then turn left at the traffic light. Walk past the convenience store. You will see it on your right — it\'s next to the park.' },
+  { week:2, id:14, title:'Coffee Shop Intro', promptZh:'在咖啡廳初次見到在臺外人', script:'Hi, nice to meet you! I\'m Yao-Mou. I\'m an interior designer here in Taiwan. The weather is nice today, isn\'t it? I mostly work on residential and commercial projects. What do you do for work?' },
+  { week:3, id:15, title:'Opening a Meeting', promptZh:'開場一個設計初步會議', script:'Hi, thank you for joining today. I appreciate you taking the time. Today I\'d like to go through three things: your project goals, the timeline, and next steps. Does that sound good?' },
+  { week:3, id:16, title:'Explaining Your Design', promptZh:'解說設計概念', script:'The idea is to create a warm and modern space. We would use natural wood and soft lighting because they make the room feel comfortable. The overall feeling should be clean but inviting.' },
+  { week:3, id:17, title:'Asking Client Questions', promptZh:'問客戶3個必問問題', script:'What style do you prefer — more modern or more traditional? What is your budget range for this project? When do you need this to be completed by?' },
+  { week:3, id:18, title:'Explaining the Timeline', promptZh:'解說工程時間表', script:'The first phase is the design concept, which takes about two weeks. Then we move to detailed drawings, that\'s another three weeks. The whole project should take around two to three months.' },
+  { week:3, id:19, title:'Ending a Meeting', promptZh:'結束會議 + 下一步', script:'So today we discussed your design preferences and the project timeline. I will send you a summary email by end of day. Let\'s schedule our next call for next week. Thank you for your time!' },
+  { week:3, id:20, title:'Email Follow-Up', promptZh:'跟進昨天的會議', script:'Thank you for your time today. Just to confirm, we discussed the overall design direction and the budget range. I will prepare a concept proposal and send it to you by Friday. Please let me know if you have any questions.' },
+  { week:3, id:21, title:'Mini Meeting', promptZh:'一段完整初步會議', script:'Hi, thank you for joining. Today I\'d like to understand your project better. What kind of space are you looking for? What is your budget range? Great. Based on what you shared, I would suggest a clean, modern design using natural materials. I can prepare a concept for you within two weeks. I\'ll send a summary email today. Thank you!' },
+  { week:4, id:22, title:'I Don\'t Understand', promptZh:'碰不懂的字的應對句型', script:'Sorry, I\'m not familiar with that word. What does it mean? Could you give me an example? So you mean you want something more minimal — is that correct?' },
+  { week:4, id:23, title:'Saying No Politely', promptZh:'婉拒請求 + 替代方案', script:'I\'m sorry, that\'s not something we can do within this budget. But we could use a similar material that costs less. Would you like me to show you some options?' },
+  { week:4, id:24, title:'Simple Proposal', promptZh:'60 秒提案', script:'Here is our plan. We will redesign your living area with a focus on natural light and open space. This takes about eight weeks from start to finish. The benefit for you is a space that feels bigger and more comfortable for your family.' },
+  { week:4, id:25, title:'Responding to Feedback', promptZh:'客戶給反饋時的回應', script:'I\'m glad you like the overall direction. For the colors, I understand your concern. We can prepare two or three additional options for you to compare. Would you like me to send those by next week?' },
+  { week:4, id:26, title:'Talking About Price', promptZh:'報價溝通', script:'This project includes design, materials, and project management. The total cost is around five hundred thousand. This covers everything from the initial concept to the final walkthrough. I think it\'s a good value for what you\'re getting.' },
+  { week:4, id:27, title:'Delivering Bad News', promptZh:'延遲通知的處理方式', script:'I need to let you know that there is a delay with the materials. I\'m sorry about this. Here is what we will do: we have already contacted another supplier and we expect to get back on schedule within one week.' },
+  { week:4, id:28, title:'Full Client Meeting', promptZh:'完整客戶會議', script:'Hi, thank you for meeting with me today. I understand you\'re looking to redesign your apartment. Could you tell me more about what you have in mind? What is your budget range? Based on what you\'ve shared, I would suggest a modern, minimal approach. The project would take about two months. I\'ll send you a detailed proposal by Friday. Thank you for your time!' },
+  { week:4, id:29, title:'Handling Objections', promptZh:'客戶質疑時的應對', script:'I understand your concern. The reason we chose this approach is because it gives you more flexibility in the long run. If you\'d prefer, we can adjust the scope. What matters most is that the result works for you.' },
+  { week:4, id:30, title:'Day 30 Introduction', promptZh:'最終版：說出自己介紹', script:'Hi, my name is Yao-Mou. I\'m an interior designer from Taiwan. I help people create spaces they love. I\'ve been working on improving my English so I can communicate better with international clients. I\'m still learning, but I\'m getting more confident every day. It\'s great to meet you — what do you do?' },
+];
+
+// ── Mission State ──
+const MISSION_LS = 'sp-missions-v1';
+const STREAK_LS  = 'sp-streak-v1';
+function loadMissionState() { try { return JSON.parse(localStorage.getItem(MISSION_LS)) || {}; } catch { return {}; } }
+function saveMissionState(s) { localStorage.setItem(MISSION_LS, JSON.stringify(s)); }
+function loadStreak() { try { return JSON.parse(localStorage.getItem(STREAK_LS)) || { days:0, lastDate:null, history:[] }; } catch { return { days:0, lastDate:null, history:[] }; } }
+function saveStreak(s) { localStorage.setItem(STREAK_LS, JSON.stringify(s)); }
+function todayStr() { return new Date().toISOString().slice(0,10); }
+
+function updateStreakOnComplete() {
+  const s = loadStreak();
+  const today = todayStr();
+  if (s.lastDate === today) return s;
+  const yest = new Date(); yest.setDate(yest.getDate()-1);
+  const yStr = yest.toISOString().slice(0,10);
+  s.days = s.lastDate === yStr ? s.days + 1 : 1;
+  s.lastDate = today;
+  if (!s.history) s.history = [];
+  if (!s.history.includes(today)) s.history.push(today);
+  saveStreak(s); return s;
+}
+
+let activeMissionId = null;
+let missionRecording = false;
+let missionTranscript = '';
+let missionWeekTab = 1;
+let missionListened = false; // NEW: track if user listened before speaking
+
+// ── Streak render (big version for today card) ──
+function renderStreakBig() {
+  const s = loadStreak();
+  const today = todayStr();
+  const last7 = [];
+  for (let i=6;i>=0;i--) { const d=new Date(); d.setDate(d.getDate()-i); last7.push(d.toISOString().slice(0,10)); }
+  const hist = s.history || [];
+  const dots = last7.map(d => {
+    if (d===today && hist.includes(d)) return `<div class="streak-dot today"></div>`;
+    if (hist.includes(d)) return `<div class="streak-dot done"></div>`;
+    return `<div class="streak-dot"></div>`;
+  }).join('');
+  return `<div class="streak-bar">
+    <div class="streak-left">
+      <div class="streak-label">Streak</div>
+      <div class="streak-val">${s.days} <span style="font-size:0.75rem;font-weight:500;color:var(--muted)">${s.days!==1?'days':'day'}</span></div>
+    </div>
+    <div class="streak-dots">${dots}</div>
+  </div>`;
+}
+
+function getNextMissionId() {
+  const st = loadMissionState();
+  // Find first unlocked not yet done
+  for (const m of MISSIONS) {
+    if (st[m.id] !== 'done') return m.id;
+  }
+  // All done
+  return MISSIONS[MISSIONS.length - 1].id;
+}
+
+function getUnlockedUpTo() {
+  const st = loadMissionState();
+  let max = 1;
+  for (const m of MISSIONS) { if (st[m.id]==='done') max = Math.min(m.id+1, 30); }
+  return max;
+}
+
+// ── TODAY CARD (new home screen) ──
+function buildTodayCard() {
+  const nextId = getNextMissionId();
+  const m = MISSIONS.find(x => x.id === nextId);
+  const st = loadMissionState();
+  const allDone = Object.keys(st).filter(k => st[k]==='done').length === 30;
+  
+  const weekLabels = ['基礎反射','場景化練習','聽力強化','壓力測試'];
+  const weekLabel = m ? weekLabels[m.week-1] : '';
+  const totalDone = Object.keys(st).filter(k => st[k]==='done').length;
+
+  return `
+    <div class="today-card">
+      <div class="today-card-header">
+        <div class="today-label">今天的任務</div>
+        <div class="today-meta">${totalDone}/30 完成</div>
+      </div>
+      ${m ? `
+        <div class="today-title">${m.title}</div>
+        <div class="today-prompt">Week ${m.week} · ${weekLabel}<br>${m.promptZh}</div>
+        <button class="today-btn" onclick="launchTodayMission()">🎤 開始說話</button>
+      ` : `
+        <div class="today-title" style="color:var(--sage)">全部完成！🎉</div>
+        <div class="today-prompt">30 個 Mission 都練完了。繼續保持 Streak！</div>
+        <button class="today-btn" onclick="launchTodayMission()">🔁 再練一次</button>
+      `}
+    </div>`;
+}
+
+function launchTodayMission() {
+  const nextId = getNextMissionId();
+  // switch UI to mission view and select this mission
+  practiceMode = 'mission';
+  updateOtherModeBtns();
+  showMissionView();
+  selectMission(nextId);
+}
+
+// ── MAIN UI BUILD ──
 function buildUI() {
   app.innerHTML = `
     <div class="header-mode-row">
@@ -656,15 +690,25 @@ function buildUI() {
         <span class="page-title">Speaking Practice</span>
         <span class="page-sub">EN</span>
       </header>
-      <div class="mode-toggle">
-        <button class="mode-btn active" id="mode-word" onclick="setMode('word')">Word</button>
-        <button class="mode-btn" id="mode-sentence" onclick="setMode('sentence')">Sentence</button>
-        <button class="mode-btn" id="mode-mission" onclick="setMode('mission')">Mission</button>
+      <div id="other-modes-row" class="other-modes">
+        <button class="other-mode-btn active" id="mode-today" onclick="switchToToday()">今日</button>
+        <button class="other-mode-btn" id="mode-mission-list" onclick="switchToMissionList()">All Missions</button>
+        <button class="other-mode-btn" id="mode-word" onclick="setMode('word')">Word</button>
+        <button class="other-mode-btn" id="mode-sentence" onclick="setMode('sentence')">Sentence</button>
       </div>
     </div>
 
-    <!-- Score panel -->
-    <div class="score-panel">
+    <!-- HOME VIEW -->
+    <div id="home-view" style="display:flex;flex-direction:column;gap:6px;width:100%;height:100%;overflow:hidden;">
+      ${buildTodayCard()}
+      ${renderStreakBig()}
+    </div>
+
+    <!-- MISSION VIEW (hidden initially) -->
+    <div id="mission-view" style="display:none;"></div>
+
+    <!-- WORD/SENTENCE VIEW (hidden initially) -->
+    <div id="word-score-panel" class="score-panel" style="display:none;">
       <div class="score-group">
         <div class="score-item">
           <span class="score-label">Correct</span>
@@ -681,17 +725,14 @@ function buildUI() {
       </div>
       <button id="btn-reset">Reset</button>
     </div>
-
-    <!-- Card selection mode -->
-    <div class="card-mode-row" id="card-mode-row">
+    <div id="card-mode-row" class="card-mode-row" style="display:none;">
       <button class="card-mode-btn active" data-cmode="smart">Smart</button>
       <button class="card-mode-btn" data-cmode="all">All</button>
       <button class="card-mode-btn" data-cmode="unlearned">Unlearned</button>
       <button class="card-mode-btn" data-cmode="wrong">Wrong</button>
     </div>
-
-    <!-- Word card -->
-    <div class="card">
+    <div id="word-counter" style="display:none;"></div>
+    <div class="card" id="word-card" style="display:none;">
       <div class="card-block">
         <div class="eyebrow">Word</div>
         <div class="word-header">
@@ -727,23 +768,20 @@ function buildUI() {
       </label>
       <div class="repeat-progress" id="repeat-progress"></div>
     </div>
-
-    <div class="result-box" id="result-box"></div>
-    <div id="interim"></div>
-    <div class="btn-row">
-      <button id="btn-record">🎤 Hold to Speak</button>
+    <div class="result-box" id="result-box" style="display:none;"></div>
+    <div id="interim" style="display:none;"></div>
+    <div class="btn-row" id="word-btn-row" style="display:none;">
+      <button id="btn-record">🎙 Hold to Speak</button>
       <button id="btn-next">Next →</button>
     </div>
   `;
 
-  // Card mode buttons
+  // Bind word/sentence events
   document.getElementById('card-mode-row').addEventListener('click', e => {
     const btn = e.target.closest('.card-mode-btn');
     if (!btn) return;
-    const mode = btn.dataset.cmode;
-    setCardMode(mode);
+    setCardMode(btn.dataset.cmode);
   });
-
   document.getElementById('btn-reset').addEventListener('click', resetProgress);
   document.getElementById('btn-speak').addEventListener('click', speakWord);
   document.getElementById('btn-speak-sentence').addEventListener('click', speakSentence);
@@ -758,129 +796,121 @@ function buildUI() {
 
   document.getElementById('btn-next').addEventListener('click', nextWord);
   document.getElementById('toggle-repeat').addEventListener('change', onRepeatToggle);
-  document.getElementById('repeat-row').addEventListener('click', e => {
-    // Update sublabel when practiceMode changes
-    updateRepeatSublabel();
-  });
 
   buildQueue();
   nextWord();
 }
 
-// ── Mission Data ─────────────────────────────────────────────────────────────
-const MISSIONS = [
-  // Week 1
-  { week:1, id:1,  title:'30-Second Introduction',      scenario:'A foreign client just walked into your first meeting. They ask: <strong>"So, tell me about yourself and your firm."</strong>', prompt:'Introduce yourself and ON Design Lab in 30 seconds. Include your name, what you do, and one thing that makes your work special.', tip:'Start with: "Hi, my name is..." and end with what makes ON Design Lab different.' },
-  { week:1, id:2,  title:'Opening a Meeting',            scenario:'You are starting a kickoff call with a new overseas client. Everyone is on the video call.', prompt:'Open the meeting: welcome the client, confirm the agenda, and hand over to them to introduce their team.', tip:'Try: "Thank you for joining today. Today we\'d like to go through..."' },
-  { week:1, id:3,  title:'Confirming the Schedule',      scenario:'The client asks about your project timeline. They seem concerned it may be too long.', prompt:'Explain your typical project phases and timeline. Be confident but flexible.', tip:'Use: "Typically we work in three phases..." and "We can adjust based on your needs."' },
-  { week:1, id:4,  title:'Asking for Clarification',     scenario:'The client said something fast and you missed part of it. This happens in every real meeting.', prompt:'Ask the client to repeat or clarify — use at least 2 different polite phrases naturally in context.', tip:'"Could you say that again?" and "Just to make sure I understand..." are your friends.' },
-  { week:1, id:5,  title:'Buying Time to Think',         scenario:'The client just asked a complex question you are not ready to answer immediately.', prompt:'Use 3 different "buying time" phrases and give a short placeholder answer before promising a follow-up.', tip:'"That\'s a great question. Let me think for a moment..." then "I\'ll confirm and get back to you."' },
-  { week:1, id:6,  title:'Agreeing and Confirming',      scenario:'The client has just summarized what they want from the project. You agree with everything they said.', prompt:'Confirm that you understood and agree. Summarize back 2–3 key points the client mentioned.', tip:'"That\'s exactly what we had in mind." and "So what I\'m hearing is..." to confirm understanding.' },
-  { week:1, id:7,  title:'Wrapping Up a Call',           scenario:'The meeting is coming to an end. You have 2 minutes left.', prompt:'Close the meeting professionally: summarize next steps, confirm follow-up action, and say goodbye.', tip:'"Before we wrap up..." and "I\'ll send a summary email by end of day."' },
-  // Week 2
-  { week:2, id:8,  title:'Presenting a Design Concept',  scenario:'You are presenting your initial concept to the client for the first time over video call.', prompt:'Describe your design concept in 60 seconds. Explain the mood, key materials, and how it fits their brief.', tip:'"The concept is inspired by..." and "We chose these materials because..."' },
-  { week:2, id:9,  title:'Responding to Questions',      scenario:'After your presentation, the client asks: "Why did you choose this layout over a more open plan?"', prompt:'Defend your design decision clearly and confidently. Then invite further feedback.', tip:'"We considered both options, and here\'s why we went with this..."' },
-  { week:2, id:10, title:'Proposing an Alternative',     scenario:'The client is not satisfied with the first concept. They want something different but are not sure what.', prompt:'Propose an alternative direction. Explain what you would change and why it might work better.', tip:'"Based on your feedback, I\'d suggest we explore..." and "This approach would give you..."' },
-  { week:2, id:11, title:'Discussing Budget',            scenario:'The client says your estimate is higher than expected. They want to negotiate.', prompt:'Explain your pricing rationale, offer one area where you could adjust, and hold firm on the rest.', tip:'"The reason for this cost is..." and "One area where we could reduce is..."' },
-  { week:2, id:12, title:'Handling a Complaint',         scenario:'The client is unhappy that a delivery was delayed. They are frustrated on the call.', prompt:'Acknowledge the problem, apologize appropriately, and explain what you are doing to fix it.', tip:'"I completely understand your frustration." — then give a concrete next step with a date.' },
-  { week:2, id:13, title:'Video Call Opening',           scenario:'You are joining a video call 2 minutes late. There are already 4 people on.', prompt:'Join gracefully, apologize briefly, and get up to speed without derailing the meeting.', tip:'"Sorry for the delay — I\'m here now. What did I miss?"' },
-  { week:2, id:14, title:'Closing & Next Steps',         scenario:'End of a design review meeting. You need to lock in next actions before everyone leaves.', prompt:'Summarize 3 action items, assign who is responsible, and set a next check-in date.', tip:'"So to summarize, we agreed that..." and "I\'ll handle X, and you\'ll take care of Y — does that work?"' },
-  // Week 3
-  { week:3, id:15, title:'Comprehend & Repeat',          scenario:'The client gives you a fast verbal briefing. You need to confirm you understood correctly.', prompt:'Listen to this scenario in your head, then repeat back the 3 main points in your own words.', tip:'"Let me just confirm what I heard..." — summarize, don\'t repeat word for word.' },
-  { week:3, id:16, title:'Extracting Key Points',        scenario:'You just sat through a long client monologue. Your job is to extract what actually matters.', prompt:'From a complex brief, identify and state: budget priority, style preference, and deadline constraint.', tip:'"The three things I want to make sure we nail are..."' },
-  { week:3, id:17, title:'Understanding Accents',        scenario:'Your client has a strong British or Australian accent. Some phrases are unfamiliar.', prompt:'Practice these phrases out loud: "sort it out", "knock it on the head", "quite good", "brilliant", "I reckon". Use each in a full sentence.', tip:'Say each 3 times, then build a sentence you\'d actually say at work.' },
-  { week:3, id:18, title:'Handling Vague Requirements',  scenario:'The client says: "I want it to feel... modern but warm. You know what I mean?"', prompt:'Clarify what they mean by asking 2–3 specific questions that narrow down their vision.', tip:'"When you say modern, do you mean...?" and "Can you share an example that felt right?"' },
-  { week:3, id:19, title:'Finding Your Turn to Speak',   scenario:'You are in a group call. Two people keep talking over each other. You have something important to add.', prompt:'Use 3 different interjection phrases to politely enter the conversation without being rude.', tip:'"If I could just add something here..." and "Sorry to jump in, but..." are natural and professional.' },
-  { week:3, id:20, title:'Handling Technical Issues',    scenario:'Midway through your presentation, your screen share stops working. The client is waiting.', prompt:'Handle the situation calmly: inform the client, buy time, and keep the conversation moving.', tip:'"Bear with me for a second..." and "While I sort this out, let me tell you about..."' },
-  { week:3, id:21, title:'Confirming Action Items Live', scenario:'At the end of a meeting, you are taking notes live and want to confirm everything out loud.', prompt:'Read back 3 action items as if confirming in real time. Include who, what, and when for each.', tip:'"So [Name] will [action] by [date] — is that correct?"' },
-  // Week 4
-  { week:4, id:22, title:'Full Simulation — Round 1',    scenario:'Complete simulation: 10-min client kickoff for a residential interior project. You are the designer.', prompt:'Run a full meeting arc: open → present brief understanding → ask 3 questions → confirm next steps → close.', tip:'Don\'t script it. Use your emergency phrases when stuck. Mistakes are fine — keep moving.' },
-  { week:4, id:23, title:'Pitch Revision',               scenario:'Your first concept pitch was rejected. You have one more chance to win this client back.', prompt:'Re-pitch the concept with changes based on feedback you received. Show you listened.', tip:'"Based on what you shared last time, we rethought the direction..." — show evolution, not defensiveness.' },
-  { week:4, id:24, title:'Handling Objections',          scenario:'The client says: "We\'ve worked with other designers and they never charged this much."', prompt:'Address this objection without getting defensive. Explain your value and stand your ground.', tip:'"I understand that comparison. What sets our work apart is..."' },
-  { week:4, id:25, title:'Cross-Cultural Communication', scenario:'Your client is very indirect. They say "That\'s interesting" about your concept — which likely means they don\'t like it.', prompt:'Navigate diplomatically: read between the lines, invite honest feedback, and respond to what they actually mean.', tip:'"I want to make sure this is really working for you — what would you change?"' },
-  { week:4, id:26, title:'Defending Under Pressure',     scenario:'The client and their team are questioning your structural choices in front of everyone.', prompt:'Stay calm, defend your reasoning clearly, and acknowledge what is valid in their concern.', tip:'"That\'s a fair point. Here\'s the reasoning behind our decision..."' },
-  { week:4, id:27, title:'Basic Negotiation',            scenario:'You want to add a scope item. The client\'s budget is fixed. You need to negotiate.', prompt:'Propose a trade-off: offer to reduce something else in exchange for adding the new item.', tip:'"What if we adjusted X to make room for Y? Here\'s how the trade-off would work..."' },
-  { week:4, id:28, title:'Full Simulation — Round 2',    scenario:'Same as Mission 22, but the client is more challenging — they interrupt, ask hard questions, and push back on timeline.', prompt:'Handle a difficult client meeting: stay professional, adapt in real time, and close with clear next steps.', tip:'Focus on composure over perfection. The client is difficult on purpose — that\'s the training.' },
-  { week:4, id:29, title:'Weak Spot Reinforcement',      scenario:'Look back at the missions where you struggled most. Pick the hardest one and redo it.', prompt:'Redo your hardest mission. Compare your performance to the first attempt. Name what improved.', tip:'Self-awareness is the skill. Name what was hard and what changed.' },
-  { week:4, id:30, title:'Final Assessment: Day 1 vs 30',scenario:'Record yourself doing Mission 1 again. Compare it to your very first attempt.', prompt:'Do the 30-second introduction one more time, as naturally as possible. Then reflect: what changed?', tip:'"Thirty days ago I would have said... Now I say this without thinking about it."' },
-];
-
-// ── Mission State ─────────────────────────────────────────────────────────────
-const MISSION_LS = 'sp-missions-v1';
-const STREAK_LS  = 'sp-streak-v1';
-
-function loadMissionState() { try { return JSON.parse(localStorage.getItem(MISSION_LS)) || {}; } catch { return {}; } }
-function saveMissionState(s) { localStorage.setItem(MISSION_LS, JSON.stringify(s)); }
-function loadStreak() { try { return JSON.parse(localStorage.getItem(STREAK_LS)) || { days:0, lastDate:null, history:[] }; } catch { return { days:0, lastDate:null, history:[] }; } }
-function saveStreak(s) { localStorage.setItem(STREAK_LS, JSON.stringify(s)); }
-function todayStr() { return new Date().toISOString().slice(0,10); }
-
-function updateStreakOnComplete() {
-  const s = loadStreak();
-  const today = todayStr();
-  if (s.lastDate === today) return s;
-  const yest = new Date(); yest.setDate(yest.getDate()-1);
-  const yStr = yest.toISOString().slice(0,10);
-  s.days = s.lastDate === yStr ? s.days + 1 : 1;
-  s.lastDate = today;
-  if (!s.history) s.history = [];
-  if (!s.history.includes(today)) s.history.push(today);
-  saveStreak(s); return s;
+function updateOtherModeBtns() {
+  ['mode-today','mode-mission-list','mode-word','mode-sentence'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.classList.remove('active');
+  });
+  if (practiceMode === 'home' || practiceMode === 'today') { const b = document.getElementById('mode-today'); if(b) b.classList.add('active'); }
+  else if (practiceMode === 'mission') { const b = document.getElementById('mode-mission-list'); if(b) b.classList.add('active'); }
+  else if (practiceMode === 'word') { const b = document.getElementById('mode-word'); if(b) b.classList.add('active'); }
+  else if (practiceMode === 'sentence') { const b = document.getElementById('mode-sentence'); if(b) b.classList.add('active'); }
 }
 
-// ── Mission UI ────────────────────────────────────────────────────────────────
-let activeMissionId = null;
-let missionRecording = false;
-let missionTranscript = '';
-
-function renderStreakBar() {
-  const s = loadStreak();
-  const today = todayStr();
-  const last7 = [];
-  for (let i=6;i>=0;i--) { const d=new Date(); d.setDate(d.getDate()-i); last7.push(d.toISOString().slice(0,10)); }
-  const hist = s.history || [];
-  const dots = last7.map(d => {
-    if (d===today && hist.includes(d)) return `<div class="streak-dot today"></div>`;
-    if (hist.includes(d)) return `<div class="streak-dot done"></div>`;
-    return `<div class="streak-dot"></div>`;
-  }).join('');
-  return `<div class="streak-bar">
-    <div><div class="streak-label">Streak</div><div class="streak-val">${s.days} day${s.days!==1?'s':''} 🔥</div></div>
-    <div class="streak-dots">${dots}</div>
-  </div>`;
+function switchToToday() {
+  practiceMode = 'today';
+  updateOtherModeBtns();
+  document.getElementById('home-view').style.display = 'flex';
+  document.getElementById('mission-view').style.display = 'none';
+  hideWordView();
+  // Refresh today card in case missions changed
+  const homeView = document.getElementById('home-view');
+  if (homeView) {
+    homeView.innerHTML = buildTodayCard() + renderStreakBig();
+  }
 }
 
-function getUnlockedUpTo() {
+function switchToMissionList() {
+  practiceMode = 'mission';
+  activeMissionId = null;
+  updateOtherModeBtns();
+  document.getElementById('home-view').style.display = 'none';
+  hideWordView();
+  showMissionView();
+}
+
+function showMissionView() {
+  document.getElementById('home-view').style.display = 'none';
+  hideWordView();
+  const mv = document.getElementById('mission-view');
+  mv.style.display = 'flex';
+  mv.style.flexDirection = 'column';
+  mv.style.gap = '6px';
+  mv.style.width = '100%';
+  mv.style.height = '100%';
+  mv.style.overflow = 'hidden';
+  buildMissionView();
+}
+
+function hideMissionView() {
+  document.getElementById('mission-view').style.display = 'none';
+}
+
+function hideWordView() {
+  ['word-score-panel','card-mode-row','word-counter','word-card','result-box','interim','word-btn-row'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+}
+
+function showWordView() {
+  document.getElementById('home-view').style.display = 'none';
+  hideMissionView();
+  document.getElementById('word-score-panel').style.display = 'flex';
+  document.getElementById('card-mode-row').style.display = 'flex';
+  document.getElementById('word-counter').style.display = 'block';
+  document.getElementById('word-card').style.display = 'flex';
+  document.getElementById('word-btn-row').style.display = 'flex';
+}
+
+// ── MISSION VIEW ──
+function renderMissionStreakBar() {
+  return renderStreakBig();
+}
+
+function renderWeekTabs() {
   const st = loadMissionState();
-  let max = 1;
-  for (const m of MISSIONS) { if (st[m.id]==='done') max = Math.min(m.id+1, 30); }
-  return max;
+  return `<div class="week-tabs">${[1,2,3,4].map(w => {
+    const wm = MISSIONS.filter(m=>m.week===w);
+    const done = wm.filter(m=>st[m.id]==='done').length;
+    return `<button class="week-tab${missionWeekTab===w?' active':''}" onclick="setMissionWeek(${w})">W${w}<span class="week-tab-progress"> ${done}/${wm.length}</span></button>`;
+  }).join('')}</div>`;
 }
 
 function renderMissionList() {
   const st = loadMissionState();
   const unlocked = getUnlockedUpTo();
-  let html = ''; let lastWeek = 0;
-  for (const m of MISSIONS) {
-    if (m.week !== lastWeek) { html += `<div class="mission-week-label">Week ${m.week}</div>`; lastWeek = m.week; }
-    const done = st[m.id]==='done', locked = m.id>unlocked, active = m.id===activeMissionId;
+  const weekMissions = MISSIONS.filter(m => m.week === missionWeekTab);
+  let html = '';
+  for (const m of weekMissions) {
+    const done = st[m.id]==='done', locked = m.id>unlocked;
     const icon = done?'✅':locked?'🔒':'▶';
-    const cls = ['mission-item', done?'completed':'', locked?'locked':'', active?'active-mission':''].filter(Boolean).join(' ');
+    const cls = ['mission-item', done?'completed':'', locked?'locked':''].filter(Boolean).join(' ');
     html += `<div class="${cls}" onclick="selectMission(${m.id})">
       <span class="mission-item-num">${String(m.id).padStart(2,'0')}</span>
-      <span class="mission-item-name">${m.title}</span>
+      <span class="mission-item-text">
+        <span class="mission-item-name">${m.title}</span>
+        <span class="mission-item-sub">${m.promptZh}</span>
+      </span>
       <span class="mission-item-icon">${icon}</span>
     </div>`;
   }
   return html;
 }
 
+function setMissionWeek(w) { missionWeekTab = w; buildMissionView(); }
+
 function buildMissionView() {
   const mv = document.getElementById('mission-view');
   if (!mv) return;
 
   if (!activeMissionId) {
-    mv.innerHTML = renderStreakBar() + `<div class="mission-list">${renderMissionList()}</div>`;
+    mv.innerHTML = renderMissionStreakBar() + renderWeekTabs() + `<div class="mission-list">${renderMissionList()}</div>`;
     return;
   }
 
@@ -888,48 +918,66 @@ function buildMissionView() {
   if (!m) return;
   const st = loadMissionState();
   const done = st[m.id]==='done';
-  const savedFb = st['fb_'+m.id] || '';
+  missionListened = false; // reset on mission open
+
+  const weekLabels = ['基礎反射','場景化練習','聽力強化','壓力測試'];
 
   mv.innerHTML = `
-    ${renderStreakBar()}
+    <div class="mission-back-row">
+      <button class="mission-back-btn" onclick="selectMission(null)">← Back</button>
+      <span class="mission-progress-text">Mission ${m.id} / 30</span>
+    </div>
+    ${renderMissionStreakBar()}
     <div class="mission-practice-area">
       <div class="mission-card">
         <div class="mission-header">
-          <div class="mission-week">Week ${m.week} · Mission ${m.id} / 30</div>
+          <div class="mission-week">Week ${m.week} · ${weekLabels[m.week-1]}</div>
           <div class="mission-title">${m.title}</div>
         </div>
-        <div class="mission-scenario">${m.scenario}</div>
-        <div class="mission-prompt">🎯 ${m.prompt}</div>
-      </div>
-      <div style="font-size:0.72rem;color:var(--muted);padding:0 2px;line-height:1.5;flex-shrink:0;">💡 ${m.tip}</div>
-      <div id="mission-interim" style="min-height:36px;font-size:0.8rem;color:var(--sub);padding:6px 10px;background:var(--surf);border-radius:10px;box-shadow:inset 0 0 0 1px var(--ring-in);"></div>
-      <div class="self-eval${done?' visible':''}" id="mission-eval">
-        <div class="eval-label">How did you do?</div>
-        <div class="eval-buttons">
-          <button class="eval-btn excellent" onclick="missionSelfEval('Excellent')"${done?' disabled':''}>Excellent</button>
-          <button class="eval-btn good" onclick="missionSelfEval('Good')"${done?' disabled':''}>Good</button>
-          <button class="eval-btn needs-work" onclick="missionSelfEval('Needs Work')"${done?' disabled':''}>Needs Work</button>
+        <div style="padding:10px 16px 6px;border-bottom:1px solid var(--div);font-size:0.8rem;color:var(--muted);">${m.promptZh}</div>
+        <div style="padding:10px 16px 12px;">
+          <div class="eyebrow" style="margin-bottom:8px;">Script</div>
+          <div style="font-size:0.85rem;color:var(--text);line-height:1.8;">${m.script}</div>
         </div>
-        ${savedFb ? `<div class="eval-result">${savedFb}</div>` : ''}
       </div>
+      <!-- LISTEN FIRST -->
+      <button class="listen-first-btn" id="btn-listen-first" onclick="missionListenFirst()">🔊 先聽一遍 Listen First</button>
+      <div class="mission-nav-row" style="gap:6px;">
+        <button id="btn-mission-record" ${!missionListened?'style="opacity:0.5"':''} onclick="missionToggleRecording()">🎤 Speak</button>
+      </div>
+      <div id="mission-interim" style="min-height:0;font-size:0.8rem;color:var(--sub);padding:6px 10px;background:var(--surf);border-radius:10px;box-shadow:inset 0 0 0 1px var(--ring-in);display:none;"></div>
+      <div class="result-box" id="mission-result"></div>
       <div class="mission-complete${done?' visible':''}" id="mission-complete">
         <div class="mission-complete-icon">🎉</div>
         <div class="mission-complete-title">Mission Complete!</div>
         <div class="mission-complete-sub">Great work. Move to the next mission when ready.</div>
       </div>
     </div>
-    <div class="mission-nav-row">
-      <button onclick="selectMission(null)" style="flex:0 0 auto;padding:0 16px;">← Back</button>
-      <button id="btn-mission-record">${done?'🔁 Redo':'🎤 Hold to Speak'}</button>
-      ${done && m.id<30 ? `<button onclick="goNextMission()" style="flex:0 0 auto;padding:0 16px;">Next →</button>` : ''}
+    <div class="mission-nav-row" id="mission-next-row">
+      ${done && m.id<30 ? `<button onclick="goNextMission()">Next →</button>` : ''}
     </div>`;
 
+  document.getElementById('btn-listen-first').addEventListener('click', missionListenFirst);
+  document.getElementById('btn-mission-record').addEventListener('click', missionToggleRecording);
+}
+
+function missionListenFirst() {
+  const m = MISSIONS.find(x => x.id===activeMissionId);
+  if (!m) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(m.script);
+  utter.lang = 'en-US';
+  utter.rate = slowMode ? 0.6 : 0.82;
+  const btn = document.getElementById('btn-listen-first');
   const recBtn = document.getElementById('btn-mission-record');
-  recBtn.addEventListener('mousedown', missionStartRecording);
-  recBtn.addEventListener('touchstart', e=>{e.preventDefault();missionStartRecording();});
-  recBtn.addEventListener('mouseup', missionStopRecording);
-  recBtn.addEventListener('touchend', e=>{e.preventDefault();missionStopRecording();});
-  recBtn.addEventListener('mouseleave', ()=>{if(missionRecording)missionStopRecording();});
+  if (btn) { btn.disabled = true; btn.textContent = '🔊 Listening…'; }
+  utter.onend = () => {
+    missionListened = true;
+    if (btn) { btn.disabled = false; btn.textContent = '🔊 Listen Again'; btn.classList.add('done'); }
+    if (recBtn) recBtn.style.opacity = '1';
+  };
+  utter.onerror = utter.onend;
+  window.speechSynthesis.speak(utter);
 }
 
 function selectMission(id) {
@@ -942,20 +990,26 @@ function goNextMission() {
   if (activeMissionId < 30) selectMission(activeMissionId + 1);
 }
 
-// ── Mission Recording ─────────────────────────────────────────────────────────
+// ── Mission Recording ──
 let missionRecognition = null;
-
+function missionToggleRecording() {
+  if (missionRecording) { missionStopRecording(); return; }
+  missionStartRecording();
+}
 function missionStartRecording() {
   if (missionRecording || !SR) return;
   missionRecording = true; missionTranscript = '';
   const btn = document.getElementById('btn-mission-record');
-  if (btn) { btn.classList.add('recording'); btn.textContent='🔴 Listening…'; }
+  if (btn) { btn.classList.add('recording'); btn.textContent='⏹ Stop'; }
+  const el = document.getElementById('mission-interim');
+  if (el) { el.style.display = 'block'; el.textContent = ''; }
+  const rb = document.getElementById('mission-result');
+  if (rb) { rb.innerHTML = ''; rb.className = 'result-box'; }
 
   missionRecognition = new SR();
   missionRecognition.lang = 'en-US';
   missionRecognition.interimResults = true;
   missionRecognition.continuous = true;
-
   missionRecognition.onresult = e => {
     let interim='', final='';
     for (let i=e.resultIndex;i<e.results.length;i++) {
@@ -964,177 +1018,113 @@ function missionStartRecording() {
     }
     missionTranscript += final;
     const el = document.getElementById('mission-interim');
-    if (el) el.textContent = (missionTranscript+interim).trim();
+    if (el) el.textContent = (missionTranscript+interim).trim() || 'Listening…';
   };
   missionRecognition.onerror = ()=>missionResetRecordBtn();
-  missionRecognition.onend = ()=>missionResetRecordBtn();
+  missionRecognition.onend = ()=>{
+    if (missionRecording) {
+      missionRecording = false;
+      missionResetRecordBtn();
+      if(missionTranscript.trim().length>5) missionAutoComplete();
+    }
+  };
   missionRecognition.start();
 }
-
 function missionStopRecording() {
   if (!missionRecording||!missionRecognition) return;
-  missionRecognition.stop();
-  setTimeout(()=>{
-    if(missionTranscript.trim().length>5) {
-      const evalBox = document.getElementById('mission-eval');
-      if (evalBox) evalBox.classList.add('visible');
-    }
-  }, 500);
-}
-
-function missionResetRecordBtn() {
   missionRecording = false;
+  missionRecognition.stop();
+  missionResetRecordBtn();
+  setTimeout(()=>{ if(missionTranscript.trim().length>5) missionAutoComplete(); }, 500);
+}
+function missionResetRecordBtn() {
   const btn = document.getElementById('btn-mission-record');
-  if (btn) { btn.classList.remove('recording'); btn.textContent='🎤 Hold to Speak'; }
+  if (btn) { btn.classList.remove('recording'); btn.textContent='🎤 Speak'; }
 }
 
-function missionSelfEval(score) {
+// ── Humanized feedback messages ──
+const FEEDBACK_GOOD = [
+  '流暢！這次說話很自然。',
+  '很好，大部分關鍵詞都說到了。',
+  '不錯！繼續保持這個節奏。',
+  '這次很流利，繼續練下去。',
+  '說得很好，口音也越來越自然了。',
+];
+const FEEDBACK_TRY = [
+  '再來一遍，注意漏掉的字。',
+  '不錯的嘗試！重點字再加強。',
+  '基本架構都有，細節再補強。',
+  '繼續練，每次都會更流暢。',
+];
+
+function missionAutoComplete() {
   const m = MISSIONS.find(x=>x.id===activeMissionId);
   if (!m) return;
+  const scriptWords = normalize(m.script).split(/\s+/).filter(Boolean);
+  const spokenWords = normalize(missionTranscript).split(/\s+/).filter(Boolean);
+  const spokenSet = new Set(spokenWords);
+  const matched = scriptWords.filter(w => spokenSet.has(w)).length;
+  const pct = scriptWords.length > 0 ? Math.round(matched / scriptWords.length * 100) : 0;
+  const isGood = pct >= 65;
 
-  // Disable buttons after selection
-  document.querySelectorAll('.eval-btn').forEach(b => b.disabled = true);
+  const diffHTML = scriptWords.map(w =>
+    spokenSet.has(w)
+      ? `<span class="diff-correct">${w}</span>`
+      : `<span class="diff-wrong-char">${w}</span>`
+  ).join(' ');
 
-  // Save result
-  const resultText = `You rated: <strong>${score}</strong>`;
-  const evalBox = document.getElementById('mission-eval');
-  let resultEl = evalBox?.querySelector('.eval-result');
-  if (!resultEl) {
-    resultEl = document.createElement('div');
-    resultEl.className = 'eval-result';
-    evalBox?.appendChild(resultEl);
+  // Pick humanized feedback
+  const feedbackMsg = isGood
+    ? FEEDBACK_GOOD[Math.floor(Math.random() * FEEDBACK_GOOD.length)]
+    : FEEDBACK_TRY[Math.floor(Math.random() * FEEDBACK_TRY.length)];
+
+  const resultBox = document.getElementById('mission-result');
+  if (resultBox) {
+    resultBox.className = 'result-box ' + (isGood ? 'correct' : 'wrong');
+    resultBox.innerHTML = `
+      <div class="result-header">
+        <span class="result-icon">${isGood ? '✅' : '📍'}</span>
+        <span class="result-title">${isGood ? 'Nice! ' + pct + '% match' : pct + '% match'}</span>
+      </div>
+      <div class="result-feedback">${feedbackMsg}</div>
+      <div class="diff-detail">
+        <div class="diff-row"><span class="diff-label">You said</span><span class="diff-word" style="white-space:normal;line-height:1.6;">${normalize(missionTranscript)}</span></div>
+        <div class="diff-row"><span class="diff-label">Script</span><span class="diff-word" style="white-space:normal;line-height:1.6;">${diffHTML}</span></div>
+      </div>`;
   }
-  resultEl.innerHTML = resultText;
 
   const st = loadMissionState();
-  st[m.id] = 'done'; st['fb_'+m.id] = resultText;
+  st[m.id] = 'done';
   saveMissionState(st);
   updateStreakOnComplete();
 
   const completeEl = document.getElementById('mission-complete');
   if (completeEl) completeEl.classList.add('visible');
 
-  const navRow = document.querySelector('.mission-nav-row');
-  if (navRow && m.id<30 && !document.getElementById('btn-m-next')) {
+  const recBtn = document.getElementById('btn-mission-record');
+  if (recBtn) recBtn.textContent = '↩ Redo';
+
+  const navRow = document.getElementById('mission-next-row');
+  if (navRow && m.id<30 && !navRow.querySelector('button')) {
     const nb = document.createElement('button');
-    nb.id='btn-m-next'; nb.style.cssText='flex:0 0 auto;padding:0 16px;';
     nb.textContent='Next →'; nb.onclick=()=>goNextMission();
     navRow.appendChild(nb);
   }
-}
 
-// ── Mission mode switch ───────────────────────────────────────────────────────
-function showMissionView() {
-  ['card-mode-row','word-counter'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.style.display='none';
-  });
-  document.querySelector('.score-panel')?.style.setProperty('display','none');
-  document.querySelector('.card')?.style.setProperty('display','none');
-  document.getElementById('result-box')?.style.setProperty('display','none');
-  document.getElementById('interim')?.style.setProperty('display','none');
-  document.querySelector('.btn-row')?.style.setProperty('display','none');
-
-  let mv = document.getElementById('mission-view');
-  if (!mv) {
-    mv = document.createElement('div');
-    mv.id='mission-view'; mv.className='mission-view';
-    document.getElementById('app').appendChild(mv);
+  // Refresh today card streak
+  const homeView = document.getElementById('home-view');
+  if (homeView && homeView.style.display !== 'none') {
+    homeView.innerHTML = buildTodayCard() + renderStreakBig();
   }
-  mv.style.display='flex';
-  buildMissionView();
 }
 
-function hideMissionView() {
-  const mv = document.getElementById('mission-view');
-  if (mv) mv.style.display='none';
-  ['card-mode-row','word-counter'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.style.display='';
-  });
-  document.querySelector('.score-panel')?.style.removeProperty('display');
-  document.querySelector('.card')?.style.removeProperty('display');
-  document.getElementById('result-box')?.style.removeProperty('display');
-  document.getElementById('interim')?.style.removeProperty('display');
-  document.querySelector('.btn-row')?.style.removeProperty('display');
-}
-
-// ── Card mode ─────────────────────────────────────────────────────────────────
-function setCardMode(mode) {
-  cardMode = mode;
-  document.querySelectorAll('.card-mode-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.cmode === mode);
-  });
-  buildQueue();
-  nextWord();
-}
-
-// ── Word logic ─────────────────────────────────────────────────────────────────
-function nextWord() {
-  abortRepeat();
-  const chk = document.getElementById('toggle-repeat');
-  if (chk) chk.checked = false;
-  if (isRecording) stopRecording();
-  current = pickNext();
-
-  document.getElementById('word-display').textContent = current['Word'] || '—';
-
-  // IPA phonetic
-  const ipaEl = document.getElementById('word-ipa');
-  if (ipaEl) { ipaEl.className = 'word-ipa'; ipaEl.textContent = ''; }
-  if (current['Word']) fetchIPA(current['Word']);
-
-  // Status dot
-  const dot = document.getElementById('status-dot');
-  const st = wordStatus[current['Word']];
-  dot.className = 'status-dot' + (st ? ' ' + st : '');
-
-  const transEl = document.getElementById('translation');
-  transEl.textContent = current['Translation/Explanation'] || current['Translation'] || '—';
-  transEl.style.display = 'none';
-  const transBtn = document.getElementById('btn-trans');
-  if (transBtn) transBtn.textContent = 'Translation ▼';
-  renderExample(current['Example Sentence'] || '(no example)');
-  document.getElementById('result-box').className = 'result-box';
-  document.getElementById('result-box').innerHTML = '';
-  document.getElementById('interim').textContent = '';
-  updateCounter();
-
-  const btn = document.getElementById('btn-record');
-  btn.disabled = false;
-  btn.textContent = '🎤 Hold to Speak';
-  btn.classList.remove('recording');
-}
-
-function updateCounter() {
-  const total = words.length;
-  const practiced = Object.keys(wordStatus).length;
-  const correct = Object.values(wordStatus).filter(v => v === 'correct').length;
-  const wrong = Object.values(wordStatus).filter(v => v === 'wrong').length;
-  const unlearned = total - practiced;
-  const wc = document.getElementById('word-counter');
-  if (wc) wc.textContent = `Practiced ${practiced} / ${total}  ·  Unlearned ${unlearned}  ·  Correct ${correct}  ·  Wrong ${wrong}`;
-}
-
-// ── Reset progress ────────────────────────────────────────────────────────────
-function resetProgress() {
-  if (!confirm('Reset all progress and start over?')) return;
-  wordStatus = {};
-  localStorage.removeItem(LS_KEY);
-  stats = { correct: 0, wrong: 0 };
-  updateScorePanel();
-  buildQueue();
-  nextWord();
-}
-
-// ── Mode toggle ───────────────────────────────────────────────────────────────
+// ── Mode toggle ──
 function setMode(mode) {
   practiceMode = mode;
-  document.getElementById('mode-word').classList.toggle('active', mode==='word');
-  document.getElementById('mode-sentence').classList.toggle('active', mode==='sentence');
-  document.getElementById('mode-mission').classList.toggle('active', mode==='mission');
-  if (mode==='mission') {
-    showMissionView(); return;
-  }
+  updateOtherModeBtns();
   hideMissionView();
+  document.getElementById('home-view').style.display = 'none';
+  showWordView();
   const label = document.getElementById('example-label');
   if (label) label.textContent = mode==='sentence' ? 'Example · say the full sentence' : 'Example · say the word aloud';
   const exEl = document.getElementById('example');
@@ -1146,14 +1136,10 @@ function setMode(mode) {
 function renderExample(sentence) {
   const el = document.getElementById('example');
   if (!el) return;
-  if (practiceMode === 'sentence') {
-    el.innerHTML = renderSentenceWithStress(sentence);
-  } else {
-    el.textContent = sentence;
-  }
+  if (practiceMode === 'sentence') { el.innerHTML = renderSentenceWithStress(sentence); }
+  else { el.textContent = sentence; }
 }
 
-// ── Translation toggle ────────────────────────────────────────────────────────
 function toggleTranslation() {
   const el = document.getElementById('translation');
   const btn = document.getElementById('btn-trans');
@@ -1162,10 +1148,7 @@ function toggleTranslation() {
   btn.textContent = visible ? 'Translation ▼' : 'Translation ▲';
 }
 
-
-function stopCurrentAudio() {
-  window.speechSynthesis.cancel();
-}
+function stopCurrentAudio() { window.speechSynthesis.cancel(); }
 
 function speakText(text, btn) {
   window.speechSynthesis.cancel();
@@ -1180,18 +1163,8 @@ function speakText(text, btn) {
   window.speechSynthesis.speak(utter);
 }
 
-function speakWord() {
-  if (!current) return;
-  speakText(current['Word'], document.getElementById('btn-speak'));
-}
-
-function speakSentence() {
-  if (!current) return;
-  const sentence = current['Example Sentence'];
-  if (!sentence) return;
-  speakText(sentence, document.getElementById('btn-speak-sentence'));
-}
-
+function speakWord() { if (!current) return; speakText(current['Word'], document.getElementById('btn-speak')); }
+function speakSentence() { if (!current) return; const s = current['Example Sentence']; if (!s) return; speakText(s, document.getElementById('btn-speak-sentence')); }
 function toggleSpeed() {
   slowMode = !slowMode;
   const btn = document.getElementById('btn-speed');
@@ -1199,8 +1172,7 @@ function toggleSpeed() {
   btn.classList.toggle('slow', slowMode);
 }
 
-
-// ── Recording ─────────────────────────────────────────────────────────────────
+// ── Recording (word mode) ──
 function startRecording() {
   if (isRecording || !SR) return;
   isRecording = true;
@@ -1221,56 +1193,43 @@ function startRecording() {
       if (e.results[i].isFinal) final += t;
       else interim += t;
     }
-    if (interim) document.getElementById('interim').textContent = interim;
+    const interimEl = document.getElementById('interim');
+    if (interim && interimEl) interimEl.textContent = interim;
     if (final) processResult(final);
   };
-
   recognition.onerror = (e) => {
     console.warn('SR error', e.error);
     resetRecordBtn();
     if (e.error === 'no-speech') {
-      document.getElementById('interim').textContent = 'No speech detected, please try again.';
+      const interimEl = document.getElementById('interim');
+      if (interimEl) interimEl.textContent = 'No speech detected, please try again.';
     }
   };
-
   recognition.onend = () => { resetRecordBtn(); };
   recognition.start();
 }
-
-function stopRecording() {
-  if (!isRecording || !recognition) return;
-  recognition.stop();
-}
-
+function stopRecording() { if (!isRecording || !recognition) return; recognition.stop(); }
 function resetRecordBtn() {
   isRecording = false;
   const btn = document.getElementById('btn-record');
   if (!btn) return;
   btn.classList.remove('recording');
-  btn.textContent = '🎤 Hold to Speak';
+  btn.textContent = '🎙 Hold to Speak';
 }
 
-// ── Comparison ────────────────────────────────────────────────────────────────
-function normalize(s) {
-  return s.toLowerCase().trim().replace(/[^a-z\s'-]/g, '');
-}
-
+// ── Word comparison ──
+function normalize(s) { return s.toLowerCase().trim().replace(/[^a-z\s'-]/g, ''); }
 function bestMatchWord(transcript, answer) {
   const parts = normalize(transcript).split(/\s+/);
   if (parts.length === 1) return parts[0];
-  return parts.reduce((best, w) =>
-    charSimilarity(w, answer) >= charSimilarity(best, answer) ? w : best, parts[0]);
+  return parts.reduce((best, w) => charSimilarity(w, answer) >= charSimilarity(best, answer) ? w : best, parts[0]);
 }
-
 function charSimilarity(a, b) {
   let matches = 0;
   const len = Math.max(a.length, b.length);
-  for (let i = 0; i < Math.min(a.length, b.length); i++) {
-    if (a[i] === b[i]) matches++;
-  }
+  for (let i = 0; i < Math.min(a.length, b.length); i++) { if (a[i] === b[i]) matches++; }
   return len === 0 ? 1 : matches / len;
 }
-
 function buildDiffHTML(word, answer) {
   const maxLen = Math.max(word.length, answer.length);
   let html = '';
@@ -1282,7 +1241,6 @@ function buildDiffHTML(word, answer) {
   }
   return html;
 }
-
 function buildAnswerDiffHTML(word, answer) {
   const maxLen = Math.max(word.length, answer.length);
   let html = '';
@@ -1297,7 +1255,6 @@ function buildAnswerDiffHTML(word, answer) {
 
 function processResult(transcript) {
   if (!current) return;
-
   let correct;
   if (practiceMode === 'sentence') {
     const answerWords = normalize(current['Example Sentence'] || '').split(/\s+/).filter(Boolean);
@@ -1309,46 +1266,39 @@ function processResult(transcript) {
     const spoken = normalize(transcript);
     correct = spoken === answer || spoken.split(/\s+/).includes(answer);
   }
-
-  // Update session stats
   if (correct) stats.correct++; else stats.wrong++;
-
-  // Update localStorage status (most recent answer wins)
   wordStatus[current['Word']] = correct ? 'correct' : 'wrong';
   saveStatus();
-
-  // Update status dot
   const dot = document.getElementById('status-dot');
   if (dot) { dot.className = 'status-dot ' + (correct ? 'correct' : 'wrong'); }
-
   showResult(correct, transcript.trim());
   updateScorePanel();
   updateCounter();
-
   resetRecordBtn();
-  document.getElementById('btn-record').disabled = true;
+  const recBtn = document.getElementById('btn-record');
+  if (recBtn) recBtn.disabled = true;
 }
 
 function updateScorePanel() {
   const total = stats.correct + stats.wrong;
-  document.getElementById('sp-correct').textContent = stats.correct;
-  document.getElementById('sp-wrong').textContent = stats.wrong;
-  const rateEl = document.getElementById('sp-rate');
-  if (total === 0) { rateEl.textContent = '—'; rateEl.className = 'score-val'; return; }
+  const sc = document.getElementById('sp-correct');
+  const sw = document.getElementById('sp-wrong');
+  const sr = document.getElementById('sp-rate');
+  if (sc) sc.textContent = stats.correct;
+  if (sw) sw.textContent = stats.wrong;
+  if (!sr) return;
+  if (total === 0) { sr.textContent = '—'; sr.className = 'score-val'; return; }
   const pct = Math.round(stats.correct / total * 100);
-  rateEl.textContent = pct + '%';
-  rateEl.className = 'score-val ' + (pct >= 80 ? 'rate-good' : pct >= 50 ? 'rate-ok' : 'rate-bad');
+  sr.textContent = pct + '%';
+  sr.className = 'score-val ' + (pct >= 80 ? 'rate-good' : pct >= 50 ? 'rate-ok' : 'rate-bad');
 }
 
 function showResult(correct, spokenRaw) {
   const box = document.getElementById('result-box');
+  if (!box) return;
   if (correct) {
     box.className = 'result-box correct';
-    box.innerHTML = `
-      <div class="result-header">
-        <span class="result-icon">✅</span>
-        <span class="result-title">Correct! Great pronunciation!</span>
-      </div>`;
+    box.innerHTML = `<div class="result-header"><span class="result-icon">✅</span><span class="result-title">Correct! Great pronunciation!</span></div>`;
     return;
   }
   box.className = 'result-box wrong';
@@ -1356,16 +1306,9 @@ function showResult(correct, spokenRaw) {
     const answerWords = normalize(current['Example Sentence'] || '').split(/\s+/).filter(Boolean);
     const spokenWords = normalize(spokenRaw).split(/\s+/).filter(Boolean);
     const spokenSet = new Set(spokenWords);
-    const answerHTML = answerWords.map(w =>
-      spokenSet.has(w)
-        ? `<span class="diff-correct">${w}</span>`
-        : `<span class="diff-wrong-char">${w}</span>`
-    ).join(' ');
+    const answerHTML = answerWords.map(w => spokenSet.has(w) ? `<span class="diff-correct">${w}</span>` : `<span class="diff-wrong-char">${w}</span>`).join(' ');
     box.innerHTML = `
-      <div class="result-header">
-        <span class="result-icon">❌</span>
-        <span class="result-title">Try again</span>
-      </div>
+      <div class="result-header"><span class="result-icon">❌</span><span class="result-title">Try again</span></div>
       <div class="diff-detail">
         <div class="diff-row"><span class="diff-label">You said:</span><span class="diff-word" style="white-space:normal;line-height:1.6;">${normalize(spokenRaw)}</span></div>
         <div class="diff-row"><span class="diff-label">Correct:</span><span class="diff-word" style="white-space:normal;line-height:1.6;">${answerHTML}</span></div>
@@ -1374,10 +1317,7 @@ function showResult(correct, spokenRaw) {
     const answer = normalize(current['Word']);
     const bestWord = bestMatchWord(spokenRaw, answer);
     box.innerHTML = `
-      <div class="result-header">
-        <span class="result-icon">❌</span>
-        <span class="result-title">Try again</span>
-      </div>
+      <div class="result-header"><span class="result-icon">❌</span><span class="result-title">Try again</span></div>
       <div class="diff-detail">
         <div class="diff-row"><span class="diff-label">You said:</span><span class="diff-word">${buildDiffHTML(bestWord, answer)}</span></div>
         <div class="diff-row"><span class="diff-label">Correct:</span><span class="diff-word">${buildAnswerDiffHTML(bestWord, answer)}</span></div>
@@ -1385,7 +1325,63 @@ function showResult(correct, spokenRaw) {
   }
 }
 
-// ── Repeat × 3 toggle ────────────────────────────────────────────────────────
+// ── Word logic ──
+function nextWord() {
+  abortRepeat();
+  const chk = document.getElementById('toggle-repeat');
+  if (chk) chk.checked = false;
+  if (isRecording) stopRecording();
+  current = pickNext();
+
+  document.getElementById('word-display').textContent = current['Word'] || '—';
+  const ipaEl = document.getElementById('word-ipa');
+  if (ipaEl) { ipaEl.className = 'word-ipa'; ipaEl.textContent = ''; }
+  if (current['Word']) fetchIPA(current['Word']);
+  const dot = document.getElementById('status-dot');
+  const st = wordStatus[current['Word']];
+  dot.className = 'status-dot' + (st ? ' ' + st : '');
+  const transEl = document.getElementById('translation');
+  transEl.textContent = current['Translation/Explanation'] || current['Translation'] || '—';
+  transEl.style.display = 'none';
+  const transBtn = document.getElementById('btn-trans');
+  if (transBtn) transBtn.textContent = 'Translation ▼';
+  renderExample(current['Example Sentence']||'(no example)');
+  const rb = document.getElementById('result-box');
+  if (rb) { rb.className = 'result-box'; rb.innerHTML = ''; rb.style.display = 'none'; }
+  const interimEl = document.getElementById('interim');
+  if (interimEl) { interimEl.textContent = ''; interimEl.style.display = 'none'; }
+  updateCounter();
+  const btn = document.getElementById('btn-record');
+  if (btn) { btn.disabled = false; btn.textContent = '🎙 Hold to Speak'; btn.classList.remove('recording'); }
+}
+
+function updateCounter() {
+  const total = words.length;
+  const practiced = Object.keys(wordStatus).length;
+  const correct = Object.values(wordStatus).filter(v => v === 'correct').length;
+  const wrong = Object.values(wordStatus).filter(v => v === 'wrong').length;
+  const unlearned = total - practiced;
+  const wc = document.getElementById('word-counter');
+  if (wc) wc.textContent = `Practiced ${practiced} / ${total}  ·  Unlearned ${unlearned}  ·  Correct ${correct}  ·  Wrong ${wrong}`;
+}
+
+function resetProgress() {
+  if (!confirm('Reset all progress and start over?')) return;
+  wordStatus = {};
+  localStorage.removeItem(LS_KEY);
+  stats = { correct: 0, wrong: 0 };
+  updateScorePanel();
+  buildQueue();
+  nextWord();
+}
+
+function setCardMode(mode) {
+  cardMode = mode;
+  document.querySelectorAll('.card-mode-btn').forEach(b => { b.classList.toggle('active', b.dataset.cmode === mode); });
+  buildQueue();
+  nextWord();
+}
+
 function updateRepeatSublabel() {
   const el = document.getElementById('repeat-sublabel');
   if (el) el.textContent = practiceMode === 'sentence' ? 'speak this sentence 3 times' : 'speak this word 3 times';
@@ -1408,18 +1404,12 @@ function sleep(ms, signal) {
 async function onRepeatToggle() {
   const chk = document.getElementById('toggle-repeat');
   if (!chk.checked) { abortRepeat(); return; }
-
   abortRepeat();
-
   const ctrl = new AbortController();
   repeatAbortCtrl = ctrl;
   const sig = ctrl.signal;
-
-  const text = practiceMode === 'sentence'
-    ? (current?.['Example Sentence'] || '')
-    : (current?.['Word'] || '');
+  const text = practiceMode === 'sentence' ? (current?.['Example Sentence'] || '') : (current?.['Word'] || '');
   if (!text) { chk.checked = false; return; }
-
   const prog = document.getElementById('repeat-progress');
   try {
     for (let i = 1; i <= 3; i++) {
@@ -1429,27 +1419,22 @@ async function onRepeatToggle() {
         const utter = new SpeechSynthesisUtterance(text);
         utter.lang = 'en-US';
         utter.rate = slowMode ? 0.6 : 1.0;
-        utter.onend = resolve;
-        utter.onerror = reject;
+        utter.onend = resolve; utter.onerror = reject;
         sig.addEventListener('abort', () => { window.speechSynthesis.cancel(); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
         window.speechSynthesis.speak(utter);
       });
       if (i < 3) await sleep(320, sig);
     }
   } catch (e) { /* aborted */ }
-
   if (prog) prog.textContent = '';
   chk.checked = false;
   repeatAbortCtrl = null;
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
+// ── Init ──
 async function init() {
   if (!SR) {
-    app.innerHTML = `<div class="notice">
-      ⚠️ 您的瀏覽器不支援語音辨識 API。<br><br>
-      請使用 <strong>Google Chrome</strong> 瀏覽器開啟此頁面。
-    </div>`;
+    app.innerHTML = `<div class="notice">⚠️ 你的瀏覽器不支援語音辨識 API。<br><br>請使用 <strong>Google Chrome</strong> 瀏覽器打開。</div>`;
     return;
   }
   try {
@@ -1457,14 +1442,12 @@ async function init() {
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const text = await resp.text();
     words = parseCSV(text);
-    if (words.length === 0) throw new Error('CSV 無有效資料');
+    if (words.length === 0) throw new Error('CSV 檔案沒有內容');
     buildUI();
+    // Default: show home view (today's mission)
+    practiceMode = 'today';
   } catch (err) {
-    app.innerHTML = `<div class="notice">
-      ⚠️ 無法載入單字檔案。<br><br>
-      請確認 <code>notebooklm_words.csv</code> 存在於同一目錄下。<br>
-      <small style="color:#888;">(${err.message})</small>
-    </div>`;
+    app.innerHTML = `<div class="notice">⚠️ 無法載入單字庫。<br><br>請將 <code>notebooklm_words.csv</code> 放在相同目錄下。<br><small style="color:#888;">(${err.message})</small></div>`;
   }
 }
 
