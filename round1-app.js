@@ -1,6 +1,17 @@
-// Round 1 — flat 4-category architecture. Two views: overview + detail.
+// Round 1 — flashcard mode. Pick category → flip through words. English only.
+
+const OPERATORS = [
+  'be', 'come', 'do', 'get', 'give', 'go', 'have', 'keep', 'let',
+  'make', 'may', 'put', 'say', 'see', 'seem', 'send', 'take', 'will',
+];
+const OP_RE = new RegExp(`\\b(${OPERATORS.join('|')})\\b`, 'gi');
 
 let DATA = null;
+let deck = [];
+let idx = 0;
+let flipped = false;
+let currentCat = null;
+
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
@@ -14,19 +25,24 @@ async function init() {
     $('#overview').innerHTML = `<div class="error">無法載入資料: ${e.message}</div>`;
   }
 
-  $('.back').addEventListener('click', renderOverview);
-  $('#detail').addEventListener('click', (e) => {
-    const chip = e.target.closest('.chip');
-    if (chip) toggleChip(chip);
-  });
-  $('.detail-search').addEventListener('input', (e) => {
-    filterChips(e.target.value.trim().toLowerCase());
+  $('.back-btn').addEventListener('click', renderOverview);
+  $('.flashcard').addEventListener('click', flipCard);
+  $('.nav-prev').addEventListener('click', prevCard);
+  $('.nav-next').addEventListener('click', nextCard);
+  $('.nav-shuffle').addEventListener('click', shuffleDeck);
+
+  document.addEventListener('keydown', (e) => {
+    if ($('#deck').hidden) return;
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
+    else if (e.key === 'ArrowRight') nextCard();
+    else if (e.key === 'ArrowLeft') prevCard();
+    else if (e.key === 'Escape') renderOverview();
   });
 }
 
 function renderOverview() {
   $('#overview').hidden = false;
-  $('#detail').hidden = true;
+  $('#deck').hidden = true;
   window.scrollTo({ top: 0, behavior: 'instant' });
 
   const cards = $('.cards');
@@ -43,63 +59,94 @@ function renderOverview() {
         <span class="card-label-en">${escapeHtml(cat.label_en)}</span>
       </div>
     `;
-    card.addEventListener('click', () => renderDetail(cat));
+    card.addEventListener('click', () => openDeck(cat));
     cards.appendChild(card);
   }
 }
 
-function renderDetail(cat) {
+function openDeck(cat) {
+  currentCat = cat;
+  deck = [...cat.words];
+  shuffleArray(deck);
+  idx = 0;
+  flipped = false;
+
   $('#overview').hidden = true;
-  $('#detail').hidden = false;
-  $('#detail').style.setProperty('--accent', `var(--${cat.accent})`);
+  $('#deck').hidden = false;
+  $('#deck').style.setProperty('--accent', `var(--${cat.accent})`);
+  $('.deck-label-zh').textContent = cat.label;
+  $('.deck-label-en').textContent = cat.label_en;
 
-  $('.detail-num').textContent = cat.words.length;
-  $('.detail-label-zh').textContent = cat.label;
-  $('.detail-label-en').textContent = cat.label_en;
-  $('.detail-tagline').textContent = cat.tagline;
-
-  const search = $('.detail-search');
-  search.value = '';
-  search.placeholder = `搜尋 ${cat.words.length} 個${cat.label}`;
-
-  const chips = $('.detail-chips');
-  chips.innerHTML = '';
-  for (const w of cat.words) {
-    const ch = document.createElement('button');
-    ch.type = 'button';
-    ch.className = 'chip';
-    ch.dataset.word = w.word;
-    ch.dataset.zh = w.zh || '';
-    ch.dataset.ex = w.ex || '';
-    ch.textContent = w.word;
-    chips.appendChild(ch);
-  }
-
+  renderCard();
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
-function toggleChip(chip) {
-  const wasExpanded = chip.classList.contains('expanded');
-  $$('.chip.expanded').forEach((c) => c.classList.remove('expanded'));
-  $$('.word-info').forEach((d) => d.remove());
-  if (wasExpanded) return;
+function renderCard() {
+  const w = deck[idx];
+  $('.counter').textContent = `${idx + 1} / ${deck.length}`;
 
-  chip.classList.add('expanded');
-  const info = document.createElement('div');
-  info.className = 'word-info';
-  info.innerHTML = `
-    <div class="info-zh">${escapeHtml(chip.dataset.zh)}</div>
-    <div class="info-ex">${escapeHtml(chip.dataset.ex)}</div>
-  `;
-  chip.insertAdjacentElement('afterend', info);
+  $('.face-front .word-front').textContent = w.word;
+  $('.face-back .word-back').textContent = w.word;
+
+  const ex = w.ex || '';
+  $('.face-back .example').innerHTML = ex ? highlightOps(ex) : '';
+
+  const ops = opsIn(ex);
+  $('.face-back .pairs').textContent = ops.length
+    ? `pairs with · ${ops.join(' · ')}`
+    : '';
+
+  flipped = false;
+  $('.flashcard').classList.remove('flipped');
+
+  $('.nav-prev').disabled = idx === 0;
+  $('.nav-next').disabled = idx === deck.length - 1;
 }
 
-function filterChips(q) {
-  $$('.word-info').forEach((d) => d.remove());
-  $$('.chip.expanded').forEach((c) => c.classList.remove('expanded'));
-  for (const c of $$('.chip')) {
-    const visible = !q || c.dataset.word.toLowerCase().includes(q) || c.dataset.zh.includes(q);
-    c.classList.toggle('chip-hidden', !visible);
+function flipCard() {
+  flipped = !flipped;
+  $('.flashcard').classList.toggle('flipped', flipped);
+}
+
+function nextCard() {
+  if (idx < deck.length - 1) {
+    idx++;
+    renderCard();
+  }
+}
+
+function prevCard() {
+  if (idx > 0) {
+    idx--;
+    renderCard();
+  }
+}
+
+function shuffleDeck() {
+  shuffleArray(deck);
+  idx = 0;
+  renderCard();
+}
+
+function opsIn(s) {
+  const found = new Set();
+  let m;
+  OP_RE.lastIndex = 0;
+  while ((m = OP_RE.exec(s)) !== null) {
+    found.add(m[1].toLowerCase());
+  }
+  return Array.from(found);
+}
+
+function highlightOps(s) {
+  const esc = escapeHtml(s);
+  return esc.replace(OP_RE, '<span class="op-hl">$1</span>');
+}
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
 }
 

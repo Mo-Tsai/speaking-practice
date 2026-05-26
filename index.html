@@ -41,7 +41,7 @@ body {
   font-weight: 450;
   -webkit-font-smoothing: antialiased;
   display: flex; flex-direction: column; align-items: center;
-  padding: 28px 18px 40px;
+  padding: 28px 18px 28px;
   min-height: 100dvh;
 }
 #app { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 22px; flex: 1; }
@@ -49,9 +49,7 @@ button { font: inherit; color: inherit; }
 
 /* ─── HERO ─── */
 .hero { display: flex; flex-direction: column; gap: 6px; padding: 4px 4px 0; }
-.hero h1 {
-  font-size: 36px; font-weight: 700; letter-spacing: -0.03em;
-}
+.hero h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.03em; }
 .hero p { color: var(--sub); font-size: 15px; line-height: 1.55; }
 
 /* ─── OVERVIEW: 4 stat cards ─── */
@@ -94,96 +92,151 @@ button { font: inherit; color: inherit; }
   letter-spacing: 0.06em; text-transform: uppercase;
 }
 
-/* ─── DETAIL VIEW ─── */
-#detail { display: flex; flex-direction: column; gap: 18px; }
-.detail-head { display: flex; flex-direction: column; gap: 6px; }
-.back {
-  align-self: flex-start;
+/* ─── DECK (flashcard mode) ─── */
+#deck { display: flex; flex-direction: column; gap: 16px; flex: 1; }
+.deck-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+}
+.back-btn {
   background: transparent; border: none;
   color: var(--muted); cursor: pointer;
-  font-size: 13px; padding: 6px 0;
+  font-size: 13px; padding: 6px 4px;
   transition: color 0.12s;
 }
-.back:hover { color: var(--text); }
-.detail-title {
-  display: flex; align-items: baseline; gap: 12px;
-  margin-top: 2px;
-}
-.detail-num {
-  font-size: 36px; font-weight: 700; letter-spacing: -0.03em;
-  color: var(--accent);
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-}
-.detail-label-zh { font-size: 22px; font-weight: 600; }
-.detail-label-en {
-  font-size: 12px; color: var(--muted);
+.back-btn:hover { color: var(--text); }
+.deck-title { display: flex; align-items: baseline; gap: 8px; }
+.deck-label-zh { font-size: 15px; font-weight: 600; color: var(--text); }
+.deck-label-en {
+  font-size: 11px; color: var(--muted);
   letter-spacing: 0.06em; text-transform: uppercase;
-  margin-left: auto;
 }
-.detail-tagline { color: var(--sub); font-size: 14px; line-height: 1.55; }
+.counter {
+  font-family: ui-monospace, monospace;
+  font-size: 12px; color: var(--muted);
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+}
 
-.detail-search {
+/* ─── FLASHCARD ─── */
+.card-stage {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  perspective: 1400px;
+  padding: 20px 0;
+  min-height: 60vh;
+}
+.flashcard {
+  width: 100%;
+  max-width: 380px;
+  aspect-ratio: 3 / 4;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.4, 0.0, 0.2, 1);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.flashcard.flipped { transform: rotateY(180deg); }
+.face {
+  position: absolute; inset: 0;
+  background: var(--surf);
+  border: 1px solid var(--ring);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-card);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex; flex-direction: column;
+  padding: 32px 28px;
+  overflow: hidden;
+}
+.face-front {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.face-back {
+  transform: rotateY(180deg);
+  justify-content: flex-start;
+  gap: 20px;
+}
+
+.word-front {
+  font-size: 48px; font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  word-break: break-word;
+}
+@media (max-width: 380px) {
+  .word-front { font-size: 40px; }
+}
+.tap-hint {
+  position: absolute; bottom: 18px;
+  font-size: 10px; color: var(--faint);
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.word-back {
+  font-size: 18px; font-weight: 600;
+  color: var(--accent);
+  letter-spacing: -0.01em;
+}
+.example {
+  font-size: 22px; font-weight: 500;
+  line-height: 1.4; color: var(--text);
+  letter-spacing: -0.005em;
+  flex: 1;
+}
+@media (max-width: 380px) {
+  .example { font-size: 19px; }
+}
+.op-hl { color: var(--accent); font-weight: 700; }
+.pairs {
+  font-size: 12px; color: var(--muted);
+  letter-spacing: 0.04em;
+  padding-top: 12px;
+  border-top: 1px solid var(--ring);
+  font-family: ui-monospace, monospace;
+}
+
+/* ─── NAV ─── */
+.deck-nav {
+  display: flex; gap: 8px; align-items: center;
+}
+.nav-btn {
+  flex: 1;
   background: var(--surf);
   border: 1px solid var(--ring);
   border-radius: var(--r-pill);
-  padding: 10px 16px;
-  color: var(--text); font: inherit; font-size: 14px;
-  outline: none; width: 100%;
+  padding: 13px 12px;
+  color: var(--text);
+  font-size: 14px; font-weight: 500;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, opacity 0.12s;
 }
-.detail-search::placeholder { color: var(--muted); }
-.detail-search:focus { border-color: var(--accent); }
-
-/* ─── CHIPS ─── */
-.detail-chips {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
-  gap: 6px;
-}
-@media (max-width: 480px) {
-  .detail-chips { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
-}
-.chip {
-  background: var(--surf);
-  border: 1px solid var(--ring);
-  border-radius: var(--r-chip);
-  padding: 9px 10px;
-  color: var(--text); font-size: 13px; font-weight: 500;
-  text-align: center; cursor: pointer;
-  transition: background 0.12s, border-color 0.12s, transform 0.06s;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.chip:hover { background: var(--surf-2); border-color: rgba(255,255,255,0.14); }
-.chip:active { transform: scale(0.96); }
-.chip-hidden { display: none; }
-.chip.expanded {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #0f0f0f; font-weight: 600;
-}
-
-.word-info {
-  grid-column: 1 / -1;
+.nav-btn:hover:not(:disabled) {
   background: var(--surf-2);
-  border: 1px solid var(--ring);
-  border-left: 3px solid var(--accent);
-  border-radius: var(--r-chip);
-  padding: 12px 14px;
-  display: flex; flex-direction: column; gap: 6px;
+  border-color: rgba(255,255,255,0.14);
 }
-.info-zh { color: var(--text); font-size: 15px; font-weight: 500; }
-.info-ex { color: var(--sub); font-size: 13px; font-style: italic; line-height: 1.55; }
+.nav-btn:active:not(:disabled) { transform: scale(0.98); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.nav-shuffle {
+  flex: 0 0 auto;
+  width: 44px;
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+  padding: 13px 0;
+}
 
 /* ─── FOOTER ─── */
 .footer {
-  display: flex; flex-direction: column; gap: 6px;
+  display: flex; flex-direction: column; gap: 4px;
   margin-top: auto;
-  padding-top: 18px;
+  padding-top: 12px;
 }
 .r2-link {
   color: var(--muted); text-decoration: none;
   font-size: 13px; text-align: center;
-  padding: 12px;
+  padding: 10px;
   transition: color 0.12s;
 }
 .r2-link:hover { color: var(--text); }
@@ -209,18 +262,35 @@ button { font: inherit; color: inherit; }
     <div class="cards"></div>
   </section>
 
-  <section id="detail" hidden>
-    <button type="button" class="back">← 回首頁</button>
-    <div class="detail-head">
-      <div class="detail-title">
-        <span class="detail-num"></span>
-        <span class="detail-label-zh"></span>
-        <span class="detail-label-en"></span>
+  <section id="deck" hidden>
+    <div class="deck-head">
+      <button type="button" class="back-btn">← 回首頁</button>
+      <div class="deck-title">
+        <span class="deck-label-zh"></span>
+        <span class="deck-label-en"></span>
       </div>
-      <p class="detail-tagline"></p>
+      <span class="counter"></span>
     </div>
-    <input type="text" class="detail-search" autocomplete="off" autocapitalize="off" spellcheck="false">
-    <div class="detail-chips"></div>
+
+    <div class="card-stage">
+      <div class="flashcard">
+        <div class="face face-front">
+          <span class="word-front"></span>
+          <span class="tap-hint">tap to flip</span>
+        </div>
+        <div class="face face-back">
+          <span class="word-back"></span>
+          <p class="example"></p>
+          <div class="pairs"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="deck-nav">
+      <button type="button" class="nav-btn nav-prev">← prev</button>
+      <button type="button" class="nav-btn nav-shuffle" title="shuffle deck">⇄</button>
+      <button type="button" class="nav-btn nav-next">next →</button>
+    </div>
   </section>
 
   <footer class="footer">
