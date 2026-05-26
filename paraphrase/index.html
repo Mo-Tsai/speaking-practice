@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>BE850 · Round 2 · Paraphrase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BE850">
+<meta name="theme-color" content="#0f0f0f">
+<link rel="manifest" href="../manifest.json">
+<style>
+:root {
+  --bg:      #0f0f0f;
+  --surf:    #161616;
+  --surf-2:  #1c1c1c;
+  --ring:    rgba(255,255,255,0.08);
+  --ring-in: rgba(255,255,255,0.05);
+  --div:     rgba(255,255,255,0.06);
+  --text:    #e8e8e8;
+  --sub:     #aaa;
+  --muted:   #777;
+  --faint:   #444;
+  --sage:    #8a9e89;
+  --rose:    #a88585;
+  --sand:    #b89870;
+  --slate:   #7d94a6;
+  --r-card:  18px;
+  --r-pill:  9999px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-weight: 450;
+  -webkit-font-smoothing: antialiased;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 16px;
+  min-height: 100dvh;
+}
+#app { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+
+/* ─── HEADER BAR ─── */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 4px 2px;
+}
+.brand { display: flex; align-items: baseline; gap: 8px; }
+.brand-name { font-size: 0.95rem; font-weight: 700; letter-spacing: -0.02em; }
+.brand-sub { font-family: ui-monospace, monospace; font-size: 0.62rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.head-right { display: flex; align-items: center; gap: 10px; }
+.progress-text { font-family: ui-monospace, monospace; font-size: 0.72rem; color: var(--sub); letter-spacing: 0.04em; }
+.icon-btn {
+  width: 32px; height: 32px; border: none; background: transparent;
+  color: var(--muted); cursor: pointer; border-radius: var(--r-pill);
+  font-size: 0.95rem; display: flex; align-items: center; justify-content: center;
+  transition: color 0.12s, background 0.12s;
+}
+.icon-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+
+/* ─── CARD ─── */
+.card {
+  background: var(--surf); border-radius: var(--r-card);
+  box-shadow: inset 0 0 0 1px var(--ring), 0 8px 28px rgba(0,0,0,0.4);
+  padding: 22px 22px 18px;
+  display: flex; flex-direction: column; gap: 14px;
+  flex: 1; min-height: 0;
+}
+.card-eyebrow {
+  font-family: ui-monospace, monospace;
+  font-size: 0.62rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--slate);
+}
+.card-eyebrow.basic { color: var(--sand); }
+.card-prompt-en {
+  font-size: 1.7rem; font-weight: 650; letter-spacing: -0.02em;
+  line-height: 1.25; color: #f4f4f4;
+  text-wrap: balance;
+}
+.card-prompt-zh {
+  font-size: 0.92rem; font-weight: 400; color: var(--sub);
+  letter-spacing: 0.01em; line-height: 1.5;
+}
+.card-hint {
+  font-size: 0.82rem; color: var(--muted); line-height: 1.6;
+  padding: 10px 12px; background: rgba(255,255,255,0.025);
+  border-radius: 10px; box-shadow: inset 0 0 0 1px var(--ring-in);
+}
+.card-divider { height: 1px; background: var(--div); margin: 2px -22px; }
+
+.answer-block { display: flex; flex-direction: column; gap: 8px; }
+.answer-text {
+  font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em;
+  line-height: 1.4; color: #f4f4f4; text-wrap: balance;
+}
+.answer-text .w-op {
+  color: var(--sand); font-weight: 700;
+  text-shadow: 0 0 6px rgba(184,152,112,0.25);
+}
+.operators-row {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  font-size: 0.7rem; color: var(--muted);
+}
+.op-chip {
+  background: rgba(184,152,112,0.12); color: var(--sand);
+  padding: 2px 8px; border-radius: var(--r-pill);
+  font-family: ui-monospace, monospace; font-size: 0.7rem; font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(184,152,112,0.25);
+}
+.note-block {
+  font-size: 0.78rem; color: var(--sub); line-height: 1.6;
+  padding: 8px 10px; border-left: 2px solid var(--sage);
+  background: rgba(138,158,137,0.06);
+  border-radius: 0 8px 8px 0;
+}
+
+/* ─── SPEAK ROW ─── */
+.speak-row {
+  display: flex; gap: 8px; align-items: center;
+}
+.speak-row button {
+  flex: 1; height: 38px;
+  font-family: inherit; font-size: 0.82rem; font-weight: 550;
+  background: var(--surf-2); color: var(--text); border: none;
+  border-radius: var(--r-pill); cursor: pointer;
+  box-shadow: inset 0 0 0 1px var(--ring);
+  transition: background 0.12s, box-shadow 0.12s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.speak-row button:hover { background: #222; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.14); }
+.speak-row button.active { color: var(--slate); box-shadow: inset 0 0 0 1px var(--slate); }
+.speak-row .btn-slow.on { color: var(--sage); box-shadow: inset 0 0 0 1px var(--sage); }
+
+/* ─── RECORD BUTTON ─── */
+.record-btn {
+  width: 100%; height: 56px;
+  font-family: inherit; font-size: 0.95rem; font-weight: 650;
+  background: var(--surf-2); color: var(--text); border: none;
+  border-radius: var(--r-pill); cursor: pointer;
+  box-shadow: inset 0 0 0 1px var(--ring), 0 2px 10px rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background 0.12s, color 0.12s, box-shadow 0.12s;
+  letter-spacing: 0.02em;
+}
+.record-btn:hover:not(:disabled) { background: #222; }
+.record-btn.recording {
+  color: var(--rose);
+  box-shadow: inset 0 0 0 1.5px rgba(168,133,133,0.5);
+  animation: pulse 1.4s infinite;
+}
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(168,133,133,0.4), inset 0 0 0 1.5px rgba(168,133,133,0.5); }
+  70%  { box-shadow: 0 0 0 10px rgba(168,133,133,0), inset 0 0 0 1.5px rgba(168,133,133,0.5); }
+  100% { box-shadow: 0 0 0 0   rgba(168,133,133,0), inset 0 0 0 1.5px rgba(168,133,133,0.5); }
+}
+
+/* ─── HEARD TEXT ─── */
+.heard-box {
+  font-size: 0.82rem; color: var(--sub); line-height: 1.5;
+  padding: 10px 12px; background: rgba(255,255,255,0.03);
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px var(--ring-in);
+  min-height: 0;
+}
+.heard-box .heard-label {
+  font-family: ui-monospace, monospace; font-size: 0.6rem;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
+  margin-right: 6px;
+}
+.heard-box:empty { display: none; }
+
+/* ─── PRIMARY ACTION ─── */
+.btn-primary {
+  width: 100%; height: 50px;
+  font-family: inherit; font-size: 0.92rem; font-weight: 650;
+  background: var(--slate); color: #fff; border: none;
+  border-radius: var(--r-pill); cursor: pointer;
+  box-shadow: 0 4px 16px rgba(125,148,166,0.3);
+  transition: background 0.12s, transform 0.08s;
+  letter-spacing: 0.02em;
+}
+.btn-primary:hover { background: #8fa8bc; }
+.btn-primary:active { transform: scale(0.98); }
+
+/* ─── RATING ROW (SM-2) ─── */
+.rating-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+}
+.rate-btn {
+  height: 50px; padding: 4px;
+  font-family: inherit; font-size: 0.74rem; font-weight: 600;
+  background: var(--surf-2); border: none; border-radius: 12px;
+  cursor: pointer; color: var(--sub);
+  box-shadow: inset 0 0 0 1px var(--ring);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px;
+  transition: background 0.12s, color 0.12s, box-shadow 0.12s;
+}
+.rate-btn .rate-label { font-size: 0.82rem; font-weight: 650; letter-spacing: -0.01em; }
+.rate-btn .rate-next { font-family: ui-monospace, monospace; font-size: 0.6rem; color: var(--faint); letter-spacing: 0.04em; }
+.rate-btn:hover { background: #222; }
+.rate-btn.rate-again:hover { color: var(--rose); box-shadow: inset 0 0 0 1px rgba(168,133,133,0.4); }
+.rate-btn.rate-hard:hover  { color: var(--sand); box-shadow: inset 0 0 0 1px rgba(184,152,112,0.4); }
+.rate-btn.rate-good:hover  { color: var(--sage); box-shadow: inset 0 0 0 1px rgba(138,158,137,0.4); }
+.rate-btn.rate-easy:hover  { color: var(--slate); box-shadow: inset 0 0 0 1px rgba(125,148,166,0.4); }
+
+/* ─── EMPTY / DONE STATE ─── */
+.empty-state {
+  text-align: center; padding: 40px 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.empty-icon { font-size: 2.4rem; }
+.empty-title { font-size: 1.1rem; font-weight: 650; color: var(--sage); }
+.empty-sub { font-size: 0.85rem; color: var(--sub); line-height: 1.6; max-width: 320px; }
+
+/* ─── SETTINGS PANEL ─── */
+.modal-bg {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal {
+  background: var(--surf); border-radius: 16px; padding: 22px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6), inset 0 0 0 1px var(--ring);
+  width: 100%; max-width: 360px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.modal h3 { font-size: 1rem; font-weight: 650; letter-spacing: -0.01em; }
+.setting-row { display: flex; flex-direction: column; gap: 6px; }
+.setting-label { font-family: ui-monospace, monospace; font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.setting-options { display: flex; gap: 6px; flex-wrap: wrap; }
+.setting-pill {
+  padding: 6px 12px; font-family: inherit; font-size: 0.78rem; font-weight: 550;
+  background: var(--surf-2); color: var(--sub); border: none;
+  border-radius: var(--r-pill); cursor: pointer;
+  box-shadow: inset 0 0 0 1px var(--ring);
+  transition: background 0.12s, color 0.12s;
+}
+.setting-pill:hover { color: var(--text); }
+.setting-pill.active { background: var(--slate); color: #fff; box-shadow: none; }
+.modal-foot { display: flex; gap: 8px; margin-top: 6px; }
+.modal-foot button {
+  flex: 1; height: 38px; font-family: inherit; font-size: 0.82rem; font-weight: 550;
+  border-radius: var(--r-pill); border: none; cursor: pointer;
+}
+.btn-close { background: var(--surf-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--ring); }
+.btn-reset { background: transparent; color: var(--rose); box-shadow: inset 0 0 0 1px rgba(168,133,133,0.3); }
+.stat-line { font-size: 0.78rem; color: var(--sub); line-height: 1.6; }
+.stat-line b { color: var(--text); }
+
+/* ─── NOTICE ─── */
+.notice {
+  background: var(--surf); border-radius: 14px; padding: 24px;
+  color: var(--rose); font-size: 0.88rem; line-height: 1.8;
+  box-shadow: inset 0 0 0 1px rgba(168,133,133,0.2);
+}
+
+/* ─── FOOTER ─── */
+.app-version {
+  position: fixed; bottom: 6px; right: 10px;
+  font-family: ui-monospace, monospace; font-size: 0.56rem;
+  color: var(--faint); letter-spacing: 0.08em;
+  pointer-events: none; user-select: none;
+}
+.back-link {
+  position: fixed; top: 10px; left: 12px; z-index: 100;
+  font-family: ui-monospace, monospace; font-size: 0.66rem;
+  color: var(--muted); text-decoration: none;
+  letter-spacing: 0.04em;
+  padding: 4px 8px; border-radius: var(--r-pill);
+  background: rgba(15,15,15,0.7);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  transition: color 0.12s, background 0.12s;
+}
+.back-link:hover { color: var(--text); background: rgba(28,28,28,0.85); }
+</style>
+</head>
+<body>
+<a class="back-link" href="../">← Round 1 架構</a>
+<div class="app-version">v6.0 · BE850</div>
+<div id="app">
+  <p style="color:#444;font-size:0.85rem;padding:20px 4px;">Loading…</p>
+</div>
+<script src="./be850-app.js"></script>
+</body>
+</html>
