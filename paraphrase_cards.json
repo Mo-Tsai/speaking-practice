@@ -1,0 +1,484 @@
+{
+  "version": "v6.0",
+  "description": "Basic English Paraphrase 練習卡 — 把日常英文用 18 動詞 + 850 字重組",
+  "operators_18": ["come","get","give","go","keep","let","make","put","seem","take","be","do","have","say","see","send","may","will"],
+  "cards": [
+    {
+      "id": "verb_walk",
+      "type": "verb",
+      "prompt_en": "walk",
+      "prompt_zh": "走路",
+      "basic_answer": "go by walking",
+      "operators_used": ["go"],
+      "note": "走路 = 用走的方式去"
+    },
+    {
+      "id": "verb_run",
+      "type": "verb",
+      "prompt_en": "run",
+      "prompt_zh": "跑",
+      "basic_answer": "go quickly",
+      "operators_used": ["go"],
+      "note": "跑 = 快速地去"
+    },
+    {
+      "id": "verb_jump",
+      "type": "verb",
+      "prompt_en": "jump",
+      "prompt_zh": "跳",
+      "basic_answer": "go up high",
+      "operators_used": ["go"],
+      "note": "跳 = 向上去"
+    },
+    {
+      "id": "verb_swim",
+      "type": "verb",
+      "prompt_en": "swim",
+      "prompt_zh": "游泳",
+      "basic_answer": "go through water",
+      "operators_used": ["go"],
+      "note": "游泳 = 穿過水"
+    },
+    {
+      "id": "verb_eat",
+      "type": "verb",
+      "prompt_en": "eat",
+      "prompt_zh": "吃",
+      "basic_answer": "have a meal",
+      "operators_used": ["have"],
+      "note": "吃 = 擁有一餐"
+    },
+    {
+      "id": "verb_drink",
+      "type": "verb",
+      "prompt_en": "drink",
+      "prompt_zh": "喝(動詞)",
+      "basic_answer": "have a drink",
+      "operators_used": ["have"],
+      "note": "喝 = 擁有一份飲料"
+    },
+    {
+      "id": "verb_sleep",
+      "type": "verb",
+      "prompt_en": "sleep",
+      "prompt_zh": "睡覺",
+      "basic_answer": "go to sleep",
+      "operators_used": ["go"],
+      "note": "睡覺 = 進入睡眠"
+    },
+    {
+      "id": "verb_buy",
+      "type": "verb",
+      "prompt_en": "buy",
+      "prompt_zh": "買",
+      "basic_answer": "give money for",
+      "operators_used": ["give"],
+      "note": "買 = 付錢取得"
+    },
+    {
+      "id": "verb_sell",
+      "type": "verb",
+      "prompt_en": "sell",
+      "prompt_zh": "賣",
+      "basic_answer": "give for money",
+      "operators_used": ["give"],
+      "note": "賣 = 給出去換錢"
+    },
+    {
+      "id": "verb_enter",
+      "type": "verb",
+      "prompt_en": "enter",
+      "prompt_zh": "進入",
+      "basic_answer": "go in",
+      "operators_used": ["go"],
+      "note": "進入 = 走進去"
+    },
+    {
+      "id": "verb_leave",
+      "type": "verb",
+      "prompt_en": "leave",
+      "prompt_zh": "離開",
+      "basic_answer": "go away",
+      "operators_used": ["go"],
+      "note": "離開 = 走開"
+    },
+    {
+      "id": "verb_arrive",
+      "type": "verb",
+      "prompt_en": "arrive",
+      "prompt_zh": "抵達",
+      "basic_answer": "come to",
+      "operators_used": ["come"],
+      "note": "抵達 = 來到"
+    },
+    {
+      "id": "verb_forget",
+      "type": "verb",
+      "prompt_en": "forget",
+      "prompt_zh": "忘記",
+      "basic_answer": "let go from memory",
+      "operators_used": ["let","go"],
+      "note": "忘記 = 讓記憶離開"
+    },
+    {
+      "id": "verb_remember",
+      "type": "verb",
+      "prompt_en": "remember",
+      "prompt_zh": "記得",
+      "basic_answer": "keep in memory",
+      "operators_used": ["keep"],
+      "note": "記得 = 保留在記憶中"
+    },
+    {
+      "id": "verb_want",
+      "type": "verb",
+      "prompt_en": "want",
+      "prompt_zh": "想要",
+      "basic_answer": "have a desire for",
+      "operators_used": ["have"],
+      "note": "想要 = 擁有對它的渴望"
+    },
+    {
+      "id": "verb_need",
+      "type": "verb",
+      "prompt_en": "need",
+      "prompt_zh": "需要",
+      "basic_answer": "have a need for",
+      "operators_used": ["have"],
+      "note": "需要 = 擁有對它的需求"
+    },
+    {
+      "id": "verb_help",
+      "type": "verb",
+      "prompt_en": "help",
+      "prompt_zh": "幫助",
+      "basic_answer": "give help to",
+      "operators_used": ["give"],
+      "note": "幫助 = 給予幫忙"
+    },
+    {
+      "id": "verb_answer",
+      "type": "verb",
+      "prompt_en": "answer",
+      "prompt_zh": "回答",
+      "basic_answer": "give an answer",
+      "operators_used": ["give"],
+      "note": "回答 = 給出答案"
+    },
+    {
+      "id": "verb_ask",
+      "type": "verb",
+      "prompt_en": "ask",
+      "prompt_zh": "問",
+      "basic_answer": "put a question",
+      "operators_used": ["put"],
+      "note": "問 = 提出問題"
+    },
+    {
+      "id": "verb_decide",
+      "type": "verb",
+      "prompt_en": "decide",
+      "prompt_zh": "決定",
+      "basic_answer": "make a decision",
+      "operators_used": ["make"],
+      "note": "決定 = 做出決定"
+    },
+    {
+      "id": "verb_start",
+      "type": "verb",
+      "prompt_en": "start",
+      "prompt_zh": "開始",
+      "basic_answer": "make a start",
+      "operators_used": ["make"],
+      "note": "開始 = 做出開頭"
+    },
+    {
+      "id": "verb_stop",
+      "type": "verb",
+      "prompt_en": "stop",
+      "prompt_zh": "停止",
+      "basic_answer": "come to a stop",
+      "operators_used": ["come"],
+      "note": "停止 = 來到停止點"
+    },
+    {
+      "id": "verb_visit",
+      "type": "verb",
+      "prompt_en": "visit",
+      "prompt_zh": "拜訪",
+      "basic_answer": "go to see",
+      "operators_used": ["go","see"],
+      "note": "拜訪 = 去看(某人)"
+    },
+    {
+      "id": "verb_meet",
+      "type": "verb",
+      "prompt_en": "meet",
+      "prompt_zh": "見面",
+      "basic_answer": "come together",
+      "operators_used": ["come"],
+      "note": "見面 = 一起來到"
+    },
+    {
+      "id": "verb_speak",
+      "type": "verb",
+      "prompt_en": "speak",
+      "prompt_zh": "說話",
+      "basic_answer": "say words",
+      "operators_used": ["say"],
+      "note": "說話 = 說出字"
+    },
+    {
+      "id": "verb_listen",
+      "type": "verb",
+      "prompt_en": "listen",
+      "prompt_zh": "聽",
+      "basic_answer": "give ear to",
+      "operators_used": ["give"],
+      "note": "聽 = 給予耳朵"
+    },
+    {
+      "id": "verb_watch",
+      "type": "verb",
+      "prompt_en": "watch",
+      "prompt_zh": "觀看",
+      "basic_answer": "keep looking at",
+      "operators_used": ["keep"],
+      "note": "觀看 = 持續看著"
+    },
+    {
+      "id": "verb_wait",
+      "type": "verb",
+      "prompt_en": "wait",
+      "prompt_zh": "等待",
+      "basic_answer": "keep waiting",
+      "operators_used": ["keep"],
+      "note": "等待 = 持續等"
+    },
+    {
+      "id": "verb_understand",
+      "type": "verb",
+      "prompt_en": "understand",
+      "prompt_zh": "理解",
+      "basic_answer": "get the idea",
+      "operators_used": ["get"],
+      "note": "理解 = 抓到意思"
+    },
+    {
+      "id": "verb_learn",
+      "type": "verb",
+      "prompt_en": "learn",
+      "prompt_zh": "學習",
+      "basic_answer": "get knowledge",
+      "operators_used": ["get"],
+      "note": "學習 = 取得知識"
+    },
+    {
+      "id": "para_allergic",
+      "type": "paraphrase",
+      "prompt_en": "I'm allergic to shellfish.",
+      "prompt_zh": "我對海鮮過敏。",
+      "basic_answer": "Sea animals with hard outside make me ill.",
+      "operators_used": ["make"],
+      "note": "影片範例 7:用 make 描述因果"
+    },
+    {
+      "id": "para_abscond",
+      "type": "paraphrase",
+      "prompt_en": "He absconded with the proceeds.",
+      "prompt_zh": "他帶著贓款潛逃。",
+      "basic_answer": "He went away in secret with the money.",
+      "operators_used": ["go"],
+      "note": "影片範例 1:用 go away 替代 abscond"
+    },
+    {
+      "id": "para_existential",
+      "type": "paraphrase",
+      "prompt_en": "I'm experiencing existential dread.",
+      "prompt_zh": "我正在經歷存在主義的恐懼。",
+      "basic_answer": "I have a bad feeling about being alive.",
+      "operators_used": ["have","be"],
+      "note": "影片範例 2:哲學概念也能用 850 字"
+    },
+    {
+      "id": "para_narcissistic",
+      "type": "paraphrase",
+      "prompt_en": "She's pathologically narcissistic.",
+      "prompt_zh": "她有病態自戀傾向。",
+      "basic_answer": "She has a sickness where she only has love for herself.",
+      "operators_used": ["have"],
+      "note": "影片範例 3:心理疾病用 have a sickness"
+    },
+    {
+      "id": "para_terminal",
+      "type": "paraphrase",
+      "prompt_en": "The prognosis is terminal.",
+      "prompt_zh": "病情已是末期。",
+      "basic_answer": "The doctor says I will be dead before long.",
+      "operators_used": ["say","will","be"],
+      "note": "影片範例 4:醫學詞用 doctor says"
+    },
+    {
+      "id": "para_expectorating",
+      "type": "paraphrase",
+      "prompt_en": "Please refrain from expectorating on the premises.",
+      "prompt_zh": "請勿在場內吐痰。",
+      "basic_answer": "Please do not put your mouth water on the floor.",
+      "operators_used": ["do","put"],
+      "note": "影片範例 5:吐痰 = put mouth water"
+    },
+    {
+      "id": "para_acquitted",
+      "type": "paraphrase",
+      "prompt_en": "He was acquitted of all charges.",
+      "prompt_zh": "他所有罪名都不成立。",
+      "basic_answer": "They said he did not do any bad things.",
+      "operators_used": ["say","do"],
+      "note": "影片範例 6:無罪 = 沒做壞事"
+    },
+    {
+      "id": "para_postpartum",
+      "type": "paraphrase",
+      "prompt_en": "She's suffering from postpartum depression.",
+      "prompt_zh": "她有產後憂鬱症。",
+      "basic_answer": "After her baby came out she had a sad feeling that will not go away.",
+      "operators_used": ["come","have","will","go"],
+      "note": "影片範例 8:抽象病名 → 具體描述"
+    },
+    {
+      "id": "para_impasse",
+      "type": "paraphrase",
+      "prompt_en": "Negotiations have reached an impasse.",
+      "prompt_zh": "談判陷入僵局。",
+      "basic_answer": "The talks are stuck and not going anywhere.",
+      "operators_used": ["be","go"],
+      "note": "影片範例 9:僵局 = stuck + not going"
+    },
+    {
+      "id": "para_incarcerated",
+      "type": "paraphrase",
+      "prompt_en": "He is incarcerated for tax evasion.",
+      "prompt_zh": "他因逃稅入獄。",
+      "basic_answer": "He is in prison because he kept his money from the government.",
+      "operators_used": ["be","keep"],
+      "note": "影片範例 10:法律詞 → 日常因果"
+    },
+    {
+      "id": "para_hungry",
+      "type": "paraphrase",
+      "prompt_en": "I'm starving.",
+      "prompt_zh": "我快餓死了。",
+      "basic_answer": "I have a great need for food.",
+      "operators_used": ["have"],
+      "note": "延伸:用 have a need 替代 starve"
+    },
+    {
+      "id": "para_exhausted",
+      "type": "paraphrase",
+      "prompt_en": "I'm exhausted.",
+      "prompt_zh": "我累壞了。",
+      "basic_answer": "I have no more power in my body.",
+      "operators_used": ["have"],
+      "note": "延伸:用身體沒力描述疲累"
+    },
+    {
+      "id": "para_angry",
+      "type": "paraphrase",
+      "prompt_en": "I'm furious.",
+      "prompt_zh": "我超級生氣。",
+      "basic_answer": "I have a very strong angry feeling.",
+      "operators_used": ["have"],
+      "note": "延伸:程度詞用 very strong"
+    },
+    {
+      "id": "para_celebrate",
+      "type": "paraphrase",
+      "prompt_en": "Let's celebrate.",
+      "prompt_zh": "我們來慶祝吧。",
+      "basic_answer": "Let us have a happy time together.",
+      "operators_used": ["let","have"],
+      "note": "延伸:慶祝 = 一起開心"
+    },
+    {
+      "id": "para_postpone",
+      "type": "paraphrase",
+      "prompt_en": "Let's postpone the meeting.",
+      "prompt_zh": "我們把會議延後吧。",
+      "basic_answer": "Let us put the meeting to a later day.",
+      "operators_used": ["let","put"],
+      "note": "延伸:postpone = put to later"
+    },
+    {
+      "id": "para_explain",
+      "type": "paraphrase",
+      "prompt_en": "Could you explain that?",
+      "prompt_zh": "你可以解釋嗎?",
+      "basic_answer": "Could you make that clear to me?",
+      "operators_used": ["make"],
+      "note": "延伸:explain = make clear"
+    },
+    {
+      "id": "para_suggest",
+      "type": "paraphrase",
+      "prompt_en": "May I suggest something?",
+      "prompt_zh": "我可以建議一下嗎?",
+      "basic_answer": "May I give you an idea?",
+      "operators_used": ["may","give"],
+      "note": "延伸:suggest = give an idea"
+    },
+    {
+      "id": "para_apologize",
+      "type": "paraphrase",
+      "prompt_en": "I apologize for being late.",
+      "prompt_zh": "抱歉我遲到了。",
+      "basic_answer": "I am sorry for coming late.",
+      "operators_used": ["be","come"],
+      "note": "延伸:apologize = say sorry"
+    },
+    {
+      "id": "para_disappointed",
+      "type": "paraphrase",
+      "prompt_en": "I'm disappointed.",
+      "prompt_zh": "我很失望。",
+      "basic_answer": "I had a hope but it did not come true.",
+      "operators_used": ["have","do","come"],
+      "note": "延伸:disappointed = 希望沒成真"
+    },
+    {
+      "id": "para_borrow",
+      "type": "paraphrase",
+      "prompt_en": "May I borrow your pen?",
+      "prompt_zh": "可以借你的筆嗎?",
+      "basic_answer": "May I take your pen for a short time?",
+      "operators_used": ["may","take"],
+      "note": "延伸:borrow = take for a short time"
+    },
+    {
+      "id": "para_confused",
+      "type": "paraphrase",
+      "prompt_en": "I'm confused.",
+      "prompt_zh": "我搞不清楚。",
+      "basic_answer": "I do not get the idea clearly.",
+      "operators_used": ["do","get"],
+      "note": "延伸:confused = 沒抓到清楚"
+    },
+    {
+      "id": "para_recommend",
+      "type": "paraphrase",
+      "prompt_en": "I recommend this restaurant.",
+      "prompt_zh": "我推薦這間餐廳。",
+      "basic_answer": "I say this food place is very good.",
+      "operators_used": ["say","be"],
+      "note": "延伸:recommend = say is good"
+    },
+    {
+      "id": "para_succeed",
+      "type": "paraphrase",
+      "prompt_en": "He succeeded.",
+      "prompt_zh": "他成功了。",
+      "basic_answer": "He got what he was working for.",
+      "operators_used": ["get","be"],
+      "note": "延伸:succeed = 拿到努力的東西"
+    }
+  ]
+}

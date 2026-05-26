@@ -2,1738 +2,281 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Speaking Practice · English</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>BE850 · Basic English Practice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Speaking">
+<meta name="apple-mobile-web-app-title" content="BE850">
 <meta name="theme-color" content="#0f0f0f">
 <link rel="manifest" href="manifest.json">
 <style>
 :root {
   --bg:      #0f0f0f;
   --surf:    #161616;
-  --ring:    rgba(255,255,255,0.06);
+  --surf-2:  #1c1c1c;
+  --ring:    rgba(255,255,255,0.08);
   --ring-in: rgba(255,255,255,0.05);
-  --div:     rgba(255,255,255,0.05);
+  --div:     rgba(255,255,255,0.06);
   --text:    #e8e8e8;
-  --sub:     #888;
-  --muted:   #555;
-  --faint:   #2e2e2e;
+  --sub:     #aaa;
+  --muted:   #777;
+  --faint:   #444;
   --sage:    #8a9e89;
   --rose:    #a88585;
   --sand:    #b89870;
   --slate:   #7d94a6;
-  --r-app:   20px;
+  --r-card:  18px;
   --r-pill:  9999px;
-  --btn-h:   38px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
 body {
   background: var(--bg); color: var(--text);
   font-family: "Inter", system-ui, -apple-system, sans-serif;
-  font-weight: 450; font-feature-settings: "ss02" 0, "cv05" 1;
+  font-weight: 450;
   -webkit-font-smoothing: antialiased;
-  height: 100dvh; overflow: hidden; display: flex; flex-direction: column;
-  align-items: center; padding: 10px 16px;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 16px;
+  min-height: 100dvh;
 }
-#app { width: 100%; max-width: 460px; height: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; overflow: hidden; }
-.header-mode-row { display: flex; align-items: center; justify-content: space-between; width: 100%; }
-.page-header { display: flex; align-items: baseline; gap: 8px; }
-.page-title { font-size: 1rem; font-weight: 650; letter-spacing: -0.015em; color: var(--text); }
-.page-sub   { font-size: 0.875rem; font-weight: 400; color: var(--muted); }
+#app { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
 
-/* ── TODAY CARD (NEW hero element) ── */
-.today-card {
-  width: 100%; background: var(--surf); border-radius: 16px;
-  box-shadow: inset 0 0 0 1px var(--ring-in), 0 0 0 1px rgba(125,148,166,0.12);
-  flex-shrink: 0; overflow: hidden;
-}
-.today-card-header {
-  padding: 14px 16px 0;
+/* ─── HEADER BAR ─── */
+.header {
   display: flex; align-items: center; justify-content: space-between;
+  padding: 4px 2px;
 }
-.today-label {
-  font-family: ui-monospace, monospace; font-size: 0.58rem;
-  text-transform: uppercase; letter-spacing: 0.09em; color: var(--slate);
+.brand { display: flex; align-items: baseline; gap: 8px; }
+.brand-name { font-size: 0.95rem; font-weight: 700; letter-spacing: -0.02em; }
+.brand-sub { font-family: ui-monospace, monospace; font-size: 0.62rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.head-right { display: flex; align-items: center; gap: 10px; }
+.progress-text { font-family: ui-monospace, monospace; font-size: 0.72rem; color: var(--sub); letter-spacing: 0.04em; }
+.icon-btn {
+  width: 32px; height: 32px; border: none; background: transparent;
+  color: var(--muted); cursor: pointer; border-radius: var(--r-pill);
+  font-size: 0.95rem; display: flex; align-items: center; justify-content: center;
+  transition: color 0.12s, background 0.12s;
 }
-.today-meta { font-size: 0.68rem; color: var(--muted); }
-.today-title {
-  padding: 6px 16px 0;
-  font-size: 1.3rem; font-weight: 700; letter-spacing: -0.03em; color: var(--text);
-}
-.today-prompt {
-  padding: 4px 16px 14px;
-  font-size: 0.8rem; color: var(--sub); line-height: 1.5;
-}
-.today-btn {
-  width: calc(100% - 32px); margin: 0 16px 16px;
-  height: 48px; font-family: inherit; font-size: 0.95rem; font-weight: 600;
-  background: var(--slate); color: #fff; border: none;
-  border-radius: var(--r-pill); cursor: pointer; letter-spacing: 0.02em;
-  transition: background 0.12s, transform 0.08s;
-  box-shadow: 0 2px 12px rgba(125,148,166,0.3);
-}
-.today-btn:hover { background: #8fa8bc; }
-.today-btn:active { transform: scale(0.97); }
-.today-btn.listened {
-  background: var(--sage);
-  box-shadow: 0 2px 12px rgba(138,158,137,0.3);
-}
+.icon-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
 
-/* ── STREAK BAR (enlarged) ── */
-.streak-bar {
-  width: 100%; background: var(--surf); border-radius: 12px;
-  padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;
-  box-shadow: inset 0 0 0 1px var(--ring-in); flex-shrink: 0; gap: 10px;
-}
-.streak-left { display: flex; flex-direction: column; gap: 1px; }
-.streak-label { font-family: ui-monospace, monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
-.streak-val { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.04em; color: var(--sand); line-height: 1; }
-.streak-dots { display: flex; gap: 6px; align-items: center; }
-.streak-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--faint); transition: background 0.2s; }
-.streak-dot.done { background: var(--sand); }
-.streak-dot.today { background: var(--sage); box-shadow: 0 0 8px rgba(138,158,137,0.6); }
-
-/* ── OTHER MODES link row ── */
-.other-modes {
-  width: 100%; display: flex; gap: 5px; flex-shrink: 0;
-}
-.other-mode-btn {
-  flex: 1; height: 30px; font-family: inherit; font-size: 0.7rem; font-weight: 550;
-  background: var(--surf); color: var(--muted); border: none; border-radius: 8px;
-  cursor: pointer; box-shadow: inset 0 0 0 1px var(--ring-in);
-  transition: background 0.12s, color 0.12s;
-}
-.other-mode-btn:hover { color: var(--sub); }
-.other-mode-btn.active { background: #222; color: var(--text); box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
-
-/* ── SCORE PANEL ── */
-.score-panel {
-  width: 100%; background: var(--surf); border-radius: 12px;
-  padding: 8px 14px; display: flex; align-items: center; gap: 0;
-  box-shadow: inset 0 0 0 1px var(--ring-in); flex-shrink: 0;
-}
-.score-group { display: flex; gap: 14px; flex: 1; }
-.score-item { display: flex; flex-direction: column; gap: 1px; }
-.score-label { font-family: ui-monospace, monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
-.score-val { font-size: 0.95rem; font-weight: 650; letter-spacing: -0.04em; color: var(--text); }
-.score-val.good { color: var(--sage); }
-.score-val.bad  { color: var(--rose); }
-.score-val.rate-good { color: var(--sage); }
-.score-val.rate-ok   { color: var(--sand); }
-.score-val.rate-bad  { color: var(--rose); }
-#btn-reset {
-  height: 28px; padding: 0 12px; font-family: inherit; font-size: 0.7rem;
-  font-weight: 500; letter-spacing: 0.03em; background: transparent;
-  color: var(--muted); border-radius: var(--r-pill);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
-  transition: color 0.12s, box-shadow 0.12s;
-}
-#btn-reset:hover { color: var(--rose); box-shadow: inset 0 0 0 1px rgba(168,133,133,0.3); }
-
-/* ── WORD COUNTER ── */
-#word-counter { font-size: 0.75rem; color: var(--faint); line-height: 2; width: 100%; }
-
-/* ── MISSION LIST & CARDS ── */
-.mission-list {
-  width: 100%; display: flex; flex-direction: column; gap: 4px;
-  overflow-y: auto; flex: 1; padding-bottom: 4px;
-}
-.mission-item {
-  width: 100%; background: var(--surf); border-radius: 10px;
-  padding: 10px 14px; display: flex; align-items: center; gap: 10px;
-  box-shadow: inset 0 0 0 1px var(--ring-in);
-  cursor: pointer; transition: box-shadow 0.12s;
-}
-.mission-item:active { box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12); }
-.mission-item.locked { opacity: 0.35; cursor: default; }
-.mission-item.completed .mission-item-icon { color: var(--sage); }
-.mission-item.active-mission { box-shadow: inset 0 0 0 1.5px var(--slate); }
-.mission-item-num { font-family: ui-monospace, monospace; font-size: 0.7rem; color: var(--muted); min-width: 20px; }
-.mission-item-name { flex: 1; font-size: 0.82rem; font-weight: 500; color: var(--text); }
-.mission-item-sub { font-size: 0.68rem; color: var(--muted); margin-top: 1px; }
-.mission-item-text { display: flex; flex-direction: column; flex: 1; }
-.mission-item-icon { font-size: 0.9rem; }
-
-.week-tabs { width: 100%; display: flex; gap: 4px; flex-shrink: 0; }
-.week-tab {
-  flex: 1; height: 30px; font-family: inherit; font-size: 0.7rem; font-weight: 550;
-  background: var(--surf); color: var(--muted); border: none; border-radius: 8px;
-  cursor: pointer; box-shadow: inset 0 0 0 1px var(--ring-in);
-  transition: background 0.12s, color 0.12s;
-}
-.week-tab.active { background: #222; color: var(--text); box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
-.week-tab:hover:not(.active) { color: var(--sub); }
-.week-tab .week-tab-progress { font-size: 0.58rem; color: var(--muted); margin-left: 2px; }
-
-/* ── MISSION COMPLETE ── */
-.mission-complete {
-  width: 100%; background: var(--surf); border-radius: 14px;
-  box-shadow: inset 0 0 0 1px rgba(138,158,137,0.3);
-  padding: 20px 16px; text-align: center; flex-shrink: 0; display: none;
-}
-.mission-complete.visible { display: block; }
-.mission-complete-icon { font-size: 2.2rem; margin-bottom: 8px; }
-.mission-complete-title { font-size: 1rem; font-weight: 650; color: var(--sage); margin-bottom: 4px; }
-.mission-complete-sub { font-size: 0.78rem; color: var(--sub); line-height: 1.5; }
-
-/* ── MISSION PRACTICE VIEW ── */
-.mission-view { display: flex; flex-direction: column; gap: 6px; width: 100%; height: 100%; overflow: hidden; }
-.mission-practice-area { display: flex; flex-direction: column; gap: 6px; flex: 1; overflow-y: auto; }
-.mission-nav-row { display: flex; gap: 6px; width: 100%; flex-shrink: 0; }
-.mission-nav-row button { flex: 1; }
-#btn-mission-record {
-  height: 42px; font-size: 0.9rem; font-weight: 600; letter-spacing: 0.04em;
-  background: #1c1c1c; color: var(--text);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 2px 8px rgba(0,0,0,0.4);
-  border-radius: var(--r-pill);
-}
-#btn-mission-record:hover { background: #222; }
-#btn-mission-record.recording {
-  background: #1c1c1c; color: var(--rose);
-  box-shadow: 0 0 0 1px rgba(168,133,133,0.3);
-  animation: pulse 1.4s infinite;
-}
-.mission-back-row { display: flex; align-items: center; gap: 8px; width: 100%; flex-shrink: 0; }
-.mission-back-btn {
-  height: 28px; padding: 0 12px; font-family: inherit; font-size: 0.75rem;
-  font-weight: 500; background: transparent; color: var(--muted); border: none;
-  border-radius: var(--r-pill); cursor: pointer;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
-}
-.mission-back-btn:hover { color: var(--sub); }
-.mission-progress-text {
-  font-family: ui-monospace, monospace; font-size: 0.6rem; color: var(--muted);
-  letter-spacing: 0.06em; text-transform: uppercase;
-}
-.mission-card {
-  width: 100%; background: var(--surf); border-radius: 14px;
-  box-shadow: inset 0 0 0 1px var(--ring-in); flex-shrink: 0;
-  display: flex; flex-direction: column; overflow: hidden;
-}
-.mission-header { padding: 12px 16px 8px; border-bottom: 1px solid var(--div); }
-.mission-week { font-family: ui-monospace, monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 4px; }
-.mission-title { font-size: 1rem; font-weight: 650; letter-spacing: -0.02em; color: var(--text); }
-
-/* ── LISTEN FIRST BUTTON ── */
-.listen-first-btn {
-  width: calc(100% - 32px); margin: 12px 16px 4px;
-  height: 38px; font-family: inherit; font-size: 0.82rem; font-weight: 550;
-  background: rgba(125,148,166,0.12); color: var(--slate); border: none;
-  border-radius: var(--r-pill); cursor: pointer; letter-spacing: 0.02em;
-  box-shadow: inset 0 0 0 1px rgba(125,148,166,0.2);
-  transition: background 0.12s;
-}
-.listen-first-btn:hover { background: rgba(125,148,166,0.2); }
-.listen-first-btn:disabled { opacity: 0.5; cursor: default; }
-.listen-first-btn.done { color: var(--sage); box-shadow: inset 0 0 0 1px rgba(138,158,137,0.3); }
-
-/* ── v4.0: PACK PROGRESS BAR ── */
-.pack-progress-wrap { padding: 4px 16px 10px; display: flex; flex-direction: column; gap: 4px; }
-.pack-progress-text { font-family: ui-monospace, monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.04em; }
-.pack-progress-bar { height: 4px; width: 100%; background: var(--faint); border-radius: 2px; overflow: hidden; }
-.pack-progress-fill { height: 100%; background: var(--slate); border-radius: 2px; transition: width 0.3s; }
-
-/* ── v4.0: PACK MISSION LIST (on today card) ── */
-.pack-mission-list { padding: 4px 12px 12px; display: flex; flex-direction: column; gap: 2px; }
-.pack-mission-row {
-  display: flex; align-items: center; gap: 10px; padding: 8px 8px;
-  border-radius: 8px; cursor: pointer; transition: background 0.12s;
-}
-.pack-mission-row:hover { background: rgba(255,255,255,0.04); }
-.pack-mission-row:active { background: rgba(255,255,255,0.06); }
-.pack-mission-num { font-family: ui-monospace, monospace; font-size: 0.68rem; color: var(--muted); min-width: 14px; text-align: center; }
-.pack-mission-title { flex: 1; font-size: 0.78rem; font-weight: 500; color: var(--text); letter-spacing: -0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pack-mission-steps { display: flex; gap: 3px; }
-.step-dot {
-  font-size: 0.55rem; padding: 2px 5px; border-radius: 4px;
-  font-family: inherit; font-weight: 500;
-  background: var(--faint); color: var(--muted);
-  min-width: 18px; text-align: center; letter-spacing: 0.02em;
-}
-.step-dot.done { background: rgba(138,158,137,0.18); color: var(--sage); }
-
-/* ── v4.0: LOOP STEP (4-step card inside mission view) ── */
-.loop-step { border-top: 1px solid var(--div); padding: 10px 16px 12px; }
-.loop-step.done .loop-step-label { color: var(--sage); }
-.loop-step-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 6px;
-}
-.loop-step-label {
-  font-family: ui-monospace, monospace; font-size: 0.68rem;
-  text-transform: uppercase; letter-spacing: 0.08em; color: var(--slate);
-  font-weight: 600;
-}
-.loop-step-icon { font-size: 0.9rem; }
-.loop-step-body { display: flex; flex-direction: column; gap: 6px; }
-.loop-step-btn {
-  height: 34px; font-family: inherit; font-size: 0.78rem; font-weight: 550;
-  background: var(--bg); color: var(--text); border: none;
-  border-radius: var(--r-pill); cursor: pointer; letter-spacing: 0.02em;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
-  transition: background 0.12s, color 0.12s, box-shadow 0.12s;
-}
-.loop-step-btn:hover:not(:disabled) { background: #1c1c1c; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.14); }
-.loop-step-btn.done {
-  color: var(--sage); background: rgba(138,158,137,0.08);
-  box-shadow: inset 0 0 0 1px rgba(138,158,137,0.3);
-}
-.loop-step-btn:disabled { opacity: 0.7; cursor: default; }
-
-/* ── v4.0: VERSION FOOTER ── */
-.app-version {
-  position: fixed; bottom: 4px; right: 8px;
-  font-family: ui-monospace, monospace; font-size: 0.55rem;
-  color: var(--faint); letter-spacing: 0.05em;
-  pointer-events: none; user-select: none;
-}
-
-/* ── RESULT BOX ── */
-.result-box {
-  width: 100%; background: var(--surf); border-radius: 12px;
-  padding: 10px 14px; min-height: 0; display: flex;
-  flex-direction: column; gap: 6px; font-size: 0.85rem;
-  transition: box-shadow 0.25s; box-shadow: inset 0 0 0 1px var(--ring-in);
-  flex-shrink: 0;
-}
-.result-box:empty { display: none; }
-.result-box.correct { box-shadow: inset 0 0 0 1px rgba(138,158,137,0.3), 0 0 0 1px rgba(138,158,137,0.08); }
-.result-box.wrong   { box-shadow: inset 0 0 0 1px rgba(168,133,133,0.3), 0 0 0 1px rgba(168,133,133,0.08); }
-.result-header { display: flex; align-items: center; gap: 8px; }
-.result-icon { font-size: 1rem; }
-.result-title { font-weight: 600; font-size: 0.88rem; letter-spacing: -0.01em; }
-.result-box.correct .result-title { color: var(--sage); }
-.result-box.wrong   .result-title { color: var(--rose); }
-/* humanized feedback line */
-.result-feedback { font-size: 0.78rem; color: var(--sub); line-height: 1.5; margin-top: 2px; }
-.diff-detail { font-size: 0.82rem; display: flex; flex-direction: column; gap: 5px; padding-top: 10px; border-top: 1px solid var(--div); }
-.diff-row { display: flex; gap: 10px; align-items: baseline; }
-.diff-label { font-family: ui-monospace, monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); min-width: 64px; }
-.diff-word { font-family: ui-monospace, monospace; font-size: 0.88rem; letter-spacing: 0.02em; }
-.diff-correct    { color: var(--text); }
-.diff-wrong-char { color: var(--rose); font-weight: 700; }
-.diff-missing    { color: #2a2a2a; }
-
-/* ── WORD CARD MODE ── */
-.card-mode-row {
-  width: 100%; display: flex; gap: 5px; flex-wrap: wrap; flex-shrink: 0;
-}
-.card-mode-btn {
-  flex: 1; min-width: 0; height: 26px; padding: 0 6px; font-family: inherit;
-  font-size: 0.68rem; font-weight: 500; letter-spacing: 0.02em;
-  background: var(--surf); color: var(--muted); border: none;
-  border-radius: 7px; cursor: pointer;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
-  transition: background 0.15s, color 0.15s, box-shadow 0.15s; white-space: nowrap;
-}
-.card-mode-btn.active {
-  background: #222; color: var(--text);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 1px 4px rgba(0,0,0,0.4);
-}
-.card-mode-btn:hover:not(.active) { color: var(--sub); }
-
+/* ─── CARD ─── */
 .card {
-  width: 100%; background: var(--surf); border-radius: var(--r-app);
-  padding: 14px 16px; display: flex; flex-direction: column;
-  box-shadow: 0 0 0 1px var(--ring), 0 4px 20px rgba(0,0,0,0.5);
-  flex: 1; min-height: 0; overflow-y: auto;
+  background: var(--surf); border-radius: var(--r-card);
+  box-shadow: inset 0 0 0 1px var(--ring), 0 8px 28px rgba(0,0,0,0.4);
+  padding: 22px 22px 18px;
+  display: flex; flex-direction: column; gap: 14px;
+  flex: 1; min-height: 0;
 }
-.card-block { padding: 8px 0; }
-.card-block:first-child { padding-top: 0; }
-.card-block:last-of-type { padding-bottom: 10px; }
-.card-divider { height: 1px; background: var(--div); margin: 0 -16px; }
-.eyebrow {
-  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
-  font-size: 0.65rem; font-weight: 500; text-transform: uppercase;
-  letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px;
+.card-eyebrow {
+  font-family: ui-monospace, monospace;
+  font-size: 0.62rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--slate);
 }
-.word-header { display: flex; align-items: center; gap: 10px; }
-.status-dot {
-  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
-  background: var(--faint); margin-top: 3px; transition: background 0.2s;
+.card-eyebrow.basic { color: var(--sand); }
+.card-prompt-en {
+  font-size: 1.7rem; font-weight: 650; letter-spacing: -0.02em;
+  line-height: 1.25; color: #f4f4f4;
+  text-wrap: balance;
 }
-.status-dot.correct { background: var(--sage); }
-.status-dot.wrong   { background: var(--rose); }
-.word-display {
-  font-size: 1.9rem; font-weight: 650; line-height: 1.15;
-  letter-spacing: -0.03em; color: #f4f4f4; text-wrap: balance;
+.card-prompt-zh {
+  font-size: 0.92rem; font-weight: 400; color: var(--sub);
+  letter-spacing: 0.01em; line-height: 1.5;
 }
-.word-ipa {
-  font-size: 0.95rem; color: var(--muted); font-weight: 400;
-  letter-spacing: 0.04em; margin-top: 5px; min-height: 1.4em;
+.card-hint {
+  font-size: 0.82rem; color: var(--muted); line-height: 1.6;
+  padding: 10px 12px; background: rgba(255,255,255,0.025);
+  border-radius: 10px; box-shadow: inset 0 0 0 1px var(--ring-in);
 }
-.word-ipa.loading { color: var(--faint); font-size: 0.75rem; }
-.translation-toggle { padding: 8px 0 0; display: flex; flex-direction: column; gap: 6px; }
-.trans-btn {
-  align-self: flex-start; height: 24px; padding: 0 10px;
-  font-family: inherit; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.04em;
-  background: transparent; color: var(--muted); border-radius: var(--r-pill);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
-  transition: color 0.12s, box-shadow 0.12s; cursor: pointer;
+.card-divider { height: 1px; background: var(--div); margin: 2px -22px; }
+
+.answer-block { display: flex; flex-direction: column; gap: 8px; }
+.answer-text {
+  font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em;
+  line-height: 1.4; color: #f4f4f4; text-wrap: balance;
 }
-.trans-btn:hover { color: var(--sub); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12); }
-.translation { font-size: 0.85rem; font-weight: 400; color: var(--muted); line-height: 1.6; }
-.example { font-size: 0.9rem; font-weight: 400; color: var(--sub); line-height: 1.8; font-style: italic; text-wrap: pretty; max-width: 42ch; }
-.example.target { color: #d0d0d0; font-style: normal; }
-.example-chunks { display: flex; flex-wrap: wrap; gap: 4px 2px; align-items: baseline; line-height: 2.2; }
-.chunk { display: inline-flex; gap: 3px; align-items: baseline; background: rgba(255,255,255,0.035); border-radius: 7px; padding: 1px 7px; margin: 1px 2px; }
-.chunk-sep { color: var(--faint); font-size: 0.7rem; align-self: center; margin: 0 1px; user-select: none; }
-.w-stress { color: #dcdcdc; font-weight: 550; font-size: 0.9rem; }
-.w-reduce { color: var(--muted); font-weight: 400; font-size: 0.8rem; letter-spacing: 0.01em; }
+.answer-text .w-op {
+  color: var(--sand); font-weight: 700;
+  text-shadow: 0 0 6px rgba(184,152,112,0.25);
+}
+.operators-row {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  font-size: 0.7rem; color: var(--muted);
+}
+.op-chip {
+  background: rgba(184,152,112,0.12); color: var(--sand);
+  padding: 2px 8px; border-radius: var(--r-pill);
+  font-family: ui-monospace, monospace; font-size: 0.7rem; font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(184,152,112,0.25);
+}
+.note-block {
+  font-size: 0.78rem; color: var(--sub); line-height: 1.6;
+  padding: 8px 10px; border-left: 2px solid var(--sage);
+  background: rgba(138,158,137,0.06);
+  border-radius: 0 8px 8px 0;
+}
+
+/* ─── SPEAK ROW ─── */
 .speak-row {
-  display: flex; gap: 6px; width: 100%;
-  border-top: 1px solid var(--div); padding-top: 10px;
+  display: flex; gap: 8px; align-items: center;
 }
 .speak-row button {
-  flex: 1; height: calc(var(--btn-h) - 4px); padding: 0;
-  font-family: inherit; font-size: 0.78rem; font-weight: 550;
-  background: var(--bg); color: #888; border: none;
-  border-radius: var(--r-pill); letter-spacing: 0.01em; cursor: pointer;
-  transition: background 0.12s, color 0.12s, box-shadow 0.12s;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
+  flex: 1; height: 38px;
+  font-family: inherit; font-size: 0.82rem; font-weight: 550;
+  background: var(--surf-2); color: var(--text); border: none;
+  border-radius: var(--r-pill); cursor: pointer;
+  box-shadow: inset 0 0 0 1px var(--ring);
+  transition: background 0.12s, box-shadow 0.12s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
 }
-.speak-row button:hover:not(:disabled) {
-  background: #1c1c1c; color: var(--text);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.11);
-}
-.speak-row button.speaking { color: var(--slate); box-shadow: inset 0 0 0 1px var(--slate); }
-#btn-speed.slow { color: var(--sage); box-shadow: inset 0 0 0 1px var(--sage); }
-.repeat-row {
-  width: 100%; display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 0 0; margin-top: 8px;
-  border-top: 1px solid var(--div); cursor: pointer; user-select: none;
-}
-.repeat-label { font-size: 0.8rem; font-weight: 500; color: var(--muted); letter-spacing: 0.02em; }
-.repeat-sublabel { font-size: 0.68rem; color: var(--faint); margin-top: 1px; }
-.repeat-label-group { display: flex; flex-direction: column; }
-.toggle-wrap { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
-.toggle-wrap input { opacity: 0; width: 0; height: 0; position: absolute; }
-.toggle-track {
-  position: absolute; inset: 0; border-radius: 24px;
-  background: var(--faint);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
-  transition: background 0.2s, box-shadow 0.2s;
-}
-.toggle-thumb {
-  position: absolute; top: 3px; left: 3px;
-  width: 18px; height: 18px; border-radius: 50%;
-  background: #555; transition: transform 0.2s, background 0.2s;
-}
-.toggle-wrap input:checked ~ .toggle-track {
-  background: rgba(125,148,166,0.25);
-  box-shadow: inset 0 0 0 1px rgba(125,148,166,0.4);
-}
-.toggle-wrap input:checked ~ .toggle-thumb { transform: translateX(20px); background: var(--slate); }
-.repeat-progress { font-size: 0.68rem; color: var(--slate); line-height: 1.4; width: 100%; text-align: right; min-height: 0; letter-spacing: 0.06em; padding-right: 2px; }
-.repeat-progress:empty { display: none; }
+.speak-row button:hover { background: #222; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.14); }
+.speak-row button.active { color: var(--slate); box-shadow: inset 0 0 0 1px var(--slate); }
+.speak-row .btn-slow.on { color: var(--sage); box-shadow: inset 0 0 0 1px var(--sage); }
 
-/* ── BUTTONS ── */
-button { border: none; cursor: pointer; font-family: "Inter", system-ui, sans-serif; font-feature-settings: "ss02" 0; transition: background 0.12s, box-shadow 0.12s, color 0.12s, transform 0.08s; -webkit-tap-highlight-color: transparent; }
-button:active  { transform: scale(0.97); }
-button:disabled { opacity: 0.3; cursor: not-allowed; }
-.btn-row { display: flex; gap: 8px; width: 100%; }
-#btn-record {
-  flex: 1; height: var(--btn-h); padding: 0 20px;
-  font-size: 0.875rem; font-weight: 550; background: #1c1c1c; color: var(--text);
-  border-radius: var(--r-pill); display: flex; align-items: center;
-  justify-content: center; gap: 6px;
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 1px 5px rgba(0,0,0,0.5);
+/* ─── RECORD BUTTON ─── */
+.record-btn {
+  width: 100%; height: 56px;
+  font-family: inherit; font-size: 0.95rem; font-weight: 650;
+  background: var(--surf-2); color: var(--text); border: none;
+  border-radius: var(--r-pill); cursor: pointer;
+  box-shadow: inset 0 0 0 1px var(--ring), 0 2px 10px rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background 0.12s, color 0.12s, box-shadow 0.12s;
+  letter-spacing: 0.02em;
 }
-#btn-record:hover:not(:disabled) { background: #222; box-shadow: 0 0 0 1px rgba(255,255,255,0.12), 0 2px 10px rgba(0,0,0,0.5); }
-#btn-record.recording {
-  background: #1c1c1c; color: var(--rose);
-  box-shadow: 0 0 0 1px rgba(168,133,133,0.3);
+.record-btn:hover:not(:disabled) { background: #222; }
+.record-btn.recording {
+  color: var(--rose);
+  box-shadow: inset 0 0 0 1.5px rgba(168,133,133,0.5);
   animation: pulse 1.4s infinite;
 }
 @keyframes pulse {
-  0%   { box-shadow: 0 0 0 0   rgba(168,133,133,0.3), 0 0 0 1px rgba(168,133,133,0.3); }
-  70%  { box-shadow: 0 0 0 8px rgba(168,133,133,0),   0 0 0 1px rgba(168,133,133,0.3); }
-  100% { box-shadow: 0 0 0 0   rgba(168,133,133,0),   0 0 0 1px rgba(168,133,133,0.3); }
+  0%   { box-shadow: 0 0 0 0   rgba(168,133,133,0.4), inset 0 0 0 1.5px rgba(168,133,133,0.5); }
+  70%  { box-shadow: 0 0 0 10px rgba(168,133,133,0), inset 0 0 0 1.5px rgba(168,133,133,0.5); }
+  100% { box-shadow: 0 0 0 0   rgba(168,133,133,0), inset 0 0 0 1.5px rgba(168,133,133,0.5); }
 }
-#btn-next {
-  height: var(--btn-h); padding: 0 18px; font-size: 0.8rem; font-weight: 550;
-  background: transparent; color: var(--muted); border-radius: var(--r-pill);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.07);
-}
-#btn-next:hover:not(:disabled) { background: #181818; color: var(--text); box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
-.notice { background: var(--surf); border-radius: 14px; padding: 24px; color: var(--rose); font-size: 0.875rem; line-height: 2; width: 100%; box-shadow: inset 0 0 0 1px rgba(168,133,133,0.15); }
 
-/* ── MISSION COMPLETE ANIMATION ── */
-@keyframes pop-in {
-  0% { opacity: 0; transform: scale(0.8); }
-  80% { transform: scale(1.04); }
-  100% { opacity: 1; transform: scale(1); }
+/* ─── HEARD TEXT ─── */
+.heard-box {
+  font-size: 0.82rem; color: var(--sub); line-height: 1.5;
+  padding: 10px 12px; background: rgba(255,255,255,0.03);
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px var(--ring-in);
+  min-height: 0;
 }
-.mission-complete.visible { display: block; animation: pop-in 0.35s ease; }
+.heard-box .heard-label {
+  font-family: ui-monospace, monospace; font-size: 0.6rem;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
+  margin-right: 6px;
+}
+.heard-box:empty { display: none; }
 
-#interim { font-size: 0.72rem; color: #444; line-height: 1.6; min-height: 0; width: 100%; }
-#interim:empty { display: none; }
+/* ─── PRIMARY ACTION ─── */
+.btn-primary {
+  width: 100%; height: 50px;
+  font-family: inherit; font-size: 0.92rem; font-weight: 650;
+  background: var(--slate); color: #fff; border: none;
+  border-radius: var(--r-pill); cursor: pointer;
+  box-shadow: 0 4px 16px rgba(125,148,166,0.3);
+  transition: background 0.12s, transform 0.08s;
+  letter-spacing: 0.02em;
+}
+.btn-primary:hover { background: #8fa8bc; }
+.btn-primary:active { transform: scale(0.98); }
+
+/* ─── RATING ROW (SM-2) ─── */
+.rating-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+}
+.rate-btn {
+  height: 50px; padding: 4px;
+  font-family: inherit; font-size: 0.74rem; font-weight: 600;
+  background: var(--surf-2); border: none; border-radius: 12px;
+  cursor: pointer; color: var(--sub);
+  box-shadow: inset 0 0 0 1px var(--ring);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px;
+  transition: background 0.12s, color 0.12s, box-shadow 0.12s;
+}
+.rate-btn .rate-label { font-size: 0.82rem; font-weight: 650; letter-spacing: -0.01em; }
+.rate-btn .rate-next { font-family: ui-monospace, monospace; font-size: 0.6rem; color: var(--faint); letter-spacing: 0.04em; }
+.rate-btn:hover { background: #222; }
+.rate-btn.rate-again:hover { color: var(--rose); box-shadow: inset 0 0 0 1px rgba(168,133,133,0.4); }
+.rate-btn.rate-hard:hover  { color: var(--sand); box-shadow: inset 0 0 0 1px rgba(184,152,112,0.4); }
+.rate-btn.rate-good:hover  { color: var(--sage); box-shadow: inset 0 0 0 1px rgba(138,158,137,0.4); }
+.rate-btn.rate-easy:hover  { color: var(--slate); box-shadow: inset 0 0 0 1px rgba(125,148,166,0.4); }
+
+/* ─── EMPTY / DONE STATE ─── */
+.empty-state {
+  text-align: center; padding: 40px 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.empty-icon { font-size: 2.4rem; }
+.empty-title { font-size: 1.1rem; font-weight: 650; color: var(--sage); }
+.empty-sub { font-size: 0.85rem; color: var(--sub); line-height: 1.6; max-width: 320px; }
+
+/* ─── SETTINGS PANEL ─── */
+.modal-bg {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal {
+  background: var(--surf); border-radius: 16px; padding: 22px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6), inset 0 0 0 1px var(--ring);
+  width: 100%; max-width: 360px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.modal h3 { font-size: 1rem; font-weight: 650; letter-spacing: -0.01em; }
+.setting-row { display: flex; flex-direction: column; gap: 6px; }
+.setting-label { font-family: ui-monospace, monospace; font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.setting-options { display: flex; gap: 6px; flex-wrap: wrap; }
+.setting-pill {
+  padding: 6px 12px; font-family: inherit; font-size: 0.78rem; font-weight: 550;
+  background: var(--surf-2); color: var(--sub); border: none;
+  border-radius: var(--r-pill); cursor: pointer;
+  box-shadow: inset 0 0 0 1px var(--ring);
+  transition: background 0.12s, color 0.12s;
+}
+.setting-pill:hover { color: var(--text); }
+.setting-pill.active { background: var(--slate); color: #fff; box-shadow: none; }
+.modal-foot { display: flex; gap: 8px; margin-top: 6px; }
+.modal-foot button {
+  flex: 1; height: 38px; font-family: inherit; font-size: 0.82rem; font-weight: 550;
+  border-radius: var(--r-pill); border: none; cursor: pointer;
+}
+.btn-close { background: var(--surf-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--ring); }
+.btn-reset { background: transparent; color: var(--rose); box-shadow: inset 0 0 0 1px rgba(168,133,133,0.3); }
+.stat-line { font-size: 0.78rem; color: var(--sub); line-height: 1.6; }
+.stat-line b { color: var(--text); }
+
+/* ─── NOTICE ─── */
+.notice {
+  background: var(--surf); border-radius: 14px; padding: 24px;
+  color: var(--rose); font-size: 0.88rem; line-height: 1.8;
+  box-shadow: inset 0 0 0 1px rgba(168,133,133,0.2);
+}
+
+/* ─── FOOTER ─── */
+.app-version {
+  position: fixed; bottom: 6px; right: 10px;
+  font-family: ui-monospace, monospace; font-size: 0.56rem;
+  color: var(--faint); letter-spacing: 0.08em;
+  pointer-events: none; user-select: none;
+}
 </style>
 </head>
 <body>
-<div class="app-version">v4.0</div>
+<div class="app-version">v6.0 · BE850</div>
 <div id="app">
-  <p style="color:#333;font-size:0.8rem;line-height:2;width:100%;">Loading…</p>
+  <p style="color:#444;font-size:0.85rem;padding:20px 4px;">Loading…</p>
 </div>
-<script>
-// ── CSV parser ──
-function parseCSV(text) {
-  const lines = text.trim().split(/\r?\n/);
-  if (lines.length < 2) return [];
-  const headers = splitCSVLine(lines[0]);
-  return lines.slice(1).map(line => {
-    const vals = splitCSVLine(line);
-    const obj = {};
-    headers.forEach((h, i) => { obj[h.trim()] = (vals[i] || '').trim(); });
-    return obj;
-  }).filter(r => r['Word']);
-}
-function splitCSVLine(line) {
-  const result = [];
-  let cur = '', inQuote = false;
-  for (let i = 0; i < line.length; i++) {
-    const c = line[i];
-    if (c === '"') { if (inQuote && line[i+1] === '"') { cur += '"'; i++; } else inQuote = !inQuote; }
-    else if (c === ',' && !inQuote) { result.push(cur); cur = ''; }
-    else { cur += c; }
-  }
-  result.push(cur);
-  return result;
-}
-
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-const LS_KEY = 'speaking-practice-status';
-function loadStatus() { try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; } catch { return {}; } }
-function saveStatus() { localStorage.setItem(LS_KEY, JSON.stringify(wordStatus)); }
-
-let words = [];
-let current = null;
-let wordStatus = loadStatus();
-let sessionQueue = [];
-let sessionQueueIdx = 0;
-let stats = { correct: 0, wrong: 0 };
-let recognition = null;
-let isRecording = false;
-let practiceMode = 'word';
-let cardMode = 'smart';
-let slowMode = false;
-let repeatAbortCtrl = null;
-
-// ── Sentence chunks ──
-const FUNC_WORDS = new Set(['the','a','an','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','shall','should','may','might','must','can','could','to','of','in','on','at','by','for','with','from','up','about','into','through','during','before','after','above','below','between','among','that','which','who','whom','whose','this','these','those','it','he','she','they','we','you','i','me','him','her','us','them','my','your','his','its','our','their','and','or','but','so','yet','nor','as','if','than','though','although','because','since','while','when','where','what','whether']);
-const CHUNK_BREAK_BEFORE = new Set(['in','on','at','by','for','with','from','into','through','during','before','after','above','below','between','among','and','or','but','so','because','since','while','when','where','although','though','if','which','who','whom','that']);
-
-function renderSentenceWithStress(sentence) {
-  const tokens = sentence.trim().split(/\s+/);
-  const chunks = [];
-  let cur = [];
-  tokens.forEach((tok, i) => {
-    const clean = tok.toLowerCase().replace(/[^a-z']/g, '');
-    if (i > 0 && CHUNK_BREAK_BEFORE.has(clean) && cur.length > 0) { chunks.push(cur); cur = []; }
-    cur.push(tok);
-    if (cur.length >= 4 && i < tokens.length - 1) { chunks.push(cur); cur = []; }
-  });
-  if (cur.length) chunks.push(cur);
-  return '<span class="example-chunks">' +
-    chunks.map((chunk, ci) => {
-      const inner = chunk.map(tok => {
-        const clean = tok.toLowerCase().replace(/[^a-z']/g, '');
-        const cls = FUNC_WORDS.has(clean) ? 'w-reduce' : 'w-stress';
-        return `<span class="${cls}">${tok}</span>`;
-      }).join(' ');
-      const sep = ci < chunks.length - 1 ? '<span class="chunk-sep"> | </span>' : '';
-      return `<span class="chunk">${inner}</span>${sep}`;
-    }).join('') + '</span>';
-}
-
-// ── IPA cache ──
-const IPA_KEY = 'speaking-practice-ipa';
-let ipaCache = {};
-try { ipaCache = JSON.parse(localStorage.getItem(IPA_KEY)) || {}; } catch {}
-
-async function fetchIPA(word) {
-  const key = word.toLowerCase().trim();
-  if (ipaCache[key] !== undefined) { showIPA(ipaCache[key]); return; }
-  const el = document.getElementById('word-ipa');
-  if (el) { el.className = 'word-ipa loading'; el.textContent = '…'; }
-  try {
-    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(key)}`);
-    if (!res.ok) throw new Error('not found');
-    const data = await res.json();
-    const phonetic = data[0]?.phonetics?.find(p => p.text)?.text || data[0]?.phonetic || '';
-    ipaCache[key] = phonetic;
-    const entries = Object.keys(ipaCache);
-    if (entries.length > 2000) entries.slice(0, 200).forEach(k => delete ipaCache[k]);
-    localStorage.setItem(IPA_KEY, JSON.stringify(ipaCache));
-    showIPA(phonetic);
-  } catch { ipaCache[key] = ''; showIPA(''); }
-}
-function showIPA(text) {
-  const el = document.getElementById('word-ipa');
-  if (!el) return;
-  el.className = 'word-ipa';
-  el.textContent = text || '';
-}
-
-const app = document.getElementById('app');
-
-// ── Session queue ──
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
-  return a;
-}
-function buildQueue() {
-  let pool;
-  const unlIdx = words.map((_, i) => i).filter(i => !wordStatus[words[i]['Word']]);
-  const wrgIdx = words.map((_, i) => i).filter(i => wordStatus[words[i]['Word']] === 'wrong');
-  const allIdx = words.map((_, i) => i);
-  if (cardMode === 'unlearned') pool = unlIdx.length > 0 ? unlIdx : allIdx;
-  else if (cardMode === 'wrong') pool = wrgIdx.length > 0 ? wrgIdx : allIdx;
-  else if (cardMode === 'smart') { if (unlIdx.length > 0) pool = unlIdx; else if (wrgIdx.length > 0) pool = wrgIdx; else pool = allIdx; }
-  else pool = allIdx;
-  sessionQueue = shuffle(pool);
-  sessionQueueIdx = 0;
-}
-function pickNext() {
-  if (sessionQueueIdx >= sessionQueue.length) buildQueue();
-  return words[sessionQueue[sessionQueueIdx++]];
-}
-
-// ── PACK DATA (v4.0: 5 Packs × 6 Missions × 14-day loop) ──
-// Each pack = 6 頁核心素材 · 用戶跑 14 天閉環直到肌肉記憶
-const PACKS = [
-  {
-    id: 1, emoji: '💼', zh: '商務會議核心',
-    title: 'Business Meeting Core',
-    desc: '從開場到收尾 · 5/4 deadline 首選',
-    missions: [
-      { idx: 1, title: 'Opening a Meeting', promptZh: '開場商務會議', script: 'Hi, thank you for joining today. I appreciate you taking the time. Today I\'d like to go through three things: your project goals, the timeline, and next steps. Does that sound good?' },
-      { idx: 2, title: 'Asking Client Questions', promptZh: '問客戶 3 個必問問題', script: 'What style do you prefer — more modern or more traditional? What is your budget range for this project? When do you need this to be completed by?' },
-      { idx: 3, title: 'Explaining Your Design', promptZh: '解說設計概念', script: 'The idea is to create a warm and modern space. We would use natural wood and soft lighting because they make the room feel comfortable. The overall feeling should be clean but inviting.' },
-      { idx: 4, title: 'Explaining the Timeline', promptZh: '解說工程時間表', script: 'The first phase is the design concept, which takes about two weeks. Then we move to detailed drawings, that\'s another three weeks. The whole project should take around two to three months.' },
-      { idx: 5, title: 'Ending a Meeting', promptZh: '結束會議 + 下一步', script: 'So today we discussed your design preferences and the project timeline. I will send you a summary email by end of day. Let\'s schedule our next call for next week. Thank you for your time!' },
-      { idx: 6, title: 'Email Follow-Up', promptZh: '會議後的跟進郵件', script: 'Thank you for your time today. Just to confirm, we discussed the overall design direction and the budget range. I will prepare a concept proposal and send it to you by Friday. Please let me know if you have any questions.' },
-    ],
-  },
-  {
-    id: 2, emoji: '🛟', zh: '臨場應對',
-    title: 'Handling Pressure',
-    desc: '聽不懂、要時間、委婉拒絕',
-    missions: [
-      { idx: 1, title: 'I Didn\'t Catch That', promptZh: '沒聽清楚的 3 個救援句', script: 'Sorry, could you say that again? Could you speak a little slower, please? What does that word mean?' },
-      { idx: 2, title: 'Buying Time', promptZh: '需要時間想的 3 個過渡句', script: 'Let me think for a second. That\'s a good question. How do I say this in English?' },
-      { idx: 3, title: 'I Don\'t Understand', promptZh: '碰到不懂的字', script: 'Sorry, I\'m not familiar with that word. What does it mean? Could you give me an example? So you mean you want something more minimal — is that correct?' },
-      { idx: 4, title: 'Saying No Politely', promptZh: '婉拒 + 替代方案', script: 'I\'m sorry, that\'s not something we can do within this budget. But we could use a similar material that costs less. Would you like me to show you some options?' },
-      { idx: 5, title: 'Responding to Feedback', promptZh: '客戶反饋時的回應', script: 'I\'m glad you like the overall direction. For the colors, I understand your concern. We can prepare two or three additional options for you to compare. Would you like me to send those by next week?' },
-      { idx: 6, title: 'Delivering Bad News', promptZh: '延遲通知', script: 'I need to let you know that there is a delay with the materials. I\'m sorry about this. Here is what we will do: we have already contacted another supplier and we expect to get back on schedule within one week.' },
-    ],
-  },
-  {
-    id: 3, emoji: '💡', zh: '提案與報價',
-    title: 'Selling & Proposing',
-    desc: '60 秒提案、時間表、價格、建議',
-    missions: [
-      { idx: 1, title: 'My Job', promptZh: '描述你的工作內容', script: 'I design residential and commercial interiors. I work with clients to understand what kind of space they want. I use software like Rhino and AutoCAD for my projects.' },
-      { idx: 2, title: 'Simple Proposal', promptZh: '60 秒提案', script: 'Here is our plan. We will redesign your living area with a focus on natural light and open space. This takes about eight weeks from start to finish. The benefit for you is a space that feels bigger and more comfortable for your family.' },
-      { idx: 3, title: 'Making Suggestions', promptZh: '3 個提出建議的句型', script: 'I suggest we use a lighter color because it will make the space feel bigger. How about we try a different layout? Maybe we could add some plants to make it more natural.' },
-      { idx: 4, title: 'Talking About Price', promptZh: '報價溝通', script: 'This project includes design, materials, and project management. The total cost is around five hundred thousand. This covers everything from the initial concept to the final walkthrough. I think it\'s a good value for what you\'re getting.' },
-      { idx: 5, title: 'Handling Objections', promptZh: '客戶質疑時的應對', script: 'I understand your concern. The reason we chose this approach is because it gives you more flexibility in the long run. If you\'d prefer, we can adjust the scope. What matters most is that the result works for you.' },
-      { idx: 6, title: 'Mini Meeting', promptZh: '一段完整初步會議', script: 'Hi, thank you for joining. Today I\'d like to understand your project better. What kind of space are you looking for? What is your budget range? Great. Based on what you shared, I would suggest a clean, modern design using natural materials. I can prepare a concept for you within two weeks. I\'ll send a summary email today. Thank you!' },
-    ],
-  },
-  {
-    id: 4, emoji: '☕', zh: '閒聊與氛圍',
-    title: 'Small Talk & Rapport',
-    desc: '初見面、天氣、週末、反問',
-    missions: [
-      { idx: 1, title: 'Say Your Name', promptZh: '基本自我介紹', script: 'Hi, my name is Yao-Mou. I\'m from Taiwan. I work in interior design.' },
-      { idx: 2, title: 'Coffee Shop Intro', promptZh: '咖啡廳初次見面', script: 'Hi, nice to meet you! I\'m Yao-Mou. I\'m an interior designer here in Taiwan. The weather is nice today, isn\'t it? I mostly work on residential and commercial projects. What do you do for work?' },
-      { idx: 3, title: 'Small Talk', promptZh: '天氣和週末的閒聊', script: 'The weather is really nice today, isn\'t it? This weekend I plan to visit a new café in the city. Have you been to any good restaurants lately? I\'m always looking for new places to try.' },
-      { idx: 4, title: 'Giving Directions', promptZh: '給路人指路', script: 'Go straight for about two blocks. Then turn left at the traffic light. Walk past the convenience store. You will see it on your right — it\'s next to the park.' },
-      { idx: 5, title: 'Counter-Questions', promptZh: '反擊問題的 5 句切換', script: 'What about you, where are you from? How long have you been doing this? What do you like most about your work? What would you recommend for someone visiting your country? What are you working on these days?' },
-      { idx: 6, title: 'Describe a Room', promptZh: '描述一個房間', script: 'My living room is not very big. The walls are white and the floor is light wood. There is a wooden table and a gray sofa in the center. It feels clean and simple.' },
-    ],
-  },
-  {
-    id: 5, emoji: '🎬', zh: '整合測試',
-    title: 'Integration',
-    desc: '完整會議、異議處理、最終版介紹',
-    missions: [
-      { idx: 1, title: 'Why I Learn English', promptZh: '解釋為何學英文', script: 'I want to communicate with international clients. I think English opens up more opportunities in my field. I also enjoy learning — it keeps my mind active.' },
-      { idx: 2, title: 'Full Introduction', promptZh: '完整介紹', script: 'Hi there! My name is Yao-Mou, and I\'m from Taiwan. I work as an interior designer — I help people create spaces they love. I\'m currently learning English because I want to communicate more confidently at work. I\'m still learning, so please feel free to correct me! What about you?' },
-      { idx: 3, title: 'Agreeing', promptZh: '4 個表達同意句型', script: 'I agree with you. That makes sense. That\'s exactly what I was thinking. Right, I think so too.' },
-      { idx: 4, title: 'Polite Disagreement', promptZh: '3 個禮貌不同意句型', script: 'I see your point, but I think we should try a different approach. I\'m not sure about that — could we look at other options? That\'s interesting, but I think there might be a better way.' },
-      { idx: 5, title: 'Full Client Meeting', promptZh: '完整客戶會議', script: 'Hi, thank you for meeting with me today. I understand you\'re looking to redesign your apartment. Could you tell me more about what you have in mind? What is your budget range? Based on what you\'ve shared, I would suggest a modern, minimal approach. The project would take about two months. I\'ll send you a detailed proposal by Friday. Thank you for your time!' },
-      { idx: 6, title: 'Final Introduction', promptZh: '最終版自我介紹', script: 'Hi, my name is Yao-Mou. I\'m an interior designer from Taiwan. I help people create spaces they love. I\'ve been working on improving my English so I can communicate better with international clients. I\'m still learning, but I\'m getting more confident every day. It\'s great to meet you — what do you do?' },
-    ],
-  },
-];
-
-function getPack(id) { return PACKS.find(p => p.id === id); }
-function getMission(packId, missionIdx) {
-  const p = getPack(packId); return p ? p.missions.find(m => m.idx === missionIdx) : null;
-}
-
-// ── PACK STATE (v4.0) ──
-// Structure:
-// {
-//   activePackId: 1,
-//   packs: {
-//     1: {
-//       startDate: '2026-04-19',
-//       log: { '2026-04-19': { 1: {l:1,p:1,s:1,r:0}, 2: {...} } },
-//       completed: false
-//     }
-//   }
-// }
-const PACK_LS   = 'sp-packs-v4';
-const STREAK_LS = 'sp-streak-v1';
-const STEPS = ['l','p','s','r']; // 聽 拆 說 場
-
-function loadPackState() {
-  try { return JSON.parse(localStorage.getItem(PACK_LS)) || { activePackId: 1, packs: {} }; }
-  catch { return { activePackId: 1, packs: {} }; }
-}
-function savePackState(s) { localStorage.setItem(PACK_LS, JSON.stringify(s)); }
-
-function loadStreak() { try { return JSON.parse(localStorage.getItem(STREAK_LS)) || { days:0, lastDate:null, history:[] }; } catch { return { days:0, lastDate:null, history:[] }; } }
-function saveStreak(s) { localStorage.setItem(STREAK_LS, JSON.stringify(s)); }
-function todayStr() { return new Date().toISOString().slice(0,10); }
-
-function daysSince(iso) {
-  const d1 = new Date(iso + 'T00:00:00');
-  const d2 = new Date(todayStr() + 'T00:00:00');
-  return Math.round((d2 - d1) / 86400000);
-}
-
-function ensurePack(packId) {
-  const s = loadPackState();
-  if (!s.packs[packId]) {
-    s.packs[packId] = { startDate: todayStr(), log: {}, completed: false };
-    savePackState(s);
-  }
-  return s;
-}
-
-// Current day number in pack (1-14, capped)
-function getPackDay(packId) {
-  const s = loadPackState();
-  const p = s.packs[packId];
-  if (!p) return 1;
-  const d = daysSince(p.startDate) + 1;
-  return Math.max(1, Math.min(14, d));
-}
-
-// Get today's log for a specific mission
-function getMissionTodayLog(packId, missionIdx) {
-  const s = loadPackState();
-  const p = s.packs[packId];
-  if (!p) return { l:0, p:0, s:0, r:0 };
-  const today = todayStr();
-  const day = p.log[today] || {};
-  return day[missionIdx] || { l:0, p:0, s:0, r:0 };
-}
-
-// Mark a step done for today (step: 'l'|'p'|'s'|'r')
-function markStep(packId, missionIdx, step) {
-  const s = ensurePack(packId);
-  const today = todayStr();
-  if (!s.packs[packId].log[today]) s.packs[packId].log[today] = {};
-  if (!s.packs[packId].log[today][missionIdx]) s.packs[packId].log[today][missionIdx] = { l:0, p:0, s:0, r:0 };
-  s.packs[packId].log[today][missionIdx][step] = 1;
-  savePackState(s);
-  updateStreakOnStep();
-}
-
-// Unmark (for 'r' toggle off)
-function unmarkStep(packId, missionIdx, step) {
-  const s = loadPackState();
-  if (!s.packs[packId]) return;
-  const today = todayStr();
-  if (s.packs[packId].log[today] && s.packs[packId].log[today][missionIdx]) {
-    s.packs[packId].log[today][missionIdx][step] = 0;
-    savePackState(s);
-  }
-}
-
-// Today's total steps completed in the pack (out of 24)
-function getTodayStepCount(packId) {
-  const s = loadPackState();
-  const p = s.packs[packId];
-  if (!p) return 0;
-  const today = todayStr();
-  const day = p.log[today] || {};
-  let n = 0;
-  for (let i = 1; i <= 6; i++) {
-    const m = day[i]; if (!m) continue;
-    STEPS.forEach(k => { if (m[k]) n++; });
-  }
-  return n;
-}
-
-// Is a specific day "substantial" (all 6 × 聽+拆+說 done)?
-function isDaySubstantial(packId, dateStr) {
-  const s = loadPackState();
-  const p = s.packs[packId];
-  if (!p) return false;
-  const day = p.log[dateStr] || {};
-  for (let i = 1; i <= 6; i++) {
-    const m = day[i]; if (!m) return false;
-    if (!m.l || !m.p || !m.s) return false;
-  }
-  return true;
-}
-
-// Count substantial days in a pack
-function countSubstantialDays(packId) {
-  const s = loadPackState();
-  const p = s.packs[packId];
-  if (!p) return 0;
-  return Object.keys(p.log).filter(d => isDaySubstantial(packId, d)).length;
-}
-
-function isPackComplete(packId) {
-  const s = loadPackState();
-  const p = s.packs[packId];
-  if (!p) return false;
-  if (p.completed) return true;
-  if (countSubstantialDays(packId) >= 14) {
-    p.completed = true;
-    savePackState(s);
-    return true;
-  }
-  return false;
-}
-
-function isPackUnlocked(packId) {
-  if (packId === 1) return true;
-  return isPackComplete(packId - 1);
-}
-
-function getActivePackId() {
-  const s = loadPackState();
-  // If current pack is complete, auto-advance
-  for (let i = 1; i <= 5; i++) {
-    if (!isPackComplete(i) && isPackUnlocked(i)) return i;
-  }
-  return s.activePackId || 1;
-}
-
-function setActivePackId(id) {
-  const s = loadPackState();
-  s.activePackId = id;
-  ensurePack(id);
-  savePackState(s);
-}
-
-function updateStreakOnStep() {
-  const s = loadStreak();
-  const today = todayStr();
-  if (s.lastDate === today) return s;
-  const yest = new Date(); yest.setDate(yest.getDate()-1);
-  const yStr = yest.toISOString().slice(0,10);
-  s.days = s.lastDate === yStr ? s.days + 1 : 1;
-  s.lastDate = today;
-  if (!s.history) s.history = [];
-  if (!s.history.includes(today)) s.history.push(today);
-  saveStreak(s); return s;
-}
-
-// State variables
-let activePackId = 1;
-let activeMissionIdx = null;
-let missionRecording = false;
-let missionTranscript = '';
-let missionListened = false;
-
-const APP_VERSION = 'v4.0';
-
-// ── Streak render (big version for today card) ──
-function renderStreakBig() {
-  const s = loadStreak();
-  const today = todayStr();
-  const last7 = [];
-  for (let i=6;i>=0;i--) { const d=new Date(); d.setDate(d.getDate()-i); last7.push(d.toISOString().slice(0,10)); }
-  const hist = s.history || [];
-  const dots = last7.map(d => {
-    if (d===today && hist.includes(d)) return `<div class="streak-dot today"></div>`;
-    if (hist.includes(d)) return `<div class="streak-dot done"></div>`;
-    return `<div class="streak-dot"></div>`;
-  }).join('');
-  return `<div class="streak-bar">
-    <div class="streak-left">
-      <div class="streak-label">Streak</div>
-      <div class="streak-val">${s.days} <span style="font-size:0.75rem;font-weight:500;color:var(--muted)">${s.days!==1?'days':'day'}</span></div>
-    </div>
-    <div class="streak-dots">${dots}</div>
-  </div>`;
-}
-
-// ── TODAY CARD (v4.0: Pack + Day N/14 + 6 missions with 4-step) ──
-function buildTodayCard() {
-  activePackId = getActivePackId();
-  const pack = getPack(activePackId);
-  if (!pack) return '';
-  ensurePack(activePackId);
-  const day = getPackDay(activePackId);
-  const totalSteps = getTodayStepCount(activePackId);
-  const allComplete = [1,2,3,4,5].every(id => isPackComplete(id));
-  const packComplete = isPackComplete(activePackId);
-
-  const stepLabels = { l:'聽', p:'拆', s:'說', r:'場' };
-  const missionRows = pack.missions.map(m => {
-    const log = getMissionTodayLog(activePackId, m.idx);
-    const dots = STEPS.map(k => {
-      const done = log[k];
-      const cls = done ? 'step-dot done' : 'step-dot';
-      return `<span class="${cls}" title="${stepLabels[k]}">${stepLabels[k]}</span>`;
-    }).join('');
-    return `<div class="pack-mission-row" onclick="openMission(${m.idx})">
-      <span class="pack-mission-num">${m.idx}</span>
-      <span class="pack-mission-title">${m.title}</span>
-      <span class="pack-mission-steps">${dots}</span>
-    </div>`;
-  }).join('');
-
-  const progressPct = Math.round(totalSteps / 24 * 100);
-
-  return `
-    <div class="today-card">
-      <div class="today-card-header">
-        <div class="today-label">${pack.emoji} PACK ${pack.id} · ${pack.zh}</div>
-        <div class="today-meta">Day ${day} / 14</div>
-      </div>
-      <div class="today-title" style="font-size:1.05rem;margin-top:2px;">${pack.title}</div>
-      <div class="today-prompt" style="padding-bottom:8px;">${pack.desc}</div>
-      <div class="pack-progress-wrap">
-        <div class="pack-progress-text">今日 ${totalSteps}/24 · ${progressPct}%</div>
-        <div class="pack-progress-bar"><div class="pack-progress-fill" style="width:${progressPct}%"></div></div>
-      </div>
-      <div class="pack-mission-list">${missionRows}</div>
-      ${packComplete
-        ? `<div style="padding:8px 16px 14px;color:var(--sage);font-size:0.82rem;">✅ Pack ${pack.id} 已完成 14 天閉環</div>`
-        : `<button class="today-btn" onclick="openNextIncomplete()">▶ 繼續今日閉環</button>`
-      }
-    </div>`;
-}
-
-// Open the next mission that still has incomplete steps today
-function openNextIncomplete() {
-  const pack = getPack(activePackId);
-  for (const m of pack.missions) {
-    const log = getMissionTodayLog(activePackId, m.idx);
-    if (!log.l || !log.p || !log.s) { openMission(m.idx); return; }
-  }
-  // All l+p+s done, open mission 1 so user can do 場 step
-  openMission(1);
-}
-
-function openMission(idx) {
-  practiceMode = 'mission';
-  activeMissionIdx = idx;
-  missionListened = false;
-  updateOtherModeBtns();
-  showMissionView();
-}
-
-// ── MAIN UI BUILD ──
-function buildUI() {
-  app.innerHTML = `
-    <div class="header-mode-row">
-      <header class="page-header">
-        <span class="page-title">Speaking Practice</span>
-        <span class="page-sub">EN</span>
-      </header>
-      <div id="other-modes-row" class="other-modes">
-        <button class="other-mode-btn active" id="mode-today" onclick="switchToToday()">今日</button>
-        <button class="other-mode-btn" id="mode-mission-list" onclick="switchToMissionList()">Packs</button>
-        <button class="other-mode-btn" id="mode-word" onclick="setMode('word')">Word</button>
-        <button class="other-mode-btn" id="mode-sentence" onclick="setMode('sentence')">Sentence</button>
-      </div>
-    </div>
-
-    <!-- HOME VIEW -->
-    <div id="home-view" style="display:flex;flex-direction:column;gap:6px;width:100%;height:100%;overflow:hidden;">
-      ${buildTodayCard()}
-      ${renderStreakBig()}
-    </div>
-
-    <!-- MISSION VIEW (hidden initially) -->
-    <div id="mission-view" style="display:none;"></div>
-
-    <!-- WORD/SENTENCE VIEW (hidden initially) -->
-    <div id="word-score-panel" class="score-panel" style="display:none;">
-      <div class="score-group">
-        <div class="score-item">
-          <span class="score-label">Correct</span>
-          <span class="score-val good" id="sp-correct">0</span>
-        </div>
-        <div class="score-item">
-          <span class="score-label">Wrong</span>
-          <span class="score-val bad" id="sp-wrong">0</span>
-        </div>
-        <div class="score-item">
-          <span class="score-label">Accuracy</span>
-          <span class="score-val" id="sp-rate">—</span>
-        </div>
-      </div>
-      <button id="btn-reset">Reset</button>
-    </div>
-    <div id="card-mode-row" class="card-mode-row" style="display:none;">
-      <button class="card-mode-btn active" data-cmode="smart">Smart</button>
-      <button class="card-mode-btn" data-cmode="all">All</button>
-      <button class="card-mode-btn" data-cmode="unlearned">Unlearned</button>
-      <button class="card-mode-btn" data-cmode="wrong">Wrong</button>
-    </div>
-    <div id="word-counter" style="display:none;"></div>
-    <div class="card" id="word-card" style="display:none;">
-      <div class="card-block">
-        <div class="eyebrow">Word</div>
-        <div class="word-header">
-          <div class="word-display" id="word-display"></div>
-          <div class="status-dot" id="status-dot"></div>
-        </div>
-        <div class="word-ipa" id="word-ipa"></div>
-      </div>
-      <div class="card-divider"></div>
-      <div class="card-block">
-        <div class="eyebrow" id="example-label">Example · say the word aloud</div>
-        <div class="example" id="example"></div>
-      </div>
-      <div class="translation-toggle">
-        <button class="trans-btn" id="btn-trans" onclick="toggleTranslation()">Translation ▼</button>
-        <div class="translation" id="translation" style="display:none"></div>
-      </div>
-      <div class="speak-row">
-        <button id="btn-speak">🔊 Word</button>
-        <button id="btn-speak-sentence">🔊 Sentence</button>
-        <button id="btn-speed">🐢 Slow</button>
-      </div>
-      <label class="repeat-row" id="repeat-row">
-        <span class="repeat-label-group">
-          <span class="repeat-label">Repeat × 3</span>
-          <span class="repeat-sublabel" id="repeat-sublabel">speak this word 3 times</span>
-        </span>
-        <span class="toggle-wrap">
-          <input type="checkbox" id="toggle-repeat">
-          <span class="toggle-track"></span>
-          <span class="toggle-thumb"></span>
-        </span>
-      </label>
-      <div class="repeat-progress" id="repeat-progress"></div>
-    </div>
-    <div class="result-box" id="result-box" style="display:none;"></div>
-    <div id="interim" style="display:none;"></div>
-    <div class="btn-row" id="word-btn-row" style="display:none;">
-      <button id="btn-record">🎙 Hold to Speak</button>
-      <button id="btn-next">Next →</button>
-    </div>
-  `;
-
-  // Bind word/sentence events
-  document.getElementById('card-mode-row').addEventListener('click', e => {
-    const btn = e.target.closest('.card-mode-btn');
-    if (!btn) return;
-    setCardMode(btn.dataset.cmode);
-  });
-  document.getElementById('btn-reset').addEventListener('click', resetProgress);
-  document.getElementById('btn-speak').addEventListener('click', speakWord);
-  document.getElementById('btn-speak-sentence').addEventListener('click', speakSentence);
-  document.getElementById('btn-speed').addEventListener('click', toggleSpeed);
-
-  const rec = document.getElementById('btn-record');
-  rec.addEventListener('mousedown', startRecording);
-  rec.addEventListener('touchstart', e => { e.preventDefault(); startRecording(); });
-  rec.addEventListener('mouseup', stopRecording);
-  rec.addEventListener('touchend', e => { e.preventDefault(); stopRecording(); });
-  rec.addEventListener('mouseleave', () => { if (isRecording) stopRecording(); });
-
-  document.getElementById('btn-next').addEventListener('click', nextWord);
-  document.getElementById('toggle-repeat').addEventListener('change', onRepeatToggle);
-
-  buildQueue();
-  nextWord();
-}
-
-function updateOtherModeBtns() {
-  ['mode-today','mode-mission-list','mode-word','mode-sentence'].forEach(id => {
-    const btn = document.getElementById(id);
-    if (btn) btn.classList.remove('active');
-  });
-  if (practiceMode === 'home' || practiceMode === 'today') { const b = document.getElementById('mode-today'); if(b) b.classList.add('active'); }
-  else if (practiceMode === 'mission') { const b = document.getElementById('mode-mission-list'); if(b) b.classList.add('active'); }
-  else if (practiceMode === 'word') { const b = document.getElementById('mode-word'); if(b) b.classList.add('active'); }
-  else if (practiceMode === 'sentence') { const b = document.getElementById('mode-sentence'); if(b) b.classList.add('active'); }
-}
-
-function switchToToday() {
-  practiceMode = 'today';
-  updateOtherModeBtns();
-  document.getElementById('home-view').style.display = 'flex';
-  document.getElementById('mission-view').style.display = 'none';
-  hideWordView();
-  // Refresh today card in case missions changed
-  const homeView = document.getElementById('home-view');
-  if (homeView) {
-    homeView.innerHTML = buildTodayCard() + renderStreakBig();
-  }
-}
-
-function switchToMissionList() {
-  practiceMode = 'mission';
-  activeMissionIdx = null;
-  updateOtherModeBtns();
-  document.getElementById('home-view').style.display = 'none';
-  hideWordView();
-  showMissionView();
-}
-
-function showMissionView() {
-  document.getElementById('home-view').style.display = 'none';
-  hideWordView();
-  const mv = document.getElementById('mission-view');
-  mv.style.display = 'flex';
-  mv.style.flexDirection = 'column';
-  mv.style.gap = '6px';
-  mv.style.width = '100%';
-  mv.style.height = '100%';
-  mv.style.overflow = 'hidden';
-  buildMissionView();
-}
-
-function hideMissionView() {
-  document.getElementById('mission-view').style.display = 'none';
-}
-
-function hideWordView() {
-  ['word-score-panel','card-mode-row','word-counter','word-card','result-box','interim','word-btn-row'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
-  });
-}
-
-function showWordView() {
-  document.getElementById('home-view').style.display = 'none';
-  hideMissionView();
-  document.getElementById('word-score-panel').style.display = 'flex';
-  document.getElementById('card-mode-row').style.display = 'flex';
-  document.getElementById('word-counter').style.display = 'block';
-  document.getElementById('word-card').style.display = 'flex';
-  document.getElementById('word-btn-row').style.display = 'flex';
-}
-
-// ── PACKS LIST VIEW (all 5 packs overview) ──
-function buildPacksListView() {
-  return `<div class="mission-list">${PACKS.map(p => {
-    const unlocked = isPackUnlocked(p.id);
-    const complete = isPackComplete(p.id);
-    const subDays  = countSubstantialDays(p.id);
-    const active   = p.id === activePackId;
-    const cls = ['mission-item', complete?'completed':'', !unlocked?'locked':'', active?'active-mission':''].filter(Boolean).join(' ');
-    const icon = complete ? '✅' : !unlocked ? '🔒' : (active ? '▶' : '○');
-    return `<div class="${cls}" onclick="${unlocked ? `switchToPack(${p.id})` : ''}">
-      <span class="mission-item-num">${p.emoji}</span>
-      <span class="mission-item-text">
-        <span class="mission-item-name">Pack ${p.id} · ${p.zh}</span>
-        <span class="mission-item-sub">${p.desc} · ${subDays}/14 天完成</span>
-      </span>
-      <span class="mission-item-icon">${icon}</span>
-    </div>`;
-  }).join('')}</div>`;
-}
-
-function switchToPack(id) {
-  if (!isPackUnlocked(id)) return;
-  setActivePackId(id);
-  activePackId = id;
-  activeMissionIdx = null;
-  switchToToday();
-}
-
-// ── MISSION VIEW (4-step closed loop) ──
-function buildMissionView() {
-  const mv = document.getElementById('mission-view');
-  if (!mv) return;
-
-  if (activeMissionIdx === null) {
-    mv.innerHTML = renderStreakBig() + buildPacksListView();
-    return;
-  }
-
-  const pack = getPack(activePackId);
-  const m = getMission(activePackId, activeMissionIdx);
-  if (!pack || !m) { activeMissionIdx = null; return buildMissionView(); }
-
-  const log = getMissionTodayLog(activePackId, m.idx);
-  const day = getPackDay(activePackId);
-  const chunkedScript = renderSentenceWithStress(m.script);
-
-  mv.innerHTML = `
-    <div class="mission-back-row">
-      <button class="mission-back-btn" onclick="backToToday()">← Back</button>
-      <span class="mission-progress-text">${pack.emoji} Pack ${pack.id} · ${m.idx}/6 · Day ${day}/14</span>
-    </div>
-    <div class="mission-practice-area">
-      <div class="mission-card">
-        <div class="mission-header">
-          <div class="mission-week">${pack.title}</div>
-          <div class="mission-title">${m.title}</div>
-        </div>
-        <div style="padding:10px 16px 6px;border-bottom:1px solid var(--div);font-size:0.8rem;color:var(--muted);">${m.promptZh}</div>
-
-        <!-- Step 1: 聽 -->
-        <div class="loop-step ${log.l?'done':''}" id="step-l">
-          <div class="loop-step-header">
-            <span class="loop-step-label">① 聽 · Listen</span>
-            <span class="loop-step-icon">${log.l?'✅':''}</span>
-          </div>
-          <button class="listen-first-btn${log.l?' done':''}" id="btn-listen-first">🔊 ${log.l?'Listen Again':'Play Script'}</button>
-        </div>
-
-        <!-- Step 2: 拆 -->
-        <div class="loop-step ${log.p?'done':''}" id="step-p">
-          <div class="loop-step-header">
-            <span class="loop-step-label">② 拆 · Break Down</span>
-            <span class="loop-step-icon">${log.p?'✅':''}</span>
-          </div>
-          <div class="loop-step-body">
-            <div style="font-size:0.88rem;line-height:1.6;color:var(--text);">${chunkedScript}</div>
-            <button class="loop-step-btn${log.p?' done':''}" onclick="markStepAndRefresh('p')" ${log.p?'disabled':''}>${log.p?'已看過':'看完 → 標記完成'}</button>
-          </div>
-        </div>
-
-        <!-- Step 3: 說 -->
-        <div class="loop-step ${log.s?'done':''}" id="step-s">
-          <div class="loop-step-header">
-            <span class="loop-step-label">③ 說 · Speak</span>
-            <span class="loop-step-icon">${log.s?'✅':''}</span>
-          </div>
-          <div class="loop-step-body">
-            <button id="btn-mission-record" ${!missionListened && !log.s?'style="opacity:0.5"':''} onclick="missionToggleRecording()">🎤 ${log.s?'Redo Speak':'Hold to Speak'}</button>
-            <div id="mission-interim" style="min-height:0;font-size:0.8rem;color:var(--sub);padding:6px 10px;background:var(--surf);border-radius:10px;box-shadow:inset 0 0 0 1px var(--ring-in);display:none;margin-top:6px;"></div>
-            <div class="result-box" id="mission-result" style="margin-top:6px;"></div>
-          </div>
-        </div>
-
-        <!-- Step 4: 場 -->
-        <div class="loop-step ${log.r?'done':''}" id="step-r">
-          <div class="loop-step-header">
-            <span class="loop-step-label">④ 場 · Real Scene</span>
-            <span class="loop-step-icon">${log.r?'✅':''}</span>
-          </div>
-          <div class="loop-step-body">
-            <div style="font-size:0.78rem;color:var(--sub);line-height:1.5;margin-bottom:8px;">今天有用到真實場景嗎？<br>（真人對話、AI roleplay、寫給客戶、Gemini Live）</div>
-            <button class="loop-step-btn${log.r?' done':''}" onclick="toggleStageStep()">${log.r?'✓ 已用於真實場景（取消）':'✓ 我今天用過了'}</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="mission-nav-row" id="mission-next-row"></div>
-    </div>`;
-
-  document.getElementById('btn-listen-first').addEventListener('click', missionListenFirst);
-  updateMissionNavRow();
-}
-
-function markStepAndRefresh(step) {
-  markStep(activePackId, activeMissionIdx, step);
-  buildMissionView();
-}
-
-function toggleStageStep() {
-  const log = getMissionTodayLog(activePackId, activeMissionIdx);
-  if (log.r) unmarkStep(activePackId, activeMissionIdx, 'r');
-  else markStep(activePackId, activeMissionIdx, 'r');
-  buildMissionView();
-}
-
-function updateMissionNavRow() {
-  const row = document.getElementById('mission-next-row');
-  if (!row) return;
-  const pack = getPack(activePackId);
-  const nextIdx = activeMissionIdx < 6 ? activeMissionIdx + 1 : null;
-  const prevIdx = activeMissionIdx > 1 ? activeMissionIdx - 1 : null;
-  let html = '';
-  if (prevIdx) html += `<button onclick="openMission(${prevIdx})">← Prev</button>`;
-  if (nextIdx) html += `<button onclick="openMission(${nextIdx})">Next →</button>`;
-  else html += `<button onclick="backToToday()">✓ Done — Back</button>`;
-  row.innerHTML = html;
-}
-
-function backToToday() {
-  activeMissionIdx = null;
-  switchToToday();
-}
-
-function missionListenFirst() {
-  const m = getMission(activePackId, activeMissionIdx);
-  if (!m) return;
-  window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(m.script);
-  utter.lang = 'en-US';
-  utter.rate = slowMode ? 0.6 : 0.82;
-  const btn = document.getElementById('btn-listen-first');
-  if (btn) { btn.disabled = true; btn.textContent = '🔊 Listening…'; }
-  utter.onend = () => {
-    missionListened = true;
-    markStep(activePackId, activeMissionIdx, 'l');
-    buildMissionView();
-  };
-  utter.onerror = utter.onend;
-  window.speechSynthesis.speak(utter);
-}
-
-// ── Mission Recording ──
-let missionRecognition = null;
-function missionToggleRecording() {
-  if (missionRecording) { missionStopRecording(); return; }
-  missionStartRecording();
-}
-function missionStartRecording() {
-  if (missionRecording || !SR) return;
-  missionRecording = true; missionTranscript = '';
-  const btn = document.getElementById('btn-mission-record');
-  if (btn) { btn.classList.add('recording'); btn.textContent='⏹ Stop'; }
-  const el = document.getElementById('mission-interim');
-  if (el) { el.style.display = 'block'; el.textContent = ''; }
-  const rb = document.getElementById('mission-result');
-  if (rb) { rb.innerHTML = ''; rb.className = 'result-box'; }
-
-  missionRecognition = new SR();
-  missionRecognition.lang = 'en-US';
-  missionRecognition.interimResults = true;
-  missionRecognition.continuous = true;
-  missionRecognition.onresult = e => {
-    let interim='', final='';
-    for (let i=e.resultIndex;i<e.results.length;i++) {
-      const t = e.results[i][0].transcript;
-      if (e.results[i].isFinal) final += t+' '; else interim += t;
-    }
-    missionTranscript += final;
-    const el = document.getElementById('mission-interim');
-    if (el) el.textContent = (missionTranscript+interim).trim() || 'Listening…';
-  };
-  missionRecognition.onerror = ()=>missionResetRecordBtn();
-  missionRecognition.onend = ()=>{
-    if (missionRecording) {
-      missionRecording = false;
-      missionResetRecordBtn();
-      if(missionTranscript.trim().length>5) missionAutoComplete();
-    }
-  };
-  missionRecognition.start();
-}
-function missionStopRecording() {
-  if (!missionRecording||!missionRecognition) return;
-  missionRecording = false;
-  missionRecognition.stop();
-  missionResetRecordBtn();
-  setTimeout(()=>{ if(missionTranscript.trim().length>5) missionAutoComplete(); }, 500);
-}
-function missionResetRecordBtn() {
-  const btn = document.getElementById('btn-mission-record');
-  if (btn) { btn.classList.remove('recording'); btn.textContent='🎤 Speak'; }
-}
-
-// ── Humanized feedback messages ──
-const FEEDBACK_GOOD = [
-  '流暢！這次說話很自然。',
-  '很好，大部分關鍵詞都說到了。',
-  '不錯！繼續保持這個節奏。',
-  '這次很流利，繼續練下去。',
-  '說得很好，口音也越來越自然了。',
-];
-const FEEDBACK_TRY = [
-  '再來一遍，注意漏掉的字。',
-  '不錯的嘗試！重點字再加強。',
-  '基本架構都有，細節再補強。',
-  '繼續練，每次都會更流暢。',
-];
-
-function missionAutoComplete() {
-  const m = getMission(activePackId, activeMissionIdx);
-  if (!m) return;
-  const scriptWords = normalize(m.script).split(/\s+/).filter(Boolean);
-  const spokenWords = normalize(missionTranscript).split(/\s+/).filter(Boolean);
-  const spokenSet = new Set(spokenWords);
-  const matched = scriptWords.filter(w => spokenSet.has(w)).length;
-  const pct = scriptWords.length > 0 ? Math.round(matched / scriptWords.length * 100) : 0;
-  const isGood = pct >= 65;
-
-  const diffHTML = scriptWords.map(w =>
-    spokenSet.has(w)
-      ? `<span class="diff-correct">${w}</span>`
-      : `<span class="diff-wrong-char">${w}</span>`
-  ).join(' ');
-
-  // Pick humanized feedback
-  const feedbackMsg = isGood
-    ? FEEDBACK_GOOD[Math.floor(Math.random() * FEEDBACK_GOOD.length)]
-    : FEEDBACK_TRY[Math.floor(Math.random() * FEEDBACK_TRY.length)];
-
-  const resultBox = document.getElementById('mission-result');
-  if (resultBox) {
-    resultBox.className = 'result-box ' + (isGood ? 'correct' : 'wrong');
-    resultBox.innerHTML = `
-      <div class="result-header">
-        <span class="result-icon">${isGood ? '✅' : '📍'}</span>
-        <span class="result-title">${isGood ? 'Nice! ' + pct + '% match' : pct + '% match'}</span>
-      </div>
-      <div class="result-feedback">${feedbackMsg}</div>
-      <div class="diff-detail">
-        <div class="diff-row"><span class="diff-label">You said</span><span class="diff-word" style="white-space:normal;line-height:1.6;">${normalize(missionTranscript)}</span></div>
-        <div class="diff-row"><span class="diff-label">Script</span><span class="diff-word" style="white-space:normal;line-height:1.6;">${diffHTML}</span></div>
-      </div>`;
-  }
-
-  // Mark step 3 (說) done for today
-  markStep(activePackId, activeMissionIdx, 's');
-
-  // Rebuild mission view to reflect the step update (green check + next button)
-  setTimeout(() => buildMissionView(), 800);
-}
-
-// ── Mode toggle ──
-function setMode(mode) {
-  practiceMode = mode;
-  updateOtherModeBtns();
-  hideMissionView();
-  document.getElementById('home-view').style.display = 'none';
-  showWordView();
-  const label = document.getElementById('example-label');
-  if (label) label.textContent = mode==='sentence' ? 'Example · say the full sentence' : 'Example · say the word aloud';
-  const exEl = document.getElementById('example');
-  if (exEl) exEl.classList.toggle('target', mode==='sentence');
-  if (current) renderExample(current['Example Sentence']||'(no example)');
-  updateRepeatSublabel();
-}
-
-function renderExample(sentence) {
-  const el = document.getElementById('example');
-  if (!el) return;
-  if (practiceMode === 'sentence') { el.innerHTML = renderSentenceWithStress(sentence); }
-  else { el.textContent = sentence; }
-}
-
-function toggleTranslation() {
-  const el = document.getElementById('translation');
-  const btn = document.getElementById('btn-trans');
-  const visible = el.style.display !== 'none';
-  el.style.display = visible ? 'none' : 'block';
-  btn.textContent = visible ? 'Translation ▼' : 'Translation ▲';
-}
-
-function stopCurrentAudio() { window.speechSynthesis.cancel(); }
-
-function speakText(text, btn) {
-  window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'en-US';
-  utter.rate = slowMode ? 0.6 : 1.0;
-  if (btn) {
-    btn.classList.add('speaking'); btn.disabled = true;
-    const done = () => { btn.classList.remove('speaking'); btn.disabled = false; };
-    utter.onend = done; utter.onerror = done;
-  }
-  window.speechSynthesis.speak(utter);
-}
-
-function speakWord() { if (!current) return; speakText(current['Word'], document.getElementById('btn-speak')); }
-function speakSentence() { if (!current) return; const s = current['Example Sentence']; if (!s) return; speakText(s, document.getElementById('btn-speak-sentence')); }
-function toggleSpeed() {
-  slowMode = !slowMode;
-  const btn = document.getElementById('btn-speed');
-  btn.textContent = slowMode ? '🐢 Slow' : '▶ Normal';
-  btn.classList.toggle('slow', slowMode);
-}
-
-// ── Recording (word mode) ──
-function startRecording() {
-  if (isRecording || !SR) return;
-  isRecording = true;
-  const btn = document.getElementById('btn-record');
-  btn.classList.add('recording');
-  btn.textContent = '🔴 Listening…';
-
-  recognition = new SR();
-  recognition.lang = 'en-US';
-  recognition.interimResults = true;
-  recognition.maxAlternatives = 3;
-  recognition.continuous = false;
-
-  recognition.onresult = (e) => {
-    let interim = '', final = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      const t = e.results[i][0].transcript;
-      if (e.results[i].isFinal) final += t;
-      else interim += t;
-    }
-    const interimEl = document.getElementById('interim');
-    if (interim && interimEl) interimEl.textContent = interim;
-    if (final) processResult(final);
-  };
-  recognition.onerror = (e) => {
-    console.warn('SR error', e.error);
-    resetRecordBtn();
-    if (e.error === 'no-speech') {
-      const interimEl = document.getElementById('interim');
-      if (interimEl) interimEl.textContent = 'No speech detected, please try again.';
-    }
-  };
-  recognition.onend = () => { resetRecordBtn(); };
-  recognition.start();
-}
-function stopRecording() { if (!isRecording || !recognition) return; recognition.stop(); }
-function resetRecordBtn() {
-  isRecording = false;
-  const btn = document.getElementById('btn-record');
-  if (!btn) return;
-  btn.classList.remove('recording');
-  btn.textContent = '🎙 Hold to Speak';
-}
-
-// ── Word comparison ──
-function normalize(s) { return s.toLowerCase().trim().replace(/[^a-z\s'-]/g, ''); }
-function bestMatchWord(transcript, answer) {
-  const parts = normalize(transcript).split(/\s+/);
-  if (parts.length === 1) return parts[0];
-  return parts.reduce((best, w) => charSimilarity(w, answer) >= charSimilarity(best, answer) ? w : best, parts[0]);
-}
-function charSimilarity(a, b) {
-  let matches = 0;
-  const len = Math.max(a.length, b.length);
-  for (let i = 0; i < Math.min(a.length, b.length); i++) { if (a[i] === b[i]) matches++; }
-  return len === 0 ? 1 : matches / len;
-}
-function buildDiffHTML(word, answer) {
-  const maxLen = Math.max(word.length, answer.length);
-  let html = '';
-  for (let i = 0; i < maxLen; i++) {
-    const wc = word[i], ac = answer[i];
-    if (!wc) html += `<span class="diff-missing">_</span>`;
-    else if (wc === ac) html += `<span class="diff-correct">${wc}</span>`;
-    else html += `<span class="diff-wrong-char">${wc}</span>`;
-  }
-  return html;
-}
-function buildAnswerDiffHTML(word, answer) {
-  const maxLen = Math.max(word.length, answer.length);
-  let html = '';
-  for (let i = 0; i < maxLen; i++) {
-    const wc = word[i], ac = answer[i];
-    if (!ac) html += `<span class="diff-missing">_</span>`;
-    else if (wc === ac) html += `<span class="diff-correct">${ac}</span>`;
-    else html += `<span class="diff-wrong-char">${ac}</span>`;
-  }
-  return html;
-}
-
-function processResult(transcript) {
-  if (!current) return;
-  let correct;
-  if (practiceMode === 'sentence') {
-    const answerWords = normalize(current['Example Sentence'] || '').split(/\s+/).filter(Boolean);
-    const spokenWords = new Set(normalize(transcript).split(/\s+/).filter(Boolean));
-    const matched = answerWords.filter(w => spokenWords.has(w)).length;
-    correct = answerWords.length > 0 && matched / answerWords.length >= 0.85;
-  } else {
-    const answer = normalize(current['Word']);
-    const spoken = normalize(transcript);
-    correct = spoken === answer || spoken.split(/\s+/).includes(answer);
-  }
-  if (correct) stats.correct++; else stats.wrong++;
-  wordStatus[current['Word']] = correct ? 'correct' : 'wrong';
-  saveStatus();
-  const dot = document.getElementById('status-dot');
-  if (dot) { dot.className = 'status-dot ' + (correct ? 'correct' : 'wrong'); }
-  showResult(correct, transcript.trim());
-  updateScorePanel();
-  updateCounter();
-  resetRecordBtn();
-  const recBtn = document.getElementById('btn-record');
-  if (recBtn) recBtn.disabled = true;
-}
-
-function updateScorePanel() {
-  const total = stats.correct + stats.wrong;
-  const sc = document.getElementById('sp-correct');
-  const sw = document.getElementById('sp-wrong');
-  const sr = document.getElementById('sp-rate');
-  if (sc) sc.textContent = stats.correct;
-  if (sw) sw.textContent = stats.wrong;
-  if (!sr) return;
-  if (total === 0) { sr.textContent = '—'; sr.className = 'score-val'; return; }
-  const pct = Math.round(stats.correct / total * 100);
-  sr.textContent = pct + '%';
-  sr.className = 'score-val ' + (pct >= 80 ? 'rate-good' : pct >= 50 ? 'rate-ok' : 'rate-bad');
-}
-
-function showResult(correct, spokenRaw) {
-  const box = document.getElementById('result-box');
-  if (!box) return;
-  if (correct) {
-    box.className = 'result-box correct';
-    box.innerHTML = `<div class="result-header"><span class="result-icon">✅</span><span class="result-title">Correct! Great pronunciation!</span></div>`;
-    return;
-  }
-  box.className = 'result-box wrong';
-  if (practiceMode === 'sentence') {
-    const answerWords = normalize(current['Example Sentence'] || '').split(/\s+/).filter(Boolean);
-    const spokenWords = normalize(spokenRaw).split(/\s+/).filter(Boolean);
-    const spokenSet = new Set(spokenWords);
-    const answerHTML = answerWords.map(w => spokenSet.has(w) ? `<span class="diff-correct">${w}</span>` : `<span class="diff-wrong-char">${w}</span>`).join(' ');
-    box.innerHTML = `
-      <div class="result-header"><span class="result-icon">❌</span><span class="result-title">Try again</span></div>
-      <div class="diff-detail">
-        <div class="diff-row"><span class="diff-label">You said:</span><span class="diff-word" style="white-space:normal;line-height:1.6;">${normalize(spokenRaw)}</span></div>
-        <div class="diff-row"><span class="diff-label">Correct:</span><span class="diff-word" style="white-space:normal;line-height:1.6;">${answerHTML}</span></div>
-      </div>`;
-  } else {
-    const answer = normalize(current['Word']);
-    const bestWord = bestMatchWord(spokenRaw, answer);
-    box.innerHTML = `
-      <div class="result-header"><span class="result-icon">❌</span><span class="result-title">Try again</span></div>
-      <div class="diff-detail">
-        <div class="diff-row"><span class="diff-label">You said:</span><span class="diff-word">${buildDiffHTML(bestWord, answer)}</span></div>
-        <div class="diff-row"><span class="diff-label">Correct:</span><span class="diff-word">${buildAnswerDiffHTML(bestWord, answer)}</span></div>
-      </div>`;
-  }
-}
-
-// ── Word logic ──
-function nextWord() {
-  abortRepeat();
-  const chk = document.getElementById('toggle-repeat');
-  if (chk) chk.checked = false;
-  if (isRecording) stopRecording();
-  current = pickNext();
-
-  document.getElementById('word-display').textContent = current['Word'] || '—';
-  const ipaEl = document.getElementById('word-ipa');
-  if (ipaEl) { ipaEl.className = 'word-ipa'; ipaEl.textContent = ''; }
-  if (current['Word']) fetchIPA(current['Word']);
-  const dot = document.getElementById('status-dot');
-  const st = wordStatus[current['Word']];
-  dot.className = 'status-dot' + (st ? ' ' + st : '');
-  const transEl = document.getElementById('translation');
-  transEl.textContent = current['Translation/Explanation'] || current['Translation'] || '—';
-  transEl.style.display = 'none';
-  const transBtn = document.getElementById('btn-trans');
-  if (transBtn) transBtn.textContent = 'Translation ▼';
-  renderExample(current['Example Sentence']||'(no example)');
-  const rb = document.getElementById('result-box');
-  if (rb) { rb.className = 'result-box'; rb.innerHTML = ''; rb.style.display = 'none'; }
-  const interimEl = document.getElementById('interim');
-  if (interimEl) { interimEl.textContent = ''; interimEl.style.display = 'none'; }
-  updateCounter();
-  const btn = document.getElementById('btn-record');
-  if (btn) { btn.disabled = false; btn.textContent = '🎙 Hold to Speak'; btn.classList.remove('recording'); }
-}
-
-function updateCounter() {
-  const total = words.length;
-  const practiced = Object.keys(wordStatus).length;
-  const correct = Object.values(wordStatus).filter(v => v === 'correct').length;
-  const wrong = Object.values(wordStatus).filter(v => v === 'wrong').length;
-  const unlearned = total - practiced;
-  const wc = document.getElementById('word-counter');
-  if (wc) wc.textContent = `Practiced ${practiced} / ${total}  ·  Unlearned ${unlearned}  ·  Correct ${correct}  ·  Wrong ${wrong}`;
-}
-
-function resetProgress() {
-  if (!confirm('Reset all progress and start over?')) return;
-  wordStatus = {};
-  localStorage.removeItem(LS_KEY);
-  stats = { correct: 0, wrong: 0 };
-  updateScorePanel();
-  buildQueue();
-  nextWord();
-}
-
-function setCardMode(mode) {
-  cardMode = mode;
-  document.querySelectorAll('.card-mode-btn').forEach(b => { b.classList.toggle('active', b.dataset.cmode === mode); });
-  buildQueue();
-  nextWord();
-}
-
-function updateRepeatSublabel() {
-  const el = document.getElementById('repeat-sublabel');
-  if (el) el.textContent = practiceMode === 'sentence' ? 'speak this sentence 3 times' : 'speak this word 3 times';
-}
-
-function abortRepeat() {
-  if (repeatAbortCtrl) { repeatAbortCtrl.abort(); repeatAbortCtrl = null; }
-  stopCurrentAudio();
-  const prog = document.getElementById('repeat-progress');
-  if (prog) prog.textContent = '';
-}
-
-function sleep(ms, signal) {
-  return new Promise((resolve, reject) => {
-    const t = setTimeout(resolve, ms);
-    if (signal) signal.addEventListener('abort', () => { clearTimeout(t); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
-  });
-}
-
-async function onRepeatToggle() {
-  const chk = document.getElementById('toggle-repeat');
-  if (!chk.checked) { abortRepeat(); return; }
-  abortRepeat();
-  const ctrl = new AbortController();
-  repeatAbortCtrl = ctrl;
-  const sig = ctrl.signal;
-  const text = practiceMode === 'sentence' ? (current?.['Example Sentence'] || '') : (current?.['Word'] || '');
-  if (!text) { chk.checked = false; return; }
-  const prog = document.getElementById('repeat-progress');
-  try {
-    for (let i = 1; i <= 3; i++) {
-      if (sig.aborted) break;
-      if (prog) prog.textContent = `${i} / 3`;
-      await new Promise((resolve, reject) => {
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'en-US';
-        utter.rate = slowMode ? 0.6 : 1.0;
-        utter.onend = resolve; utter.onerror = reject;
-        sig.addEventListener('abort', () => { window.speechSynthesis.cancel(); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
-        window.speechSynthesis.speak(utter);
-      });
-      if (i < 3) await sleep(320, sig);
-    }
-  } catch (e) { /* aborted */ }
-  if (prog) prog.textContent = '';
-  chk.checked = false;
-  repeatAbortCtrl = null;
-}
-
-// ── Init ──
-async function init() {
-  if (!SR) {
-    app.innerHTML = `<div class="notice">⚠️ 你的瀏覽器不支援語音辨識 API。<br><br>請使用 <strong>Google Chrome</strong> 瀏覽器打開。</div>`;
-    return;
-  }
-  try {
-    const resp = await fetch('./notebooklm_words.csv');
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const text = await resp.text();
-    words = parseCSV(text);
-    if (words.length === 0) throw new Error('CSV 檔案沒有內容');
-    buildUI();
-    // Default: show home view (today's mission)
-    practiceMode = 'today';
-  } catch (err) {
-    app.innerHTML = `<div class="notice">⚠️ 無法載入單字庫。<br><br>請將 <code>notebooklm_words.csv</code> 放在相同目錄下。<br><small style="color:#888;">(${err.message})</small></div>`;
-  }
-}
-
-init();
-</script>
+<script src="./be850-app.js"></script>
 </body>
 </html>
