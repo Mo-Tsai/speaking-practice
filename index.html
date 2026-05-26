@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>BE850 · Round 1 架構地圖</title>
+<title>BE850</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
@@ -20,8 +20,6 @@
   --surf-2:  #1c1c1c;
   --surf-3:  #232323;
   --ring:    rgba(255,255,255,0.08);
-  --ring-in: rgba(255,255,255,0.05);
-  --div:     rgba(255,255,255,0.06);
   --text:    #e8e8e8;
   --sub:     #aaa;
   --muted:   #777;
@@ -43,180 +41,156 @@ body {
   font-weight: 450;
   -webkit-font-smoothing: antialiased;
   display: flex; flex-direction: column; align-items: center;
-  padding: 14px 16px 40px;
+  padding: 28px 18px 40px;
   min-height: 100dvh;
 }
-#app { width: 100%; max-width: 720px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+#app { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 22px; flex: 1; }
+button { font: inherit; color: inherit; }
 
 /* ─── HERO ─── */
-.hero {
-  padding: 28px 22px 24px;
+.hero { display: flex; flex-direction: column; gap: 6px; padding: 4px 4px 0; }
+.hero h1 {
+  font-size: 36px; font-weight: 700; letter-spacing: -0.03em;
+}
+.hero p { color: var(--sub); font-size: 15px; line-height: 1.55; }
+
+/* ─── OVERVIEW: 4 stat cards ─── */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.card {
+  position: relative;
   background: var(--surf);
   border: 1px solid var(--ring);
   border-radius: var(--r-card);
-  display: flex; flex-direction: column; gap: 8px;
+  padding: 28px 22px 22px;
+  text-align: left;
+  cursor: pointer;
+  display: flex; flex-direction: column; gap: 12px;
+  transition: background 0.14s, border-color 0.14s, transform 0.08s;
+  overflow: hidden;
 }
-.hero-title { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-.hero-title h1 {
-  font-size: 28px; font-weight: 600; letter-spacing: -0.02em;
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--accent);
 }
-.hero-tag {
-  font-size: 13px; color: var(--sub); font-weight: 500;
-  padding: 4px 10px;
-  background: var(--surf-2);
-  border: 1px solid var(--ring);
-  border-radius: var(--r-pill);
+.card:hover { background: var(--surf-2); border-color: rgba(255,255,255,0.14); }
+.card:active { transform: scale(0.985); }
+.card-num {
+  font-size: 44px; font-weight: 700; letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  line-height: 1;
 }
-.hero-sub { color: var(--sub); font-size: 15px; line-height: 1.55; }
-.hero-source { color: var(--muted); font-size: 12px; margin-top: 4px; }
+.card-label { display: flex; flex-direction: column; gap: 2px; }
+.card-label-zh { font-size: 16px; font-weight: 600; }
+.card-label-en {
+  font-size: 11px; color: var(--muted);
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
 
-/* ─── SEARCH ─── */
-.search-section {
-  position: sticky; top: 6px; z-index: 10;
-  background: var(--bg);
-  padding: 4px 0;
+/* ─── DETAIL VIEW ─── */
+#detail { display: flex; flex-direction: column; gap: 18px; }
+.detail-head { display: flex; flex-direction: column; gap: 6px; }
+.back {
+  align-self: flex-start;
+  background: transparent; border: none;
+  color: var(--muted); cursor: pointer;
+  font-size: 13px; padding: 6px 0;
+  transition: color 0.12s;
 }
-.search-wrap {
-  display: flex; align-items: center; gap: 10px;
+.back:hover { color: var(--text); }
+.detail-title {
+  display: flex; align-items: baseline; gap: 12px;
+  margin-top: 2px;
+}
+.detail-num {
+  font-size: 36px; font-weight: 700; letter-spacing: -0.03em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.detail-label-zh { font-size: 22px; font-weight: 600; }
+.detail-label-en {
+  font-size: 12px; color: var(--muted);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-left: auto;
+}
+.detail-tagline { color: var(--sub); font-size: 14px; line-height: 1.55; }
+
+.detail-search {
   background: var(--surf);
   border: 1px solid var(--ring);
   border-radius: var(--r-pill);
   padding: 10px 16px;
+  color: var(--text); font: inherit; font-size: 14px;
+  outline: none; width: 100%;
 }
-.search-wrap input {
-  flex: 1; background: transparent; border: none; outline: none;
-  color: var(--text); font: inherit; font-size: 15px;
-}
-.search-wrap input::placeholder { color: var(--muted); }
-#search-stats { color: var(--muted); font-size: 12px; white-space: nowrap; }
+.detail-search::placeholder { color: var(--muted); }
+.detail-search:focus { border-color: var(--accent); }
 
-/* ─── CATEGORY ─── */
-.category {
-  background: var(--surf);
-  border: 1px solid var(--ring);
-  border-radius: var(--r-card);
-  padding: 20px 18px 22px;
-  display: flex; flex-direction: column; gap: 18px;
-}
-.cat-hidden { display: none; }
-.cat-header { display: flex; flex-direction: column; gap: 4px; }
-.cat-title { display: flex; align-items: center; gap: 10px; }
-.cat-dot {
-  width: 10px; height: 10px; border-radius: 50%;
-  background: var(--accent);
-  flex-shrink: 0;
-}
-.cat-title h2 {
-  font-size: 20px; font-weight: 600; letter-spacing: -0.01em;
-  display: flex; align-items: baseline; gap: 4px;
-}
-.cat-zh { color: var(--sub); font-size: 16px; font-weight: 500; }
-.cat-count {
-  margin-left: auto;
-  font-size: 12px; color: var(--muted);
-  font-variant-numeric: tabular-nums;
-}
-.cat-tag {
-  color: var(--sub); font-size: 13px; line-height: 1.5;
-  padding-left: 20px;
-}
-
-/* ─── SUBCATEGORY ─── */
-.subs { display: flex; flex-direction: column; gap: 16px; }
-.sub-hidden { display: none; }
-.sub-header { display: flex; align-items: baseline; gap: 8px; }
-.sub-header h3 {
-  font-size: 14px; font-weight: 600;
-  color: var(--accent);
-  text-transform: uppercase; letter-spacing: 0.04em;
-}
-.sub-count {
-  margin-left: auto;
-  font-size: 11px; color: var(--muted);
-  font-variant-numeric: tabular-nums;
-}
-.sub-tag {
-  color: var(--muted); font-size: 12px;
-  margin: 2px 0 8px;
-}
-
-/* ─── CHIPS GRID ─── */
-.chips {
+/* ─── CHIPS ─── */
+.detail-chips {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
   gap: 6px;
 }
 @media (max-width: 480px) {
-  .chips { grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); }
+  .detail-chips { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
 }
 .chip {
-  background: var(--surf-2);
+  background: var(--surf);
   border: 1px solid var(--ring);
   border-radius: var(--r-chip);
-  padding: 8px 10px;
-  color: var(--text);
-  font: inherit; font-size: 13px; font-weight: 500;
-  text-align: center;
-  cursor: pointer;
+  padding: 9px 10px;
+  color: var(--text); font-size: 13px; font-weight: 500;
+  text-align: center; cursor: pointer;
   transition: background 0.12s, border-color 0.12s, transform 0.06s;
-  user-select: none;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.chip:hover { background: var(--surf-3); border-color: rgba(255,255,255,0.14); }
-.chip:active { transform: scale(0.97); }
+.chip:hover { background: var(--surf-2); border-color: rgba(255,255,255,0.14); }
+.chip:active { transform: scale(0.96); }
 .chip-hidden { display: none; }
 .chip.expanded {
   background: var(--accent);
   border-color: var(--accent);
-  color: #0f0f0f;
-  font-weight: 600;
+  color: #0f0f0f; font-weight: 600;
 }
 
-/* ─── DETAIL CARD (expanded word) ─── */
-.detail-card {
+.word-info {
   grid-column: 1 / -1;
-  background: var(--surf-3);
+  background: var(--surf-2);
   border: 1px solid var(--ring);
   border-left: 3px solid var(--accent);
   border-radius: var(--r-chip);
-  padding: 14px 16px;
+  padding: 12px 14px;
   display: flex; flex-direction: column; gap: 6px;
-  margin-top: 2px;
 }
-.detail-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.detail-word {
-  font-size: 18px; font-weight: 600;
-  color: var(--accent);
-  letter-spacing: -0.01em;
-}
-.detail-zh { color: var(--text); font-size: 14px; }
-.detail-ex {
-  color: var(--sub); font-size: 13px; line-height: 1.55;
-  font-style: italic;
-}
+.info-zh { color: var(--text); font-size: 15px; font-weight: 500; }
+.info-ex { color: var(--sub); font-size: 13px; font-style: italic; line-height: 1.55; }
 
 /* ─── FOOTER ─── */
 .footer {
-  display: flex; flex-direction: column; gap: 12px;
-  margin-top: 8px;
+  display: flex; flex-direction: column; gap: 6px;
+  margin-top: auto;
+  padding-top: 18px;
 }
-.link-card {
-  display: flex; align-items: center; gap: 12px;
-  padding: 16px 18px;
-  background: var(--surf);
-  border: 1px solid var(--ring);
-  border-radius: var(--r-card);
-  text-decoration: none; color: var(--text);
-  transition: background 0.12s, border-color 0.12s;
+.r2-link {
+  color: var(--muted); text-decoration: none;
+  font-size: 13px; text-align: center;
+  padding: 12px;
+  transition: color 0.12s;
 }
-.link-card:hover { background: var(--surf-2); border-color: rgba(255,255,255,0.14); }
-.link-text { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-.link-text strong { font-size: 15px; font-weight: 600; }
-.link-text small { color: var(--muted); font-size: 12px; }
-.link-card .arrow { color: var(--sub); font-size: 18px; }
-.footer-meta { color: var(--muted); font-size: 11px; text-align: center; padding-top: 4px; }
+.r2-link:hover { color: var(--text); }
+.source {
+  color: var(--faint); font-size: 11px; text-align: center;
+}
 
-/* ─── ERROR ─── */
 .error {
   color: var(--rose); padding: 20px; text-align: center;
   background: var(--surf); border: 1px solid var(--ring);
@@ -227,32 +201,31 @@ body {
 <body>
 <main id="app">
   <header class="hero">
-    <div class="hero-title">
-      <h1>BE850</h1>
-      <span class="hero-tag">Round 1 · 架構地圖</span>
-    </div>
-    <p class="hero-sub">850 個字 + 18 個動詞 = 用最少詞表達任何意思的系統</p>
-    <p class="hero-source">Based on C.K. Ogden《Basic English》(1930)</p>
+    <h1>BE850</h1>
+    <p>850 字 = 用最少詞表達任何意思</p>
   </header>
 
-  <section class="search-section">
-    <div class="search-wrap">
-      <input id="search" type="text" placeholder="搜尋英文 / 中文" autocomplete="off" autocapitalize="off" spellcheck="false">
-      <span id="search-stats"></span>
-    </div>
+  <section id="overview">
+    <div class="cards"></div>
   </section>
 
-  <div id="content"></div>
+  <section id="detail" hidden>
+    <button type="button" class="back">← 回首頁</button>
+    <div class="detail-head">
+      <div class="detail-title">
+        <span class="detail-num"></span>
+        <span class="detail-label-zh"></span>
+        <span class="detail-label-en"></span>
+      </div>
+      <p class="detail-tagline"></p>
+    </div>
+    <input type="text" class="detail-search" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="detail-chips"></div>
+  </section>
 
   <footer class="footer">
-    <a href="paraphrase/" class="link-card">
-      <div class="link-text">
-        <strong>Round 2 → Paraphrase 練習</strong>
-        <small>用 18 動詞重組複雜英文 · 等 Round 1 紮實後再進</small>
-      </div>
-      <span class="arrow">→</span>
-    </a>
-    <div class="footer-meta">「同一串字,既是 chunk,也是 paraphrase」</div>
+    <a href="paraphrase/" class="r2-link">→ Round 2 練習</a>
+    <div class="source">C.K. Ogden《Basic English》(1930)</div>
   </footer>
 </main>
 

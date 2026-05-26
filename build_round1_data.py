@@ -1,8 +1,10 @@
-"""Build Round 1 architecture data JSON from basic_english_words.csv.
+"""Build Round 1 data JSON from basic_english_words.csv.
 
-Reads the 850-word CSV, classifies each word into Ogden's three-tier system
-(Operations / Things / Qualities), and writes round1-data.json for the
-architecture page to consume.
+Flat 4-category output:
+  - verbs (18 operators)
+  - things (general + picturable nouns)
+  - qualities (general + opposite adjectives)
+  - connectors (prepositions / pronouns / logic words / question words)
 
 Run from repo root:
     python build_round1_data.py
@@ -35,140 +37,64 @@ def parse_tag(translation_field):
 
 def categorize(word, tag):
     if tag == "operator" or word in OPERATORS_18:
-        return "operations", "verbs-18"
+        return "verbs"
     if tag == "op":
-        return "operations", "other-ops"
-    if tag == "n":
-        return "things", "general"
-    if tag == "pic":
-        return "things", "picturable"
-    if tag == "adj":
-        return "qualities", "general"
-    if tag == "opp":
-        return "qualities", "opposites"
-    return "unknown", "unknown"
+        return "connectors"
+    if tag in ("n", "pic"):
+        return "things"
+    if tag in ("adj", "opp"):
+        return "qualities"
+    return "unknown"
 
 
 def main():
-    by_cat = {
-        "operations": {"verbs-18": [], "other-ops": []},
-        "things": {"general": [], "picturable": []},
-        "qualities": {"general": [], "opposites": []},
-        "unknown": {"unknown": []},
-    }
+    buckets = {"verbs": [], "things": [], "qualities": [], "connectors": [], "unknown": []}
 
     with CSV_PATH.open(encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
+        for row in csv.DictReader(f):
             word = row["Word"].strip()
             tag, zh = parse_tag(row["Translation/Explanation"])
-            example = row["Example Sentence"].strip()
-            top, sub = categorize(word, tag)
-            by_cat[top][sub].append({
-                "word": word,
-                "zh": zh,
-                "ex": example,
-                "tag": tag,
-            })
+            ex = row["Example Sentence"].strip()
+            cat = categorize(word, tag)
+            buckets[cat].append({"word": word, "zh": zh, "ex": ex})
 
-    for top in by_cat:
-        for sub in by_cat[top]:
-            by_cat[top][sub].sort(key=lambda x: x["word"].lower())
+    for b in buckets.values():
+        b.sort(key=lambda x: x["word"].lower())
 
-    structure = {
-        "version": "round1.v1",
-        "total": sum(len(s) for t in by_cat.values() for s in t.values() if t is not by_cat["unknown"]),
-        "categories": [
-            {
-                "id": "operations",
-                "label": "Operations",
-                "label_zh": "操作詞",
-                "tagline": "句子的骨幹 — 動詞、介詞、代名詞、邏輯詞",
-                "accent": "slate",
-                "subcategories": [
-                    {
-                        "id": "verbs-18",
-                        "label": "18 個動詞 (Operators)",
-                        "tagline": "BE850 的核心引擎 — 跟其他字組合形成所有 paraphrase",
-                        "words": by_cat["operations"]["verbs-18"],
-                    },
-                    {
-                        "id": "other-ops",
-                        "label": "其他操作詞",
-                        "tagline": "介詞 / 代名詞 / 邏輯詞 / 問句詞",
-                        "words": by_cat["operations"]["other-ops"],
-                    },
-                ],
-            },
-            {
-                "id": "things",
-                "label": "Things",
-                "label_zh": "名詞",
-                "tagline": "可以指稱的事物 — 句子的填入物",
-                "accent": "sage",
-                "subcategories": [
-                    {
-                        "id": "general",
-                        "label": "一般 (General)",
-                        "tagline": "抽象概念、活動、屬性",
-                        "words": by_cat["things"]["general"],
-                    },
-                    {
-                        "id": "picturable",
-                        "label": "可畫 (Picturable)",
-                        "tagline": "看得到摸得到的具體物",
-                        "words": by_cat["things"]["picturable"],
-                    },
-                ],
-            },
-            {
-                "id": "qualities",
-                "label": "Qualities",
-                "label_zh": "形容詞",
-                "tagline": "描述事物特質的字",
-                "accent": "rose",
-                "subcategories": [
-                    {
-                        "id": "general",
-                        "label": "一般 (General)",
-                        "tagline": "獨立的形容詞",
-                        "words": by_cat["qualities"]["general"],
-                    },
-                    {
-                        "id": "opposites",
-                        "label": "反義 (Opposites)",
-                        "tagline": "與其他形容詞成對的反義字",
-                        "words": by_cat["qualities"]["opposites"],
-                    },
-                ],
-            },
-        ],
+    meta = [
+        ("verbs", "動詞", "Verbs", "paraphrase 的核心引擎 — 18 個動詞跟其他字組合就能表達任何動作", "slate"),
+        ("things", "名詞", "Things", "可以指稱的事物 — 句子的填入物", "sage"),
+        ("qualities", "形容詞", "Qualities", "描述事物的特質", "rose"),
+        ("connectors", "連接詞", "Connectors", "介詞、代名詞、邏輯詞、問句詞 — 把字串成句子的膠水", "sand"),
+    ]
+
+    categories = []
+    for cid, label, label_en, tagline, accent in meta:
+        categories.append({
+            "id": cid,
+            "label": label,
+            "label_en": label_en,
+            "tagline": tagline,
+            "accent": accent,
+            "words": buckets[cid],
+        })
+
+    out = {
+        "version": "round1.v2",
+        "total": sum(len(b) for b in buckets.values() if b is not buckets["unknown"]),
+        "categories": categories,
     }
+    if buckets["unknown"]:
+        out["unclassified"] = buckets["unknown"]
 
-    if by_cat["unknown"]["unknown"]:
-        structure["unclassified"] = by_cat["unknown"]["unknown"]
+    OUT_PATH.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    OUT_PATH.write_text(
-        json.dumps(structure, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
-
-    total_classified = sum(
-        len(s) for t in by_cat.values() for s in t.values()
-    ) - len(by_cat["unknown"]["unknown"])
     print(f"Wrote {OUT_PATH.name}")
-    print(f"Total classified: {total_classified} / 850 expected")
-    print()
-    for cat in structure["categories"]:
-        cat_total = sum(len(s["words"]) for s in cat["subcategories"])
-        print(f"  {cat['label']} ({cat['label_zh']}): {cat_total}")
-        for sub in cat["subcategories"]:
-            print(f"    {sub['label']}: {len(sub['words'])}")
-    if by_cat["unknown"]["unknown"]:
-        print()
-        print(f"  UNCLASSIFIED ({len(by_cat['unknown']['unknown'])}):")
-        for w in by_cat["unknown"]["unknown"]:
-            print(f"    {w['word']} (tag={w['tag']!r})")
+    print(f"Total: {out['total']}")
+    for c in categories:
+        print(f"  {c['label']} ({c['label_en']}): {len(c['words'])}")
+    if buckets["unknown"]:
+        print(f"  UNCLASSIFIED: {len(buckets['unknown'])}")
 
 
 if __name__ == "__main__":
