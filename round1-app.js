@@ -1,16 +1,17 @@
-// Round 1 — flashcard mode. Pick category → flip through words. English only.
+// BE850 Daily — 10 nouns / session, flip + TTS read-aloud.
 
 const OPERATORS = [
   'be', 'come', 'do', 'get', 'give', 'go', 'have', 'keep', 'let',
   'make', 'may', 'put', 'say', 'see', 'seem', 'send', 'take', 'will',
 ];
 const OP_RE = new RegExp(`\\b(${OPERATORS.join('|')})\\b`, 'gi');
+const SESSION_SIZE = 10;
 
 let DATA = null;
 let deck = [];
 let idx = 0;
 let flipped = false;
-let currentCat = null;
+let nouns = [];
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -20,62 +21,56 @@ async function init() {
     const r = await fetch('round1-data.json', { cache: 'no-cache' });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     DATA = await r.json();
-    renderOverview();
+    const things = DATA.categories.find((c) => c.id === 'things');
+    nouns = things ? things.words : [];
+    renderLanding();
   } catch (e) {
-    $('#overview').innerHTML = `<div class="error">無法載入資料: ${e.message}</div>`;
+    $('#landing').innerHTML = `<div class="error">${e.message}</div>`;
   }
 
-  $('.back-btn').addEventListener('click', renderOverview);
+  // Prime voice list (some browsers need this)
+  if (window.speechSynthesis) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+  }
+
+  $$('.start-btn').forEach((b) => b.addEventListener('click', startSession));
   $('.flashcard').addEventListener('click', flipCard);
   $('.nav-prev').addEventListener('click', prevCard);
   $('.nav-next').addEventListener('click', nextCard);
-  $('.nav-shuffle').addEventListener('click', shuffleDeck);
+  $('.listen-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    speakExample();
+  });
 
   document.addEventListener('keydown', (e) => {
-    if ($('#deck').hidden) return;
-    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
-    else if (e.key === 'ArrowRight') nextCard();
-    else if (e.key === 'ArrowLeft') prevCard();
-    else if (e.key === 'Escape') renderOverview();
+    if (!$('#deck').hidden) {
+      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
+      else if (e.key === 'ArrowRight') nextCard();
+      else if (e.key === 'ArrowLeft') prevCard();
+      else if (e.key === 'l' || e.key === 'L') speakExample();
+    }
   });
 }
 
-function renderOverview() {
-  $('#overview').hidden = false;
+function renderLanding() {
+  $('#landing').hidden = false;
   $('#deck').hidden = true;
-  window.scrollTo({ top: 0, behavior: 'instant' });
-
-  const cards = $('.cards');
-  cards.innerHTML = '';
-  for (const cat of DATA.categories) {
-    const card = document.createElement('button');
-    card.type = 'button';
-    card.className = 'card';
-    card.style.setProperty('--accent', `var(--${cat.accent})`);
-    card.innerHTML = `
-      <div class="card-num">${cat.words.length}</div>
-      <div class="card-label">
-        <span class="card-label-zh">${escapeHtml(cat.label)}</span>
-        <span class="card-label-en">${escapeHtml(cat.label_en)}</span>
-      </div>
-    `;
-    card.addEventListener('click', () => openDeck(cat));
-    cards.appendChild(card);
-  }
+  $('#done').hidden = true;
+  $('.session-total-info').textContent = `from ${nouns.length} nouns`;
 }
 
-function openDeck(cat) {
-  currentCat = cat;
-  deck = [...cat.words];
-  shuffleArray(deck);
+function startSession() {
+  if (!nouns.length) return;
+  const shuffled = [...nouns];
+  shuffleArray(shuffled);
+  deck = shuffled.slice(0, SESSION_SIZE);
   idx = 0;
   flipped = false;
 
-  $('#overview').hidden = true;
+  $('#landing').hidden = true;
+  $('#done').hidden = true;
   $('#deck').hidden = false;
-  $('#deck').style.setProperty('--accent', `var(--${cat.accent})`);
-  $('.deck-label-zh').textContent = cat.label;
-  $('.deck-label-en').textContent = cat.label_en;
 
   renderCard();
   window.scrollTo({ top: 0, behavior: 'instant' });
@@ -84,34 +79,39 @@ function openDeck(cat) {
 function renderCard() {
   const w = deck[idx];
   $('.counter').textContent = `${idx + 1} / ${deck.length}`;
-
-  $('.face-front .word-front').textContent = w.word;
-  $('.face-back .word-back').textContent = w.word;
+  $('.word-front').textContent = w.word;
+  $('.word-back').textContent = w.word;
 
   const ex = w.ex || '';
-  $('.face-back .example').innerHTML = ex ? highlightOps(ex) : '';
-
+  $('.example').innerHTML = ex ? highlightOps(ex) : '';
   const ops = opsIn(ex);
-  $('.face-back .pairs').textContent = ops.length
-    ? `pairs with · ${ops.join(' · ')}`
-    : '';
+  $('.pairs').textContent = ops.length ? `pairs with · ${ops.join(' · ')}` : '';
 
   flipped = false;
   $('.flashcard').classList.remove('flipped');
 
   $('.nav-prev').disabled = idx === 0;
-  $('.nav-next').disabled = idx === deck.length - 1;
+  $('.nav-next').textContent = idx === deck.length - 1 ? 'finish ✓' : 'next →';
+
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
 }
 
 function flipCard() {
   flipped = !flipped;
   $('.flashcard').classList.toggle('flipped', flipped);
+  if (flipped) {
+    setTimeout(() => speakExample(), 420);
+  } else {
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+  }
 }
 
 function nextCard() {
   if (idx < deck.length - 1) {
     idx++;
     renderCard();
+  } else {
+    showDone();
   }
 }
 
@@ -122,10 +122,33 @@ function prevCard() {
   }
 }
 
-function shuffleDeck() {
-  shuffleArray(deck);
-  idx = 0;
-  renderCard();
+function showDone() {
+  $('#deck').hidden = true;
+  $('#done').hidden = false;
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+function speakExample() {
+  const w = deck[idx];
+  if (!w || !w.ex) return;
+  speak(w.ex);
+}
+
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = 0.9;
+  u.pitch = 1.0;
+  const voices = window.speechSynthesis.getVoices();
+  const preferred = voices.find(
+    (v) => v.lang.startsWith('en') &&
+      (/Samantha|Karen|Daniel|Google US English|Microsoft.*Aria|Microsoft.*Jenny|Natural/i.test(v.name))
+  );
+  if (preferred) u.voice = preferred;
+  window.speechSynthesis.speak(u);
 }
 
 function opsIn(s) {

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>BE850</title>
+<title>BE850 Daily</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
@@ -30,8 +30,7 @@
   --slate:   #7d94a6;
   --r-card:  18px;
   --r-pill:  9999px;
-  --r-chip:  8px;
-  --accent:  var(--slate);
+  --accent:  var(--sage);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
@@ -41,79 +40,62 @@ body {
   font-weight: 450;
   -webkit-font-smoothing: antialiased;
   display: flex; flex-direction: column; align-items: center;
-  padding: 28px 18px 28px;
+  padding: 28px 18px;
   min-height: 100dvh;
 }
-#app { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 22px; flex: 1; }
+#app { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 18px; flex: 1; }
 button { font: inherit; color: inherit; }
 
 /* ─── HERO ─── */
-.hero { display: flex; flex-direction: column; gap: 6px; padding: 4px 4px 0; }
-.hero h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.03em; }
-.hero p { color: var(--sub); font-size: 15px; line-height: 1.55; }
+.hero { display: flex; flex-direction: column; gap: 4px; padding: 4px 4px 0; }
+.hero h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.03em; }
+.hero p { color: var(--sub); font-size: 14px; line-height: 1.55; }
 
-/* ─── OVERVIEW: 4 stat cards ─── */
-.cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+/* ─── LANDING ─── */
+#landing {
+  display: flex; flex: 1;
+  align-items: center; justify-content: center;
+  padding: 40px 0;
 }
-.card {
-  position: relative;
-  background: var(--surf);
-  border: 1px solid var(--ring);
-  border-radius: var(--r-card);
-  padding: 28px 22px 22px;
-  text-align: left;
-  cursor: pointer;
-  display: flex; flex-direction: column; gap: 12px;
-  transition: background 0.14s, border-color 0.14s, transform 0.08s;
-  overflow: hidden;
+.landing-content {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 28px;
+  text-align: center;
 }
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 3px; height: 100%;
+.big-cta {
   background: var(--accent);
+  color: #0f0f0f;
+  border: none;
+  border-radius: var(--r-pill);
+  padding: 18px 44px;
+  font-size: 17px; font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: opacity 0.12s, transform 0.08s;
+  box-shadow: 0 4px 20px rgba(138, 158, 137, 0.15);
 }
-.card:hover { background: var(--surf-2); border-color: rgba(255,255,255,0.14); }
-.card:active { transform: scale(0.985); }
-.card-num {
-  font-size: 44px; font-weight: 700; letter-spacing: -0.04em;
-  font-variant-numeric: tabular-nums;
-  color: var(--accent);
-  line-height: 1;
-}
-.card-label { display: flex; flex-direction: column; gap: 2px; }
-.card-label-zh { font-size: 16px; font-weight: 600; }
-.card-label-en {
-  font-size: 11px; color: var(--muted);
-  letter-spacing: 0.06em; text-transform: uppercase;
+.big-cta:hover { opacity: 0.92; }
+.big-cta:active { transform: scale(0.98); }
+.landing-info {
+  color: var(--muted);
+  font-size: 13px; line-height: 1.6;
+  max-width: 300px;
 }
 
-/* ─── DECK (flashcard mode) ─── */
+/* ─── DECK ─── */
 #deck { display: flex; flex-direction: column; gap: 16px; flex: 1; }
 .deck-head {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 12px;
+  padding: 0 4px;
 }
-.back-btn {
-  background: transparent; border: none;
-  color: var(--muted); cursor: pointer;
-  font-size: 13px; padding: 6px 4px;
-  transition: color 0.12s;
-}
-.back-btn:hover { color: var(--text); }
-.deck-title { display: flex; align-items: baseline; gap: 8px; }
-.deck-label-zh { font-size: 15px; font-weight: 600; color: var(--text); }
-.deck-label-en {
+.deck-tag {
   font-size: 11px; color: var(--muted);
-  letter-spacing: 0.06em; text-transform: uppercase;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  font-family: ui-monospace, monospace;
 }
 .counter {
   font-family: ui-monospace, monospace;
-  font-size: 12px; color: var(--muted);
+  font-size: 13px; color: var(--text);
   letter-spacing: 0.05em;
   font-variant-numeric: tabular-nums;
 }
@@ -123,8 +105,8 @@ button { font: inherit; color: inherit; }
   flex: 1;
   display: flex; align-items: center; justify-content: center;
   perspective: 1400px;
-  padding: 20px 0;
-  min-height: 60vh;
+  padding: 8px 0;
+  min-height: 56vh;
 }
 .flashcard {
   width: 100%;
@@ -158,7 +140,7 @@ button { font: inherit; color: inherit; }
 .face-back {
   transform: rotateY(180deg);
   justify-content: flex-start;
-  gap: 20px;
+  gap: 14px;
 }
 
 .word-front {
@@ -180,27 +162,48 @@ button { font: inherit; color: inherit; }
   color: var(--accent);
   letter-spacing: -0.01em;
 }
+.read-prompt {
+  font-size: 10px; color: var(--muted);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  margin-top: 2px;
+}
 .example {
   font-size: 22px; font-weight: 500;
   line-height: 1.4; color: var(--text);
   letter-spacing: -0.005em;
-  flex: 1;
 }
 @media (max-width: 380px) {
   .example { font-size: 19px; }
 }
 .op-hl { color: var(--accent); font-weight: 700; }
+
+.listen-btn {
+  align-self: flex-start;
+  background: var(--surf-2);
+  border: 1px solid var(--ring);
+  border-radius: var(--r-pill);
+  padding: 8px 16px;
+  color: var(--text);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: background 0.12s, border-color 0.12s;
+}
+.listen-btn:hover { background: var(--surf-3); border-color: rgba(255,255,255,0.14); }
+.listen-btn:active { transform: scale(0.97); }
+
 .pairs {
-  font-size: 12px; color: var(--muted);
-  letter-spacing: 0.04em;
+  margin-top: auto;
   padding-top: 12px;
   border-top: 1px solid var(--ring);
+  font-size: 11px; color: var(--muted);
+  letter-spacing: 0.04em;
   font-family: ui-monospace, monospace;
 }
 
 /* ─── NAV ─── */
 .deck-nav {
-  display: flex; gap: 8px; align-items: center;
+  display: flex; gap: 8px;
 }
 .nav-btn {
   flex: 1;
@@ -219,12 +222,25 @@ button { font: inherit; color: inherit; }
 }
 .nav-btn:active:not(:disabled) { transform: scale(0.98); }
 .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-.nav-shuffle {
-  flex: 0 0 auto;
-  width: 44px;
-  font-family: ui-monospace, monospace;
-  font-size: 13px;
-  padding: 13px 0;
+
+/* ─── DONE ─── */
+#done {
+  display: flex; flex: 1;
+  align-items: center; justify-content: center;
+  padding: 40px 0;
+}
+.done-content {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 20px;
+  text-align: center;
+}
+.done-content h2 {
+  font-size: 32px; font-weight: 700; letter-spacing: -0.03em;
+  color: var(--accent);
+}
+.done-content p {
+  color: var(--sub); font-size: 14px;
+  margin-bottom: 8px;
 }
 
 /* ─── FOOTER ─── */
@@ -235,13 +251,14 @@ button { font: inherit; color: inherit; }
 }
 .r2-link {
   color: var(--muted); text-decoration: none;
-  font-size: 13px; text-align: center;
-  padding: 10px;
+  font-size: 12px; text-align: center;
+  padding: 8px;
   transition: color 0.12s;
 }
 .r2-link:hover { color: var(--text); }
 .source {
-  color: var(--faint); font-size: 11px; text-align: center;
+  color: var(--faint); font-size: 10px; text-align: center;
+  letter-spacing: 0.02em;
 }
 
 .error {
@@ -254,21 +271,24 @@ button { font: inherit; color: inherit; }
 <body>
 <main id="app">
   <header class="hero">
-    <h1>BE850</h1>
-    <p>850 字 = 用最少詞表達任何意思</p>
+    <h1>BE850 Daily</h1>
+    <p>10 nouns a day · read &amp; repeat</p>
   </header>
 
-  <section id="overview">
-    <div class="cards"></div>
+  <section id="landing">
+    <div class="landing-content">
+      <button type="button" class="big-cta start-btn">Start today's 10</button>
+      <p class="landing-info">
+        Flip each card to see the sentence.<br>
+        Hear it. Say it back.<br>
+        <span class="session-total-info"></span>
+      </p>
+    </div>
   </section>
 
   <section id="deck" hidden>
     <div class="deck-head">
-      <button type="button" class="back-btn">← 回首頁</button>
-      <div class="deck-title">
-        <span class="deck-label-zh"></span>
-        <span class="deck-label-en"></span>
-      </div>
+      <span class="deck-tag">Nouns · Things</span>
       <span class="counter"></span>
     </div>
 
@@ -280,7 +300,9 @@ button { font: inherit; color: inherit; }
         </div>
         <div class="face face-back">
           <span class="word-back"></span>
+          <div class="read-prompt">read &amp; repeat</div>
           <p class="example"></p>
+          <button type="button" class="listen-btn">▶ Listen</button>
           <div class="pairs"></div>
         </div>
       </div>
@@ -288,14 +310,21 @@ button { font: inherit; color: inherit; }
 
     <div class="deck-nav">
       <button type="button" class="nav-btn nav-prev">← prev</button>
-      <button type="button" class="nav-btn nav-shuffle" title="shuffle deck">⇄</button>
       <button type="button" class="nav-btn nav-next">next →</button>
     </div>
   </section>
 
+  <section id="done" hidden>
+    <div class="done-content">
+      <h2>Done</h2>
+      <p>10 nouns reviewed</p>
+      <button type="button" class="big-cta start-btn">Start another 10</button>
+    </div>
+  </section>
+
   <footer class="footer">
-    <a href="paraphrase/" class="r2-link">→ Round 2 練習</a>
-    <div class="source">C.K. Ogden《Basic English》(1930)</div>
+    <a href="paraphrase/" class="r2-link">→ Round 2</a>
+    <div class="source">C.K. Ogden · Basic English (1930)</div>
   </footer>
 </main>
 
